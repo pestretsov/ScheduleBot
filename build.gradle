@@ -32,6 +32,7 @@ dependencies {
 	compile('org.telegram:telegrambots:2.4.4')
 	runtime('com.h2database:h2')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compileOnly "org.projectlombok:lombok:1.16.12"
 }
 
 task stage(dependsOn: ['build', 'clean'])

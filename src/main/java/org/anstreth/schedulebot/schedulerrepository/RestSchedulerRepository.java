@@ -7,11 +7,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 
 @Repository
 class RestSchedulerRepository implements SchedulerRepository {
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Value("${ruzapi.myschedule}")
     private String myGroupScheduleURL;
@@ -23,14 +27,20 @@ class RestSchedulerRepository implements SchedulerRepository {
     }
 
     @Override
-    public Day getScheduleForToday() throws NoSuchElementException{
-        Calendar calendar = Calendar.getInstance();
+    public Day getScheduleForDate(Calendar calendar) throws NoSuchElementException{
         int day = calendar.get(Calendar.DAY_OF_WEEK);
 
         throwNoSuchElementExceptionIfTodayIsSunday(calendar);
 
-        WeekSchedule weekSchedule = restTemplate.getForObject(myGroupScheduleURL, WeekSchedule.class);
+        WeekSchedule weekSchedule = makeApiCall(calendar);
         return weekSchedule.getDays().get(day - 2);
+    }
+
+    private WeekSchedule makeApiCall(Calendar date) {
+        return restTemplate.getForObject(
+                myGroupScheduleURL,
+                WeekSchedule.class,
+                Collections.singletonMap("date", simpleDateFormat.format(date.getTime())));
     }
 
     private void throwNoSuchElementExceptionIfTodayIsSunday(Calendar calendar) {

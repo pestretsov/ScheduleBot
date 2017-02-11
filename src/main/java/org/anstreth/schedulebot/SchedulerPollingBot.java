@@ -1,27 +1,20 @@
 package org.anstreth.schedulebot;
 
-import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
-import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.util.NoSuchElementException;
-
 class SchedulerPollingBot extends TelegramLongPollingBot {
 
     private final String token;
 
-    private final SchedulerRepository schedulerRepository;
+    private final SchedulerBotTextService schedulerBotTextService;
 
-    private final SchedulerFormatter schedulerFormatter;
-
-    SchedulerPollingBot(String token, SchedulerRepository schedulerRepository, SchedulerFormatter schedulerFormatter) {
+    SchedulerPollingBot(String token, SchedulerBotTextService schedulerBotTextService) {
         super();
         this.token = token;
-        this.schedulerRepository = schedulerRepository;
-        this.schedulerFormatter = schedulerFormatter;
+        this.schedulerBotTextService = schedulerBotTextService;
     }
 
     @Override
@@ -37,38 +30,23 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
-        if (updateHasTodayCommand(update)) {
+        if (updateHasMessageWithText(update)) {
             try {
-                sendMessage(getTodayScheduleMessage(update));
+                sendMessage(getReplyForUpdate(update));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
-    private SendMessage getTodayScheduleMessage(Update update) {
+    private boolean updateHasMessageWithText(Update update) {
+        return update.hasMessage() && update.getMessage().hasText();
+    }
+
+    private SendMessage getReplyForUpdate(Update update) {
         return new SendMessage() // Create a SendMessage object with mandatory fields
-                        .setChatId(update.getMessage().getChatId())
-                        .setText(getTodayScheduleText());
-    }
-
-    private boolean updateHasTodayCommand(Update update) {
-        return updateHasCommand(update, "/today");
-    }
-
-    private boolean updateHasCommand(Update update, String command) {
-        return update.hasMessage()
-                && update.getMessage().hasText()
-                && update.getMessage().getText().equals(command);
-    }
-
-    private String getTodayScheduleText() {
-        try {
-            return schedulerFormatter.formatDay(schedulerRepository.getScheduleForToday());
-        } catch (NoSuchElementException e) {
-            return "Today is sunday, there are no lessons!";
-        }
+                .setChatId(update.getMessage().getChatId())
+                .setText(schedulerBotTextService.getReplyForText(update.getMessage().getText()));
     }
 
 }

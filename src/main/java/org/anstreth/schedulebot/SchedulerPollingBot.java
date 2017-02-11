@@ -2,7 +2,6 @@ package org.anstreth.schedulebot;
 
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -51,16 +50,20 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
     private SendMessage getTodayScheduleMessage(Update update) {
         return new SendMessage() // Create a SendMessage object with mandatory fields
                         .setChatId(update.getMessage().getChatId())
-                        .setText(getText());
+                        .setText(getTodayScheduleText());
     }
 
     private boolean updateHasTodayCommand(Update update) {
-        return update.hasMessage()
-                && update.getMessage().hasText()
-                && update.getMessage().getText().equals("/today");
+        return updateHasCommand(update, "/today");
     }
 
-    private String getText() {
+    private boolean updateHasCommand(Update update, String command) {
+        return update.hasMessage()
+                && update.getMessage().hasText()
+                && update.getMessage().getText().equals(command);
+    }
+
+    private String getTodayScheduleText() {
         try {
             return schedulerFormatter.formatDay(schedulerRepository.getScheduleForToday());
         } catch (NoSuchElementException e) {

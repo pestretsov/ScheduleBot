@@ -2,6 +2,7 @@ package org.anstreth.schedulebot.schedulerrepository;
 
 import org.anstreth.ruzapi.Day;
 import org.anstreth.ruzapi.WeekSchedule;
+import org.anstreth.schedulebot.exceptions.NoScheduleForSundayException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -27,11 +28,9 @@ class RestSchedulerRepository implements SchedulerRepository {
     }
 
     @Override
-    public Day getScheduleForDate(Calendar calendar) throws NoSuchElementException{
+    public Day getScheduleForDay(Calendar calendar) throws NoSuchElementException {
+        throwExceptionIfTodayIsSundaySunday(calendar);
         int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-        throwNoSuchElementExceptionIfTodayIsSunday(calendar);
-
         WeekSchedule weekSchedule = makeApiCall(calendar);
         return weekSchedule.getDays().get(day - 2);
     }
@@ -43,10 +42,10 @@ class RestSchedulerRepository implements SchedulerRepository {
                 Collections.singletonMap("date", simpleDateFormat.format(date.getTime())));
     }
 
-    private void throwNoSuchElementExceptionIfTodayIsSunday(Calendar calendar) {
+    private void throwExceptionIfTodayIsSundaySunday(Calendar calendar) {
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         if (day == Calendar.SUNDAY) {
-            throw new NoSuchElementException("");
+            throw new NoScheduleForSundayException();
         }
     }
 }

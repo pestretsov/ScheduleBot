@@ -7,5 +7,5 @@ import java.util.Calendar;
 
 @Repository
 public interface SchedulerRepository {
-    Day getScheduleForDate(Calendar date);
+    Day getScheduleForDay(Calendar date);
 }

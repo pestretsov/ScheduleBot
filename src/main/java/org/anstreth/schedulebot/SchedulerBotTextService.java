@@ -1,13 +1,12 @@
 package org.anstreth.schedulebot;
 
+import org.anstreth.schedulebot.exceptions.NoScheduleForSundayException;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
-import java.util.NoSuchElementException;
-import java.util.Objects;
 
 @Component
 class SchedulerBotTextService {
@@ -20,28 +19,37 @@ class SchedulerBotTextService {
         this.schedulerFormatter = schedulerFormatter;
     }
 
-    String getReplyForText(String string) {
-        if (isTodayCommand(string)) {
-            return getScheduleForToday();
-        } else {
-            return "Sorry, don't understand that!";
+    String getReplyForText(String text) {
+        String trimmedCommand = text.trim();
+
+        switch (trimmedCommand) {
+            case "/today":
+                return getScheduleForToday();
+            case "/tomorrow":
+                return getScheduleForTomorrow();
+            default:
+                return "Sorry, don't understand that!";
         }
-
-    }
-
-    private boolean isTodayCommand(String string) {
-        return Objects.equals(string, "/today");
     }
 
     private String getScheduleForToday() {
-        try {
-            return schedulerFormatter.formatDay(schedulerRepository.getScheduleForDate(Calendar.getInstance()));
-        } catch (NoSuchElementException e) {
-            return "Today is sunday!";
-        } catch (Exception e) {
-            return "Some error occured!";
-        }
+        return getScheduleForDate(Calendar.getInstance());
+    }
 
+    private String getScheduleForTomorrow() {
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.DATE, 1);
+        return getScheduleForDate(today);
+    }
+
+    private String getScheduleForDate(Calendar date) {
+        try {
+            return schedulerFormatter.formatDay(schedulerRepository.getScheduleForDay(date));
+        } catch (NoScheduleForSundayException e) {
+            return "No schedule for sunday!";
+        } catch (Exception e) {
+            return "Some error occurred!";
+        }
     }
 
 }

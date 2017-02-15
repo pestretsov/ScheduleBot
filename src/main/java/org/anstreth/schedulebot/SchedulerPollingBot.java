@@ -1,5 +1,7 @@
 package org.anstreth.schedulebot;
 
+import org.anstreth.schedulebot.schedulebottextservice.MessageSender;
+import org.anstreth.schedulebot.schedulebottextservice.SchedulerBotTextService;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -29,13 +31,11 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-
         if (updateHasMessageWithText(update)) {
-            try {
-                sendMessage(getReplyForUpdate(update));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            Long chatId = update.getMessage().getChatId();
+            String messageText = update.getMessage().getText();
+            MessageSender messageSender = getMessageSenderForChatId(chatId);
+            schedulerBotTextService.handleText(messageText, messageSender);
         }
     }
 
@@ -43,10 +43,20 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         return update.hasMessage() && update.getMessage().hasText();
     }
 
-    private SendMessage getReplyForUpdate(Update update) {
-        return new SendMessage() // Create a SendMessage object with mandatory fields
-                .setChatId(update.getMessage().getChatId())
-                .setText(schedulerBotTextService.getReplyForText(update.getMessage().getText()));
+    private MessageSender getMessageSenderForChatId(Long chatId) {
+        return (message) -> sendMessageQuietly(getSendMessageForChatIdWithText(chatId, message));
+    }
+
+    private void sendMessageQuietly(SendMessage sendMessageForChatWithText) {
+        try {
+            sendMessage(sendMessageForChatWithText);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SendMessage getSendMessageForChatIdWithText(Long chatId, String message) {
+        return new SendMessage().setChatId(chatId).setText(message);
     }
 
 }

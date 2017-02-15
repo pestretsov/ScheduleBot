@@ -1,4 +1,4 @@
-package org.anstreth.schedulebot;
+package org.anstreth.schedulebot.schedulebottextservice;
 
 import org.anstreth.schedulebot.exceptions.NoScheduleForSundayException;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Calendar;
 
 @Component
-class SchedulerBotTextService {
+public class SchedulerBotTextService {
     private final SchedulerRepository schedulerRepository;
     private final SchedulerFormatter schedulerFormatter;
 
@@ -19,7 +19,11 @@ class SchedulerBotTextService {
         this.schedulerFormatter = schedulerFormatter;
     }
 
-    String getReplyForText(String text) {
+    public void handleText(String text, MessageSender messageSender) {
+        messageSender.sendMessage(getReplyForText(text));
+    }
+
+    private String getReplyForText(String text) {
         String trimmedCommand = text.trim();
 
         switch (trimmedCommand) {
@@ -27,16 +31,10 @@ class SchedulerBotTextService {
                 return getScheduleForToday();
             case "/tomorrow":
                 return getScheduleForTomorrow();
-//            case "/week":
-//                return getScheduleForWeek();
             default:
                 return "Sorry, don't understand that!";
         }
     }
-
-//    private String getScheduleForWeek() {
-//        return schedulerFormatter.formatWeek(schedulerRepository.getScheduleForWeek(Calendar.getInstance()));
-//    }
 
     private String getScheduleForToday() {
         return getScheduleForDate(Calendar.getInstance());
@@ -57,5 +55,4 @@ class SchedulerBotTextService {
             return "Some error occurred!";
         }
     }
-
 }

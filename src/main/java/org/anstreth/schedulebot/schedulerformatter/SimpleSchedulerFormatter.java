@@ -22,7 +22,6 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
     @Override
     public String formatDay(Day scheduleForToday) {
         String lessons = getLessonsString(scheduleForToday.getLessons());
-
         return String.format("Schedule for day %s:\n\n%s", scheduleForToday.getDate(), lessons);
     }
 

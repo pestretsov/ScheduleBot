@@ -27,11 +27,16 @@ class RestSchedulerRepository implements SchedulerRepository {
     }
 
     @Override
-    public Day getScheduleForDay(Calendar calendar) throws NoSuchElementException {
-        throwExceptionIfTodayIsSundaySunday(calendar);
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-        WeekSchedule weekSchedule = makeApiCall(calendar);
+    public Day getScheduleForDay(Calendar date) throws NoSuchElementException {
+        throwExceptionIfTodayIsSundaySunday(date);
+        int day = date.get(Calendar.DAY_OF_WEEK);
+        WeekSchedule weekSchedule = getScheduleForWeek(date);
         return weekSchedule.getDays().get(day - 2);
+    }
+
+    @Override
+    public WeekSchedule getScheduleForWeek(Calendar date) {
+        return makeApiCall(date);
     }
 
     private WeekSchedule makeApiCall(Calendar date) {

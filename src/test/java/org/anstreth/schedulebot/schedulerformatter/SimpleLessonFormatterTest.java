@@ -36,11 +36,11 @@ public class SimpleLessonFormatterTest {
         lesson.setLessonType(lessonType);
 
         String expectedFormat = String.format(
-                "%s (%s), %s - %s, %s, %s",
-                subjectName,
-                lessonTypeName,
+                "%s - %s: %s (%s)\n%s, %s",
                 timeStart,
                 timeEnd,
+                subjectName,
+                lessonTypeName,
                 auditoryName,
                 auditoryBuilding
         );

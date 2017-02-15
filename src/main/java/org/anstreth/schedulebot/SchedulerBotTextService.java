@@ -27,10 +27,16 @@ class SchedulerBotTextService {
                 return getScheduleForToday();
             case "/tomorrow":
                 return getScheduleForTomorrow();
+//            case "/week":
+//                return getScheduleForWeek();
             default:
                 return "Sorry, don't understand that!";
         }
     }
+
+//    private String getScheduleForWeek() {
+//        return schedulerFormatter.formatWeek(schedulerRepository.getScheduleForWeek(Calendar.getInstance()));
+//    }
 
     private String getScheduleForToday() {
         return getScheduleForDate(Calendar.getInstance());

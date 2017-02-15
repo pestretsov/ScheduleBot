@@ -9,11 +9,11 @@ class SimpleLessonFormatter implements LessonFormatter{
 
     @Override
     public String formatLesson(Lesson lesson) {
-        return String.format("%s (%s), %s - %s, %s",
-                lesson.getSubject(),
-                lesson.getLessonType().getName(),
+        return String.format("%s - %s: %s (%s)\n%s",
                 lesson.getTimeStart(),
                 lesson.getTimeEnd(),
+                lesson.getSubject(),
+                lesson.getLessonType().getName(),
                 getAuditory(lesson));
     }
 

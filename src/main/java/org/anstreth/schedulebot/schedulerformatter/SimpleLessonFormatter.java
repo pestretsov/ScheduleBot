@@ -9,8 +9,9 @@ class SimpleLessonFormatter implements LessonFormatter{
 
     @Override
     public String formatLesson(Lesson lesson) {
-        return String.format("%s, %s - %s, %s",
+        return String.format("%s (%s), %s - %s, %s",
                 lesson.getSubject(),
+                lesson.getLessonType().getName(),
                 lesson.getTimeStart(),
                 lesson.getTimeEnd(),
                 getAuditory(lesson));

@@ -16,10 +16,9 @@ import java.util.NoSuchElementException;
 @Repository
 class RestSchedulerRepository implements SchedulerRepository {
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
     @Value("${ruzapi.myschedule}")
     private String myGroupScheduleURL;
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final RestTemplate restTemplate;
 
     @Autowired

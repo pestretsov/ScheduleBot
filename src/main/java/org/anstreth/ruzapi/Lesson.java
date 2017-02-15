@@ -10,13 +10,15 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Lesson {
     private String subject;
+    private List<Auditory> auditories;
+
+    @JsonProperty("typeObj")
+    private LessonType lessonType;
 
     @JsonProperty("time_start")
     private String timeStart;
 
     @JsonProperty("time_end")
     private String timeEnd;
-
-    private List<Auditory> auditories;
 
 }

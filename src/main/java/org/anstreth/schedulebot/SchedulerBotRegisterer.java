@@ -1,16 +1,16 @@
 package org.anstreth.schedulebot;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.generics.BotSession;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @Component
-class SchedulerBotRegisterer {
+class SchedulerBotRegisterer implements ApplicationRunner {
 
     private final TelegramBotsApi telegramBotsApi;
 
@@ -24,8 +24,8 @@ class SchedulerBotRegisterer {
         this.schedulerPollingBot = schedulerPollingBot;
     }
 
-    @PostConstruct
-    void postConstruct() throws TelegramApiRequestException {
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
         botSession = telegramBotsApi.registerBot(schedulerPollingBot);
     }
 
@@ -33,5 +33,4 @@ class SchedulerBotRegisterer {
     private void tearDown() {
         botSession.close();
     }
-
 }

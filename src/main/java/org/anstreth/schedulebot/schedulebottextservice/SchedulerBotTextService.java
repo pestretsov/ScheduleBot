@@ -1,6 +1,8 @@
 package org.anstreth.schedulebot.schedulebottextservice;
 
+import lombok.extern.log4j.Log4j;
 import org.anstreth.schedulebot.exceptions.NoScheduleForSundayException;
+import org.anstreth.schedulebot.schedulebottextservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Calendar;
 
 @Component
+@Log4j
 public class SchedulerBotTextService {
     private final SchedulerRepository schedulerRepository;
     private final SchedulerFormatter schedulerFormatter;
@@ -19,8 +22,9 @@ public class SchedulerBotTextService {
         this.schedulerFormatter = schedulerFormatter;
     }
 
-    public void handleText(String text, MessageSender messageSender) {
-        messageSender.sendMessage(getReplyForText(text));
+    public void handleText(UserRequest userRequest, MessageSender messageSender) {
+        log.info("Handling request: " + userRequest.getMessage());
+        messageSender.sendMessage(getReplyForText(userRequest.getMessage()));
     }
 
     private String getReplyForText(String text) {

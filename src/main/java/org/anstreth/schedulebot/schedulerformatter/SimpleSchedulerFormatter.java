@@ -1,11 +1,11 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
-import org.anstreth.ruzapi.Auditory;
-import org.anstreth.ruzapi.Day;
-import org.anstreth.ruzapi.Lesson;
+import org.anstreth.ruzapi.response.Day;
+import org.anstreth.ruzapi.response.Lesson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +17,11 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
     @Autowired
     public SimpleSchedulerFormatter(LessonFormatter lessonFormatter) {
         this.lessonFormatter = lessonFormatter;
+    }
+
+    @Override
+    public String getNoScheduleForDateMessage(Calendar calendar) {
+        return "There are no lessons!";
     }
 
     @Override

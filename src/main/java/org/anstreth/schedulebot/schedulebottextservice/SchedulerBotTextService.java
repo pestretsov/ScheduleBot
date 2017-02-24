@@ -1,7 +1,7 @@
 package org.anstreth.schedulebot.schedulebottextservice;
 
 import lombok.extern.log4j.Log4j;
-import org.anstreth.schedulebot.exceptions.NoScheduleForSundayException;
+import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.anstreth.schedulebot.schedulebottextservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
@@ -53,9 +53,10 @@ public class SchedulerBotTextService {
     private String getScheduleForDate(Calendar date) {
         try {
             return schedulerFormatter.formatDay(schedulerRepository.getScheduleForDay(date));
-        } catch (NoScheduleForSundayException e) {
-            return "No schedule for sunday!";
+        } catch (NoScheduleForDay e) {
+            return schedulerFormatter.getNoScheduleForDateMessage(date);
         } catch (Exception e) {
+            log.info("Some error occurred!", e);
             return "Some error occurred!";
         }
     }

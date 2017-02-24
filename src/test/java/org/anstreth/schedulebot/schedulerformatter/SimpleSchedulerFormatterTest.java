@@ -1,16 +1,18 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
-import org.anstreth.ruzapi.Day;
-import org.anstreth.ruzapi.Lesson;
+import org.anstreth.ruzapi.response.Day;
+import org.anstreth.ruzapi.response.Lesson;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Calendar;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -59,5 +61,14 @@ public class SimpleSchedulerFormatterTest {
         String formattedReslut = schedulerFormatter.formatDay(dayWithoutLessons);
 
         assertThat(formattedReslut, endsWith(expectedPlaceholder));
+    }
+
+    @Test
+    public void getNoScheduleForDayMessageInsertsPassedDateToMessage() throws Exception {
+        Calendar today = Calendar.getInstance();
+
+        String message = schedulerFormatter.getNoScheduleForDateMessage(today);
+
+        assertThat(message, is("There are no lessons!"));
     }
 }

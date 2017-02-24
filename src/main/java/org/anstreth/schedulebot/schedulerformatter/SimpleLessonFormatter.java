@@ -1,7 +1,7 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
-import org.anstreth.ruzapi.Auditory;
-import org.anstreth.ruzapi.Lesson;
+import org.anstreth.ruzapi.response.Auditory;
+import org.anstreth.ruzapi.response.Lesson;
 import org.springframework.stereotype.Component;
 
 @Component

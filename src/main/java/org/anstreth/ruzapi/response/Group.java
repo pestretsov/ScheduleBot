@@ -1,11 +1,11 @@
-package org.anstreth.ruzapi;
+package org.anstreth.ruzapi.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Auditory {
+@Data
+class Group {
     private String name;
-    private Building building;
+    private String spec;
 }

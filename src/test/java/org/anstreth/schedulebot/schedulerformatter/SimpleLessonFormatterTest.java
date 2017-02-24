@@ -1,9 +1,9 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
-import org.anstreth.ruzapi.Auditory;
-import org.anstreth.ruzapi.Building;
-import org.anstreth.ruzapi.Lesson;
-import org.anstreth.ruzapi.LessonType;
+import org.anstreth.ruzapi.response.Auditory;
+import org.anstreth.ruzapi.response.Building;
+import org.anstreth.ruzapi.response.Lesson;
+import org.anstreth.ruzapi.response.LessonType;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -53,6 +53,7 @@ public class SimpleLessonFormatterTest {
     @Test
     public void ifAuditoriesListIsEmptyPlaceholderIsPlacedInstead() throws Exception {
         Lesson lesson = new Lesson();
+        lesson.setLessonType(getLessonTypeWithName(""));
         lesson.setAuditories(Collections.emptyList());
 
         String formattedLesson = simpleLessonFormatter.formatLesson(lesson);

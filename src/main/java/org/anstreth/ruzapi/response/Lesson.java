@@ -1,4 +1,4 @@
-package org.anstreth.ruzapi;
+package org.anstreth.ruzapi.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package org.anstreth.ruzapi.ruzapiservice;
+package org.anstreth.ruzapi.ruzapirepository;
 
 import org.anstreth.ruzapi.response.WeekSchedule;
 import org.springframework.beans.factory.annotation.Autowired;

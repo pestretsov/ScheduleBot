@@ -2,7 +2,7 @@ package org.anstreth.schedulebot.schedulerrepository;
 
 import org.anstreth.ruzapi.response.Day;
 import org.anstreth.ruzapi.response.WeekSchedule;
-import org.anstreth.ruzapi.ruzapiservice.RuzApiRepository;
+import org.anstreth.ruzapi.ruzapirepository.RuzApiRepository;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.junit.Test;
 import org.junit.runner.RunWith;

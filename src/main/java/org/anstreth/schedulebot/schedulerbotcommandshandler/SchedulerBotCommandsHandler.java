@@ -1,59 +1,56 @@
-package org.anstreth.schedulebot.schedulebottextservice;
+package org.anstreth.schedulebot.schedulerbotcommandshandler;
 
 import lombok.extern.log4j.Log4j;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
-import org.anstreth.schedulebot.schedulebottextservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
+import org.anstreth.schedulebot.scheduleuserservice.MessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 
 @Component
 @Log4j
-public class SchedulerBotTextService {
+public class SchedulerBotCommandsHandler {
     private final SchedulerRepository schedulerRepository;
     private final SchedulerFormatter schedulerFormatter;
-    private final int groupId;
 
     @Autowired
-    SchedulerBotTextService(@Value("${my_group.id}")int myGroupId, SchedulerRepository schedulerRepository, SchedulerFormatter schedulerFormatter) {
-        this.groupId = myGroupId;
+    SchedulerBotCommandsHandler(SchedulerRepository schedulerRepository, SchedulerFormatter schedulerFormatter) {
         this.schedulerRepository = schedulerRepository;
         this.schedulerFormatter = schedulerFormatter;
     }
 
-    public void handleText(UserRequest userRequest, MessageSender messageSender) {
+    public void handleRequest(ScheduleRequest userRequest, MessageSender messageSender) {
         log.info("Handling request: " + userRequest.getMessage());
-        messageSender.sendMessage(getReplyForText(userRequest.getMessage()));
+        messageSender.sendMessage(getReplyForRequest(userRequest));
     }
 
-    private String getReplyForText(String text) {
-        String trimmedCommand = text.trim();
-
+    private String getReplyForRequest(ScheduleRequest request) {
+        String trimmedCommand = request.getMessage().trim();
         switch (trimmedCommand) {
             case "/today":
-                return getScheduleForToday();
+                return getScheduleForGroupForToday(request.getGroupId());
             case "/tomorrow":
-                return getScheduleForTomorrow();
+                return getScheduleForGroupForTomorrow(request.getGroupId());
             default:
                 return "Sorry, don't understand that!";
         }
     }
 
-    private String getScheduleForToday() {
-        return getScheduleForDate(Calendar.getInstance());
+    private String getScheduleForGroupForToday(int groupId) {
+        return getScheduleForGroupForDate(groupId, Calendar.getInstance());
     }
 
-    private String getScheduleForTomorrow() {
+    private String getScheduleForGroupForTomorrow(int groupId) {
         Calendar today = Calendar.getInstance();
         today.add(Calendar.DATE, 1);
-        return getScheduleForDate(today);
+        return getScheduleForGroupForDate(groupId, today);
     }
 
-    private String getScheduleForDate(Calendar date) {
+    private String getScheduleForGroupForDate(int groupId, Calendar date) {
         try {
             return schedulerFormatter.formatDay(schedulerRepository.getScheduleForGroupForDay(groupId, date));
         } catch (NoScheduleForDay e) {

@@ -3,6 +3,7 @@ package org.anstreth.ruzapi.ruzapirepository;
 import org.anstreth.ruzapi.response.Groups;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Repository
+@PropertySource("classpath:ruzapi.properties")
 class RestGroupsRepository implements GroupsRepository {
     private final RestTemplate restTemplate;
     private final String findByNameUrl;

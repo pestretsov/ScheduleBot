@@ -3,6 +3,7 @@ package org.anstreth.ruzapi.ruzapirepository;
 import org.anstreth.ruzapi.response.WeekSchedule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@PropertySource("classpath:ruzapi.properties")
 class RestWeekScheduleRepository implements WeekScheduleRepository {
 
     private final String weekScheduleURL;

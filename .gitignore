@@ -23,3 +23,6 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### BOT TOKEN ###
+/src/main/resources/bot.properties

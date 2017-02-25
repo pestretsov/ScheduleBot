@@ -27,23 +27,25 @@ public class RuzApiSchedulerRepositoryTest {
 
     @Test(expected = NoScheduleForDay.class)
     public void ifThereAreNoScheduleForPassedDateExceptionIsThrown() throws Exception {
+        int groupId = 1;
         Calendar date = Calendar.getInstance();
         date.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         WeekSchedule weekSchedule = getWeekScheduleWithDays();
-        when(ruzApiRepository.getWeekScheduleForDate(date)).thenReturn(weekSchedule);
+        when(ruzApiRepository.getWeekScheduleForGroupForDate(groupId, date)).thenReturn(weekSchedule);
 
-        ruzApiSchedulerRepository.getScheduleForDay(date);
+        ruzApiSchedulerRepository.getScheduleForGroupForDay(groupId, date);
     }
 
     @Test
     public void dayIsFoundByItsWeekdayField() throws Exception {
+        int groupId = 1;
         Calendar date = Calendar.getInstance();
         date.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
         Day dayWithNumber = getDayWithDayWeek(2);
         WeekSchedule weekSchedule = getWeekScheduleWithDays(dayWithNumber);
-        when(ruzApiRepository.getWeekScheduleForDate(date)).thenReturn(weekSchedule);
+        when(ruzApiRepository.getWeekScheduleForGroupForDate(groupId, date)).thenReturn(weekSchedule);
 
-        Day returnedDay = ruzApiSchedulerRepository.getScheduleForDay(date);
+        Day returnedDay = ruzApiSchedulerRepository.getScheduleForGroupForDay(groupId, date);
 
         assertThat(returnedDay, is(dayWithNumber));
     }

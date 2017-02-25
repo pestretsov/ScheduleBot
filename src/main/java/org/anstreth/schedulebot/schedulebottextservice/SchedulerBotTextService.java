@@ -6,6 +6,7 @@ import org.anstreth.schedulebot.schedulebottextservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
@@ -15,9 +16,11 @@ import java.util.Calendar;
 public class SchedulerBotTextService {
     private final SchedulerRepository schedulerRepository;
     private final SchedulerFormatter schedulerFormatter;
+    private final int groupId;
 
     @Autowired
-    SchedulerBotTextService(SchedulerRepository schedulerRepository, SchedulerFormatter schedulerFormatter) {
+    SchedulerBotTextService(@Value("${my_group.id}")int myGroupId, SchedulerRepository schedulerRepository, SchedulerFormatter schedulerFormatter) {
+        this.groupId = myGroupId;
         this.schedulerRepository = schedulerRepository;
         this.schedulerFormatter = schedulerFormatter;
     }
@@ -52,7 +55,7 @@ public class SchedulerBotTextService {
 
     private String getScheduleForDate(Calendar date) {
         try {
-            return schedulerFormatter.formatDay(schedulerRepository.getScheduleForDay(date));
+            return schedulerFormatter.formatDay(schedulerRepository.getScheduleForGroupForDay(groupId, date));
         } catch (NoScheduleForDay e) {
             return schedulerFormatter.getNoScheduleForDateMessage(date);
         } catch (Exception e) {

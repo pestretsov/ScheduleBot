@@ -8,27 +8,35 @@ import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class RestRuzApiRepository implements RuzApiRepository {
 
-    private final String myGroupScheduleURL;
+    private final String weekScheduleURL;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final RestTemplate restTemplate;
 
     @Autowired
-    public RestRuzApiRepository(@Value("${ruzapi.myschedule}") String myGroupScheduleURL, RestTemplate restTemplate) {
-        this.myGroupScheduleURL = myGroupScheduleURL;
+    public RestRuzApiRepository(@Value("${ruzapi.weekschedule}") String weekScheduleURL, RestTemplate restTemplate) {
+        this.weekScheduleURL = weekScheduleURL;
         this.restTemplate = restTemplate;
     }
 
 
     @Override
-    public WeekSchedule getWeekScheduleForDate(Calendar date) {
+    public WeekSchedule getWeekScheduleForGroupForDate(int groupId, Calendar date) {
         return restTemplate.getForObject(
-                myGroupScheduleURL,
+                weekScheduleURL,
                 WeekSchedule.class,
-                Collections.singletonMap("date", simpleDateFormat.format(date.getTime())));
+                getMapOfParams(groupId, date));
+    }
+
+    private Map<String, String> getMapOfParams(int groupId, Calendar date) {
+        Map<String, String> params = new HashMap<>();
+        params.put("group_id", Integer.toString(groupId));
+        params.put("date", simpleDateFormat.format(date.getTime()));
+        return params;
     }
 }

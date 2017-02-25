@@ -20,10 +20,15 @@ class RuzApiSchedulerRepository implements SchedulerRepository {
     }
 
     @Override
-    public Day getScheduleForDay(Calendar date) throws NoScheduleForDay {
+    public Day getScheduleForGroupForDay(int groupId, Calendar date) throws NoScheduleForDay {
         int weekDay = getWeekDay(date);
-        WeekSchedule weekSchedule = getScheduleForWeek(date);
+        WeekSchedule weekSchedule = getScheduleForGroupForWeek(groupId, date);
         return getDayOfWeekFromSchedule(weekSchedule, weekDay);
+    }
+
+    @Override
+    public WeekSchedule getScheduleForGroupForWeek(int groupId, Calendar date) {
+        return ruzApiRepository.getWeekScheduleForGroupForDate(groupId, date);
     }
 
     private Day getDayOfWeekFromSchedule(WeekSchedule weekSchedule, int weekDay) {
@@ -34,11 +39,6 @@ class RuzApiSchedulerRepository implements SchedulerRepository {
 
     private int getWeekDay(Calendar date) {
         return date.get(Calendar.DAY_OF_WEEK) - 1;
-    }
-
-    @Override
-    public WeekSchedule getScheduleForWeek(Calendar date) {
-        return ruzApiRepository.getWeekScheduleForDate(date);
     }
 
 }

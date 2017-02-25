@@ -9,6 +9,6 @@ import java.util.Calendar;
 
 @Repository
 public interface SchedulerRepository {
-    Day getScheduleForDay(Calendar date) throws NoScheduleForDay;
-    WeekSchedule getScheduleForWeek(Calendar date);
+    Day getScheduleForGroupForDay(int groupId, Calendar date) throws NoScheduleForDay;
+    WeekSchedule getScheduleForGroupForWeek(int groupId, Calendar date);
 }

@@ -1,4 +1,5 @@
 language: java
+#travis CI build check
 #jdk:
 #  - oraclejdk8
 #

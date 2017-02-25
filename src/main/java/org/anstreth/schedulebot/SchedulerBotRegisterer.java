@@ -3,13 +3,22 @@ package org.anstreth.schedulebot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.generics.BotSession;
 
 import javax.annotation.PreDestroy;
 
+/**
+ * This class wires BotsApi and Bot itself together.
+ * For the sake of testing its profile is set to "!test".
+ * Otherwise run method would be triggered and bot will
+ * be registered.
+ */
+
 @Component
+@Profile("!test")
 class SchedulerBotRegisterer implements ApplicationRunner {
 
     private final TelegramBotsApi telegramBotsApi;

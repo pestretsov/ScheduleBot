@@ -1,7 +1,6 @@
 language: java
-#travis CI build check
-#jdk:
-#  - oraclejdk8
+jdk:
+  - oraclejdk8
 #
 ## updating jdk
 #sudo: false

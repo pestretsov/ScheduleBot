@@ -2,7 +2,7 @@ package org.anstreth.schedulebot.schedulerrepository;
 
 import org.anstreth.ruzapi.response.Day;
 import org.anstreth.ruzapi.response.WeekSchedule;
-import org.anstreth.ruzapi.ruzapirepository.RuzApiRepository;
+import org.anstreth.ruzapi.ruzapirepository.WeekScheduleRepository;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class RuzApiSchedulerRepositoryTest {
     private RuzApiSchedulerRepository ruzApiSchedulerRepository;
 
     @Mock
-    private RuzApiRepository ruzApiRepository;
+    private WeekScheduleRepository weekScheduleRepository;
 
     @Test(expected = NoScheduleForDay.class)
     public void ifThereAreNoScheduleForPassedDateExceptionIsThrown() throws Exception {
@@ -31,7 +31,7 @@ public class RuzApiSchedulerRepositoryTest {
         Calendar date = Calendar.getInstance();
         date.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         WeekSchedule weekSchedule = getWeekScheduleWithDays();
-        when(ruzApiRepository.getWeekScheduleForGroupForDate(groupId, date)).thenReturn(weekSchedule);
+        when(weekScheduleRepository.getWeekScheduleForGroupForDate(groupId, date)).thenReturn(weekSchedule);
 
         ruzApiSchedulerRepository.getScheduleForGroupForDay(groupId, date);
     }
@@ -43,7 +43,7 @@ public class RuzApiSchedulerRepositoryTest {
         date.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
         Day dayWithNumber = getDayWithDayWeek(2);
         WeekSchedule weekSchedule = getWeekScheduleWithDays(dayWithNumber);
-        when(ruzApiRepository.getWeekScheduleForGroupForDate(groupId, date)).thenReturn(weekSchedule);
+        when(weekScheduleRepository.getWeekScheduleForGroupForDate(groupId, date)).thenReturn(weekSchedule);
 
         Day returnedDay = ruzApiSchedulerRepository.getScheduleForGroupForDay(groupId, date);
 

@@ -2,7 +2,7 @@ package org.anstreth.schedulebot.schedulerrepository;
 
 import org.anstreth.ruzapi.response.Day;
 import org.anstreth.ruzapi.response.WeekSchedule;
-import org.anstreth.ruzapi.ruzapirepository.RuzApiRepository;
+import org.anstreth.ruzapi.ruzapirepository.WeekScheduleRepository;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -12,11 +12,11 @@ import java.util.Calendar;
 @Repository
 class RuzApiSchedulerRepository implements SchedulerRepository {
 
-    private RuzApiRepository ruzApiRepository;
+    private WeekScheduleRepository weekScheduleRepository;
 
     @Autowired
-    public RuzApiSchedulerRepository(RuzApiRepository ruzApiRepository) {
-        this.ruzApiRepository = ruzApiRepository;
+    public RuzApiSchedulerRepository(WeekScheduleRepository weekScheduleRepository) {
+        this.weekScheduleRepository = weekScheduleRepository;
     }
 
     @Override
@@ -28,7 +28,7 @@ class RuzApiSchedulerRepository implements SchedulerRepository {
 
     @Override
     public WeekSchedule getScheduleForGroupForWeek(int groupId, Calendar date) {
-        return ruzApiRepository.getWeekScheduleForGroupForDate(groupId, date);
+        return weekScheduleRepository.getWeekScheduleForGroupForDate(groupId, date);
     }
 
     private Day getDayOfWeekFromSchedule(WeekSchedule weekSchedule, int weekDay) {

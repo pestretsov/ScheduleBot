@@ -12,14 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class RestRuzApiRepository implements RuzApiRepository {
+class RestWeekScheduleRepository implements WeekScheduleRepository {
 
     private final String weekScheduleURL;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final RestTemplate restTemplate;
 
     @Autowired
-    public RestRuzApiRepository(@Value("${ruzapi.weekschedule}") String weekScheduleURL, RestTemplate restTemplate) {
+    public RestWeekScheduleRepository(@Value("${ruzapi.weekschedule}") String weekScheduleURL, RestTemplate restTemplate) {
         this.weekScheduleURL = weekScheduleURL;
         this.restTemplate = restTemplate;
     }

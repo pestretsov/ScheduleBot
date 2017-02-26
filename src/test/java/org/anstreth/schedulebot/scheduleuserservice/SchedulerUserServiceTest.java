@@ -1,16 +1,20 @@
 package org.anstreth.schedulebot.scheduleuserservice;
 
+import org.anstreth.ruzapi.response.Group;
+import org.anstreth.ruzapi.response.Groups;
+import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.anstreth.schedulebot.scheduleuserservice.request.UserRequest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.Collections;
 
 import static org.mockito.Mockito.*;
 
@@ -27,9 +31,12 @@ public class SchedulerUserServiceTest {
     @Mock
     private MessageSender messageSender;
 
+    @Mock
+    private GroupsRepository groupsRepository;
+
     @Before
     public void setUp() throws Exception {
-        schedulerUserService = new SchedulerUserService(userRepository, schedulerBotCommandsHandler);
+        schedulerUserService = new SchedulerUserService(userRepository, groupsRepository, schedulerBotCommandsHandler);
     }
 
     @Test
@@ -48,16 +55,37 @@ public class SchedulerUserServiceTest {
     }
 
     @Test
-    public void ifUserGroupIdIsNOT_SPECIFIED_VALUEThenMessageIsNotSent() throws Exception {
+    public void ifUserGroupIdIsNOT_SPECIFIED_VALUEThenGroupsRepositoryIsQueriedWithPassedMessageAndUserIsSavedWithFirstReturnedGroupId() throws Exception {
         long userId = 1L;
-        int groupId = User.NO_GROUP_SPECIFIED;
+        int groupId = 2;
+        String groupName = "group name";
         String requestMessage = "message";
-        User user = new User(userId, groupId);
+        User user = new User(userId, User.NO_GROUP_SPECIFIED);
+        Group group = createGroupWithIdAndName(groupId, groupName);
+        Groups groups = createGroups(group);
         when(userRepository.getUserById(userId)).thenReturn(user);
+        when(groupsRepository.findGroupsByName(requestMessage)).thenReturn(groups);
 
         schedulerUserService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
-        verifyZeroInteractions(schedulerBotCommandsHandler, messageSender);
+        verify(groupsRepository).findGroupsByName(requestMessage);
+        verify(userRepository).save(new User(userId, groupId));
+        verify(messageSender).sendMessage("Your group is set to 'group name'.");
+        verifyNoMoreInteractions(messageSender);
+        verifyZeroInteractions(schedulerBotCommandsHandler);
+    }
+
+    private Groups createGroups(Group group) {
+        Groups groups = new Groups();
+        groups.setGroups(Collections.singletonList(group));
+        return groups;
+    }
+
+    private Group createGroupWithIdAndName(int groupId, String groupName) {
+        Group group = new Group();
+        group.setId(groupId);
+        group.setName(groupName);
+        return group;
     }
 
     @Test

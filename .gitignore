@@ -26,3 +26,6 @@ nbdist/
 
 ### BOT TOKEN ###
 /src/main/resources/bot.properties
+
+### LOGS ###
+/logs

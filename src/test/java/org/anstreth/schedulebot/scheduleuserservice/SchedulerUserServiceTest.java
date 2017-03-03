@@ -75,19 +75,6 @@ public class SchedulerUserServiceTest {
         verifyZeroInteractions(schedulerBotCommandsHandler);
     }
 
-    private Groups createGroups(Group group) {
-        Groups groups = new Groups();
-        groups.setGroups(Collections.singletonList(group));
-        return groups;
-    }
-
-    private Group createGroupWithIdAndName(int groupId, String groupName) {
-        Group group = new Group();
-        group.setId(groupId);
-        group.setName(groupName);
-        return group;
-    }
-
     @Test
     public void ifUserRepositoryReturnsUserItsGroupIdIsPassedToCommandsHandler() throws Exception {
         long userId = 1L;
@@ -100,5 +87,18 @@ public class SchedulerUserServiceTest {
 
         ScheduleRequest expectedRequest = new ScheduleRequest(groupId, requestMessage);
         verify(schedulerBotCommandsHandler).handleRequest(expectedRequest, messageSender);
+    }
+
+    private Group createGroupWithIdAndName(int groupId, String groupName) {
+        Group group = new Group();
+        group.setId(groupId);
+        group.setName(groupName);
+        return group;
+    }
+
+    private Groups createGroups(Group group) {
+        Groups groups = new Groups();
+        groups.setGroups(Collections.singletonList(group));
+        return groups;
     }
 }

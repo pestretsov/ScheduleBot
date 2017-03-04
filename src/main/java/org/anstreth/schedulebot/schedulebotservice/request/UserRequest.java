@@ -1,4 +1,4 @@
-package org.anstreth.schedulebot.scheduleuserservice.request;
+package org.anstreth.schedulebot.schedulebotservice.request;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package org.anstreth.schedulebot.scheduleuserservice;
+package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
@@ -7,7 +7,7 @@ import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
-import org.anstreth.schedulebot.scheduleuserservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +19,8 @@ import java.util.Collections;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SchedulerUserServiceTest {
-    private SchedulerUserService schedulerUserService;
+public class SchedulerBotServiceTest {
+    private SchedulerBotService schedulerBotService;
 
     @Mock
     private SchedulerBotCommandsHandler schedulerBotCommandsHandler;
@@ -36,7 +36,7 @@ public class SchedulerUserServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        schedulerUserService = new SchedulerUserService(userRepository, groupsRepository, schedulerBotCommandsHandler);
+        schedulerBotService = new SchedulerBotService(userRepository, groupsRepository, schedulerBotCommandsHandler);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class SchedulerUserServiceTest {
         String noGroupSpecifiedMessage = "Send me your group number like '12345/6' to get your schedule.";
         when(userRepository.getUserById(userId)).thenReturn(null);
 
-        schedulerUserService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
+        schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
         verify(userRepository).save(new User(userId, User.NO_GROUP_SPECIFIED));
         verify(messageSender).sendMessage(noGroupSpecifiedMessage);
@@ -66,7 +66,7 @@ public class SchedulerUserServiceTest {
         when(userRepository.getUserById(userId)).thenReturn(user);
         when(groupsRepository.findGroupsByName(requestMessage)).thenReturn(groups);
 
-        schedulerUserService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
+        schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
         verify(groupsRepository).findGroupsByName(requestMessage);
         verify(userRepository).save(new User(userId, groupId));
@@ -83,7 +83,7 @@ public class SchedulerUserServiceTest {
         User user = new User(userId, groupId);
         when(userRepository.getUserById(userId)).thenReturn(user);
 
-        schedulerUserService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
+        schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
         ScheduleRequest expectedRequest = new ScheduleRequest(groupId, requestMessage);
         verify(schedulerBotCommandsHandler).handleRequest(expectedRequest, messageSender);

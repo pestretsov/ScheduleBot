@@ -5,7 +5,7 @@ import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
-import org.anstreth.schedulebot.scheduleuserservice.MessageSender;
+import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

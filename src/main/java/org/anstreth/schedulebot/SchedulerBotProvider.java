@@ -1,6 +1,6 @@
 package org.anstreth.schedulebot;
 
-import org.anstreth.schedulebot.scheduleuserservice.SchedulerUserService;
+import org.anstreth.schedulebot.schedulebotservice.SchedulerBotService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ class SchedulerBotProvider {
     private String BOT_TOKEN;
 
     @Bean
-    SchedulerPollingBot schedulerPollingBot(SchedulerUserService schedulerUserService) {
-        return new SchedulerPollingBot(BOT_TOKEN, schedulerUserService);
+    SchedulerPollingBot schedulerPollingBot(SchedulerBotService schedulerBotService) {
+        return new SchedulerPollingBot(BOT_TOKEN, schedulerBotService);
     }
 }

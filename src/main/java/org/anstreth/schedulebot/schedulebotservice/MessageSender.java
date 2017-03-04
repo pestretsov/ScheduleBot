@@ -1,4 +1,4 @@
-package org.anstreth.schedulebot.scheduleuserservice;
+package org.anstreth.schedulebot.schedulebotservice;
 
 @FunctionalInterface
 public interface MessageSender {

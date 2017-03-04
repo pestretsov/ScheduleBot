@@ -1,9 +1,9 @@
 package org.anstreth.schedulebot;
 
 import lombok.extern.log4j.Log4j;
-import org.anstreth.schedulebot.scheduleuserservice.MessageSender;
-import org.anstreth.schedulebot.scheduleuserservice.SchedulerUserService;
-import org.anstreth.schedulebot.scheduleuserservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.MessageSender;
+import org.anstreth.schedulebot.schedulebotservice.SchedulerBotService;
+import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -14,12 +14,12 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
 
     private final String token;
 
-    private final SchedulerUserService schedulerUserService;
+    private final SchedulerBotService schedulerBotService;
 
-    SchedulerPollingBot(String token, SchedulerUserService schedulerUserService) {
+    SchedulerPollingBot(String token, SchedulerBotService schedulerBotService) {
         super();
         this.token = token;
-        this.schedulerUserService = schedulerUserService;
+        this.schedulerBotService = schedulerBotService;
     }
 
     @Override
@@ -38,7 +38,7 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
             Long chatId = update.getMessage().getChatId();
             UserRequest userRequest = getUserRequestFromUpdate(update);
             MessageSender messageSender = getMessageSenderForChatId(chatId);
-            schedulerUserService.handleRequest(userRequest, messageSender);
+            schedulerBotService.handleRequest(userRequest, messageSender);
         }
     }
 

@@ -4,6 +4,7 @@ import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +20,7 @@ public class SchedulerBotService {
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
     }
 
+    @Async
     public void handleRequest(UserRequest userRequest, MessageSender messageSender) {
         Optional<Integer> groupId = userManager.getGroupIdOfUser(userRequest.getUserId());
         if (groupId.isPresent()) {

@@ -35,9 +35,14 @@ public class UserManagerTest {
     @Mock
     private GroupsRepository groupRepository;
 
+    private final long userId = 1L;
+    private final String requestMessage = "request message";
+    private final UserRequest userRequest = new UserRequest(userId, requestMessage);
+    private final String noGroupFoundMessage = "No group by name 'request message' is found! Try again.";
+    private User userWithoutGroup = new User(userId, User.NO_GROUP_SPECIFIED);
+
     @Test
     public void ifUserRepositoryReturnsNullGetGroupOfUserReturnsEmptyOptional() throws Exception {
-        long userId = 1L;
         when(userRepository.getUserById(userId)).thenReturn(null);
 
         assertThat(userManager.getGroupIdOfUser(userId), is(Optional.empty()));
@@ -45,50 +50,67 @@ public class UserManagerTest {
 
     @Test
     public void ifUserRepositoryReturnsUserWithoutGroupThenGetGroupOfUserReturnsEmptyOptional() throws Exception {
-        long userId = 1L;
-        when(userRepository.getUserById(userId)).thenReturn(new User(userId, User.NO_GROUP_SPECIFIED));
+        when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
 
         assertThat(userManager.getGroupIdOfUser(userId), is(Optional.empty()));
     }
 
     @Test
     public void ifUserRepositoryReturnsUserWithGroupItsIdIsReturned() throws Exception {
-        long userId = 1L;
         int groupId = 2;
         when(userRepository.getUserById(userId)).thenReturn(new User(userId, groupId));
 
         assertThat(userManager.getGroupIdOfUser(userId), is(Optional.of(groupId)));
-
     }
 
     @Test
     public void ifUserRepositoryReturnsNullNewUserWithoutGroupIsCreatedAndUserIsAskedToSendHisGroup() throws Exception {
-        long userId = 1L;
         String noGroupSpecifiedMessage = "Send me your group number like '12345/6' to get your schedule.";
         when(userRepository.getUserById(userId)).thenReturn(null);
 
-        userManager.handleUserAbsense(new UserRequest(userId, "message"), messageSender);
+        userManager.handleUserAbsense(userRequest, messageSender);
 
-        verify(userRepository).save(new User(userId, User.NO_GROUP_SPECIFIED));
+        verify(userRepository).save(userWithoutGroup);
         verify(messageSender).sendMessage(noGroupSpecifiedMessage);
     }
 
     @Test
     public void ifUserGroupIsNotSpecifiedAndGroupRepositoryReturnsSomeGroupByQueryThenItsGroupIsSetAsUserGroupAndUserIsUpdated() throws Exception {
-        long userId = 1L;
         int foundGroupId = 2;
-        String requestMessage = "group name";
         String foundGroupName = "found group name";
         Group group = getGroupWithIdAndName(foundGroupId, foundGroupName);
         Groups groups = createGroupsWithGroupInside(group);
-        User userWithoutGroup = new User(userId, User.NO_GROUP_SPECIFIED);
+        User userWithoutGroup = this.userWithoutGroup;
         when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
         when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groups);
 
-        userManager.handleUserAbsense(new UserRequest(userId, requestMessage), messageSender);
+        userManager.handleUserAbsense(userRequest, messageSender);
 
         verify(userRepository).save(new User(userId, foundGroupId));
         verify(messageSender).sendMessage("Your group is set to 'found group name'.");
+    }
+
+    @Test
+    public void ifUserGroupIsNotSpecifiedAndGroupRepositoryReturnsGroupsWithNullThenUserIsAskedAgain() throws Exception {
+        Groups groupsWithNull = new Groups();
+        when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
+        when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groupsWithNull);
+
+        userManager.handleUserAbsense(userRequest, messageSender);
+
+        verify(messageSender).sendMessage(noGroupFoundMessage);
+    }
+
+    @Test
+    public void ifUserGroupIsNotSpecifiedAndGroupRepositoryReturnsGroupsWithNoGroupsThenUserIsAskedAgain() throws Exception {
+        Groups groupsWithZeroGroups = new Groups();
+        groupsWithZeroGroups.setGroups(Collections.emptyList());
+        when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
+        when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groupsWithZeroGroups);
+
+        userManager.handleUserAbsense(userRequest, messageSender);
+
+        verify(messageSender).sendMessage(noGroupFoundMessage);
     }
 
     private Groups createGroupsWithGroupInside(Group group) {

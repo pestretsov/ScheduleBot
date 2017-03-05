@@ -38,10 +38,19 @@ class UserManager {
         }
 
         if (!userGroupIsSpecified(user)) {
-            Group group = findUserGroupByGroupName(userRequest);
-            updateUserWithGroup(user, group);
-            sendMessageAboutProperGroupSetting(messageSender, group);
+            Optional<Group> group = findUserGroupByGroupName(userRequest);
+            if (group.isPresent()) {
+                updateUserWithGroup(user, group.get());
+                sendMessageAboutProperGroupSetting(messageSender, group.get());
+            } else {
+                sendMessageAboutIncorrectGroupName(messageSender, userRequest);
+            }
         }
+    }
+
+    private void sendMessageAboutIncorrectGroupName(MessageSender messageSender, UserRequest userRequest) {
+        String message = String.format("No group by name '%s' is found! Try again.", userRequest.getMessage());
+        messageSender.sendMessage(message);
     }
 
     private User saveUserWithoutGroup(long userId) {
@@ -52,9 +61,13 @@ class UserManager {
         messageSender.sendMessage("Send me your group number like '12345/6' to get your schedule.");
     }
 
-    private Group findUserGroupByGroupName(UserRequest userRequest) {
+    private Optional<Group> findUserGroupByGroupName(UserRequest userRequest) {
         Groups groups = groupsRepository.findGroupsByName(userRequest.getMessage());
-        return groups.getGroups().get(0);
+        if (groups.getGroups() != null && !groups.getGroups().isEmpty()) {
+            return Optional.of(groups.getGroups().get(0));
+        }
+
+        return Optional.empty();
     }
 
     private User updateUserWithGroup(User user, Group group) {

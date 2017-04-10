@@ -1,18 +1,17 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.response;
 
-import org.anstreth.ruzapi.response.Day;
 import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 
-public class DayResponse implements ScheduleResponse {
-    private final Day day;
+public class SimpleStringResponse implements ScheduleResponse {
+    private final String message;
 
-    public DayResponse(Day day) {
-        this.day = day;
+    public SimpleStringResponse(String message) {
+        this.message = message;
     }
 
     @Override
     public void formatAndSend(SchedulerFormatter schedulerFormatter, MessageSender messageSender) {
-        messageSender.sendMessage(schedulerFormatter.formatDay(day));
+        messageSender.sendMessage(message);
     }
 }

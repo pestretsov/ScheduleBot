@@ -36,26 +36,9 @@ public class SchedulerBotCommandsHandlerTest {
     public void commandsHandlerTakesHandlerFromSupplierAndAsksHimToHandleRequest() {
         int groupId = 2;
         String command = "command";
-        String expectedMessageToSend = "response";
         ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
         when(scheduleRequestHandlersSupplier.getHandlerForCommand(command)).thenReturn(mockRequestHandler);
-        when(mockRequestHandler.handle(requestToHandle)).thenReturn(expectedMessageToSend);
 
         schedulerBotCommandsHandler.handleRequest(requestToHandle, sender);
-
-        verify(sender).sendMessage(expectedMessageToSend);
     }
-//
-//    @Test
-//    @Ignore
-//    public void ifRepositoryThrowsNoScheduleExceptionThenNoScheduleForDateMessageIsReturned() throws Exception {
-//        int groupId = 2;
-//        String noScheduleMessage = "no schedule message";
-//        when(formatter.getNoScheduleForDateMessage(any(Calendar.class))).thenReturn(noScheduleMessage);
-//        when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenThrow(new NoScheduleForDay());
-//
-//        schedulerBotCommandsHandler.handleRequest(new ScheduleRequest(groupId, "/today"), sender);
-//
-//        verify(sender).sendMessage(noScheduleMessage);
-//    }
 }

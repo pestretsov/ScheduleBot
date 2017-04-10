@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
+import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
@@ -11,7 +12,7 @@ public class TodayScheduleRequestHandler extends AbstractScheduleRequestHandler 
         super(schedulerFormatter, schedulerRepository);
     }
 
-    public String handle(ScheduleRequest request) {
-        return getScheduleForGroupForDate(request.getGroupId(), Calendar.getInstance());
+    public void handle(ScheduleRequest request, MessageSender sender) {
+        sender.sendMessage(getScheduleForGroupForDate(request.getGroupId(), Calendar.getInstance()));
     }
 }

@@ -19,13 +19,8 @@ public class SchedulerBotCommandsHandler {
 
     public void handleRequest(ScheduleRequest userRequest, MessageSender messageSender) {
         log.info("Handling request: " + userRequest.getMessage());
-        messageSender.sendMessage(getReplyForRequest(userRequest));
-    }
-
-    private String getReplyForRequest(ScheduleRequest request) {
-        SchedulerRequestHandler scheduleRequestHandler = scheduleRequestHandlersSupplier.getHandlerForCommand(request.getMessage());
-
-        return scheduleRequestHandler.handle(request);
+        SchedulerRequestHandler requestHandler = scheduleRequestHandlersSupplier.getHandlerForCommand(userRequest.getMessage());
+        requestHandler.handle(userRequest, messageSender);
     }
 
 }

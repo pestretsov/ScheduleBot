@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
-import java.util.TimeZone;
 
 @Component
 public class WeekScheduleRequestHandler implements SchedulerRequestHandler {

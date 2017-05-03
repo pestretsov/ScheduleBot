@@ -13,17 +13,17 @@ import org.springframework.stereotype.Component;
 @Log4j
 public class SchedulerBotCommandsHandler {
     private final SchedulerFormatter schedulerFormatter;
-    private final ScheduleRequestHandlersSupplier scheduleRequestHandlersSupplier;
+    private final ScheduleRequestHandlersRouter scheduleRequestHandlersRouter;
 
     @Autowired
-    SchedulerBotCommandsHandler(ScheduleRequestHandlersSupplier scheduleRequestHandlersSupplier, SchedulerFormatter schedulerFormatter) {
-        this.scheduleRequestHandlersSupplier = scheduleRequestHandlersSupplier;
+    SchedulerBotCommandsHandler(ScheduleRequestHandlersRouter scheduleRequestHandlersRouter, SchedulerFormatter schedulerFormatter) {
+        this.scheduleRequestHandlersRouter = scheduleRequestHandlersRouter;
         this.schedulerFormatter = schedulerFormatter;
     }
 
     public void handleRequest(ScheduleRequest userRequest, MessageSender messageSender) {
         log.info("Handling request: " + userRequest.getMessage());
-        SchedulerRequestHandler requestHandler = scheduleRequestHandlersSupplier.getHandlerForCommand(userRequest.getMessage());
+        SchedulerRequestHandler requestHandler = scheduleRequestHandlersRouter.getHandlerForCommand(userRequest.getMessage());
         ScheduleResponse response = requestHandler.handle(userRequest);
         response.formatAndSend(schedulerFormatter, messageSender);
     }

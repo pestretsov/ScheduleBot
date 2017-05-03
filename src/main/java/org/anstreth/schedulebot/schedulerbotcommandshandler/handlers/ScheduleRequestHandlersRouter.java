@@ -4,10 +4,10 @@ import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ScheduleRequestHandlersSupplier {
+public class ScheduleRequestHandlersRouter {
     private final SchedulerRepository schedulerRepository;
 
-    ScheduleRequestHandlersSupplier(SchedulerRepository schedulerRepository) {
+    ScheduleRequestHandlersRouter(SchedulerRepository schedulerRepository) {
         this.schedulerRepository = schedulerRepository;
     }
 

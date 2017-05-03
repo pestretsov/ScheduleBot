@@ -1,8 +1,8 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
-import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.response.ScheduleResponse;
 
 public interface SchedulerRequestHandler {
-    void handle(ScheduleRequest request, MessageSender sender);
+    ScheduleResponse handle(ScheduleRequest request);
 }

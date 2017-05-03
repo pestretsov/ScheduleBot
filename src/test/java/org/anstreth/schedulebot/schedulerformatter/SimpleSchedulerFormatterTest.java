@@ -27,12 +27,14 @@ public class SimpleSchedulerFormatterTest {
     private LessonFormatter lessonFormatter;
 
     @Test
-    public void formatterProducesStringStartingFromCertainWordsAndDateOfTheDay() throws Exception {
+    public void formatterProducesStringStartingFromCertainWordsAndNameOfDayAndDate() throws Exception {
+        int mondayNumber = 1;
         Day scheduleForToday = new Day();
+        scheduleForToday.setWeekDay(mondayNumber);
         scheduleForToday.setLessons(Collections.emptyList());
         String dateStringInDay = "date string";
         scheduleForToday.setDate(dateStringInDay);
-        String expectedPrefix = String.format("Schedule for day %s:\n\n", dateStringInDay);
+        String expectedPrefix = String.format("Schedule for Monday, %s:\n\n", dateStringInDay);
 
         String formattedResult = schedulerFormatter.formatDay(scheduleForToday);
 
@@ -43,6 +45,7 @@ public class SimpleSchedulerFormatterTest {
     public void everyLessonIsFromattedWithLessonFromatter() throws Exception {
         Day dayWithLessons = new Day();
         Lesson lesson = mock(Lesson.class);
+        dayWithLessons.setWeekDay(1);
         dayWithLessons.setLessons(Collections.singletonList(lesson));
         String formattedLessonString = "formatted lesson string";
         given(lessonFormatter.formatLesson(lesson)).willReturn(formattedLessonString);
@@ -55,6 +58,7 @@ public class SimpleSchedulerFormatterTest {
     @Test
     public void ifThereAreNoLessonsThereAreExpectedPlaceholder() throws Exception {
         Day dayWithoutLessons = new Day();
+        dayWithoutLessons.setWeekDay(1);
         dayWithoutLessons.setLessons(Collections.emptyList());
         String expectedPlaceholder = "There are no lessons for this day!";
 

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 class SimpleSchedulerFormatter implements SchedulerFormatter {
 
     private final LessonFormatter lessonFormatter;
+    private String days[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
     @Autowired
     public SimpleSchedulerFormatter(LessonFormatter lessonFormatter) {
@@ -27,7 +28,11 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
     @Override
     public String formatDay(Day scheduleForToday) {
         String lessons = getLessonsString(scheduleForToday.getLessons());
-        return String.format("Schedule for day %s:\n\n%s", scheduleForToday.getDate(), lessons);
+        return String.format("Schedule for %s, %s:\n\n%s", dayName(scheduleForToday), scheduleForToday.getDate(), lessons);
+    }
+
+    private String dayName(Day day) {
+        return days[day.getWeekDay() - 1];
     }
 
     private String getLessonsString(List<Lesson> lessons) {

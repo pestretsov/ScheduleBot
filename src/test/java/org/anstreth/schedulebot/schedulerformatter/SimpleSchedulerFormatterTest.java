@@ -8,12 +8,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -28,13 +28,12 @@ public class SimpleSchedulerFormatterTest {
 
     @Test
     public void formatterProducesStringStartingFromCertainWordsAndNameOfDayAndDate() throws Exception {
-        int mondayNumber = 1;
+        Date date = new Date();
         Day scheduleForToday = new Day();
-        scheduleForToday.setWeekDay(mondayNumber);
         scheduleForToday.setLessons(Collections.emptyList());
-        String dateStringInDay = "date string";
-        scheduleForToday.setDate(dateStringInDay);
-        String expectedPrefix = String.format("Schedule for Monday, %s:\n\n", dateStringInDay);
+        String expectedDayFormat = getExpectedDayFormat(date);
+        scheduleForToday.setDate(date);
+        String expectedPrefix = String.format("Schedule for %s:\n\n", expectedDayFormat);
 
         String formattedResult = schedulerFormatter.formatDay(scheduleForToday);
 
@@ -43,9 +42,9 @@ public class SimpleSchedulerFormatterTest {
 
     @Test
     public void everyLessonIsFromattedWithLessonFromatter() throws Exception {
-        Day dayWithLessons = new Day();
         Lesson lesson = mock(Lesson.class);
-        dayWithLessons.setWeekDay(1);
+        Day dayWithLessons = new Day();
+        dayWithLessons.setDate(new Date());
         dayWithLessons.setLessons(Collections.singletonList(lesson));
         String formattedLessonString = "formatted lesson string";
         given(lessonFormatter.formatLesson(lesson)).willReturn(formattedLessonString);
@@ -58,7 +57,7 @@ public class SimpleSchedulerFormatterTest {
     @Test
     public void ifThereAreNoLessonsThereAreExpectedPlaceholder() throws Exception {
         Day dayWithoutLessons = new Day();
-        dayWithoutLessons.setWeekDay(1);
+        dayWithoutLessons.setDate(new Date());
         dayWithoutLessons.setLessons(Collections.emptyList());
         String expectedPlaceholder = "There are no lessons for this day!";
 
@@ -75,4 +74,9 @@ public class SimpleSchedulerFormatterTest {
 
         assertThat(message, is("There are no lessons!"));
     }
+
+    private String getExpectedDayFormat(Date date) {
+        return new SimpleDateFormat("EEEE, yyyy-MM-dd").format(date);
+    }
+
 }

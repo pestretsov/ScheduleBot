@@ -4,7 +4,7 @@ import lombok.extern.log4j.Log4j;
 import org.anstreth.ruzapi.response.Day;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.DayResponse;
-import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleResponse;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForDayResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.ScheduleResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.SimpleStringResponse;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
@@ -24,7 +24,7 @@ abstract class OneDayScheduleRequestHandler implements SchedulerRequestHandler {
             Day scheduleForGroupForDay = schedulerRepository.getScheduleForGroupForDay(groupId, date);
             return new DayResponse(scheduleForGroupForDay);
         } catch (NoScheduleForDay e) {
-            return new NoScheduleResponse(date);
+            return new NoScheduleForDayResponse(date);
         } catch (Exception e) {
             log.info("Some error occurred!", e);
             return new SimpleStringResponse("Some error occurred!");

@@ -27,6 +27,11 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
     }
 
     @Override
+    public String getNoScheduleForWeekMessage(Calendar calendar) {
+        return "There are no schedule for this week!";
+    }
+
+    @Override
     public String formatDay(Day scheduleForToday) {
         String lessons = getLessonsString(scheduleForToday.getLessons());
         return String.format("Schedule for %s:\n\n%s", formatDate(scheduleForToday), lessons);

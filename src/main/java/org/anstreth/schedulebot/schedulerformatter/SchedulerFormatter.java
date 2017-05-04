@@ -9,4 +9,5 @@ import java.util.Calendar;
 public interface SchedulerFormatter {
     String formatDay(Day scheduleForToday);
     String getNoScheduleForDateMessage(Calendar calendar);
+    String getNoScheduleForWeekMessage(Calendar calendar);
 }

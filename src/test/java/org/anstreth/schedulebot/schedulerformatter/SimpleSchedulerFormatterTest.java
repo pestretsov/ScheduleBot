@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -68,11 +68,16 @@ public class SimpleSchedulerFormatterTest {
 
     @Test
     public void getNoScheduleForDayMessageInsertsPassedDateToMessage() throws Exception {
-        Calendar today = Calendar.getInstance();
-
-        String message = schedulerFormatter.getNoScheduleForDateMessage(today);
+        String message = schedulerFormatter.getNoScheduleForDateMessage(Calendar.getInstance());
 
         assertThat(message, is("There are no lessons!"));
+    }
+
+    @Test
+    public void getNoScheduleForWeekReturnsCorrectMessage() {
+        String message = schedulerFormatter.getNoScheduleForWeekMessage(Calendar.getInstance());
+
+        assertThat(message, is("There are no schedule for this week!"));
     }
 
     private String getExpectedDayFormat(Date date) {

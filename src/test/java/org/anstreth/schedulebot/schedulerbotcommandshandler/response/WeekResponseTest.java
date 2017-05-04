@@ -6,17 +6,16 @@ import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WeekResponseTest {
@@ -41,7 +40,8 @@ public class WeekResponseTest {
 
         weekResponse.formatAndSend(formatter, sender);
 
-        then(sender).should().sendMessage(formattedDayOne);
-        then(sender).should().sendMessage(formattedDayTwo);
+        InOrder inOrder = inOrder(sender);
+        then(sender).should(inOrder).sendMessage(formattedDayOne);
+        then(sender).should(inOrder).sendMessage(formattedDayTwo);
     }
 }

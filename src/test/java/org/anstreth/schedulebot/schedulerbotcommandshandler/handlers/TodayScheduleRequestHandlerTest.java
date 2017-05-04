@@ -4,7 +4,7 @@ import org.anstreth.ruzapi.response.Day;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.DayResponse;
-import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleResponse;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForDayResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.ScheduleResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.SimpleStringResponse;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
@@ -52,7 +52,7 @@ public class TodayScheduleRequestHandlerTest {
 
         ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
 
-        assertThat(response, is(instanceOf(NoScheduleResponse.class)));
+        assertThat(response, is(instanceOf(NoScheduleForDayResponse.class)));
     }
 
     @Test

@@ -9,12 +9,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Calendar;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NoScheduleResponseTest {
-
+public class NoScheduleForWeekResponseTest {
     @Mock
     private SchedulerFormatter formatter;
 
@@ -22,14 +21,13 @@ public class NoScheduleResponseTest {
     private MessageSender sender;
 
     @Test
-    public void name() {
+    public void responseShouldTake_noScheduleForWeek_messageFromFormatterAndSendIt() {
+        String message = "message";
         Calendar date = Calendar.getInstance();
-        NoScheduleResponse response = new NoScheduleResponse(date);
-        String noScheduleMessage = "no schedule!";
-        when(formatter.getNoScheduleForDateMessage(date)).thenReturn(noScheduleMessage);
+        given(formatter.getNoScheduleForWeekMessage(date)).willReturn(message);
 
-        response.formatAndSend(formatter, sender);
+        new NoScheduleForWeekResponse(date).formatAndSend(formatter, sender);
 
-        verify(sender).sendMessage(noScheduleMessage);
+        then(sender).should().sendMessage(message);
     }
 }

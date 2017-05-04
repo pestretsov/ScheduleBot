@@ -5,10 +5,10 @@ import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 
 import java.util.Calendar;
 
-public class NoScheduleResponse implements ScheduleResponse {
+public class NoScheduleForDayResponse implements ScheduleResponse {
     private final Calendar date;
 
-    public NoScheduleResponse(Calendar date) {
+    public NoScheduleForDayResponse(Calendar date) {
         this.date = date;
     }
 

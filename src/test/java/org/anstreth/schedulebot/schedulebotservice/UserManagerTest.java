@@ -39,7 +39,7 @@ public class UserManagerTest {
     private final String requestMessage = "request message";
     private final UserRequest userRequest = new UserRequest(userId, requestMessage);
     private final String noGroupFoundMessage = "No group by name 'request message' is found! Try again.";
-    private User userWithoutGroup = new User(userId, User.NO_GROUP_SPECIFIED);
+    private final User userWithoutGroup = new User(userId, User.NO_GROUP_SPECIFIED);
 
     @Test
     public void ifUserRepositoryReturnsNullGetGroupOfUserReturnsEmptyOptional() throws Exception {

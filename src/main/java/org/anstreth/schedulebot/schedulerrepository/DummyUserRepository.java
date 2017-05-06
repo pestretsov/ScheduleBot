@@ -3,12 +3,13 @@ package org.anstreth.schedulebot.schedulerrepository;
 import org.anstreth.schedulebot.model.User;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class DummyUserRepository implements UserRepository {
 
-    private HashMap<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new ConcurrentHashMap<>();
 
     @Override
     public User getUserById(long id) {

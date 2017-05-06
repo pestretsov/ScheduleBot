@@ -12,7 +12,7 @@ import java.util.Calendar;
 @Repository
 class RuzApiSchedulerRepository implements SchedulerRepository {
 
-    private WeekScheduleRepository weekScheduleRepository;
+    private final WeekScheduleRepository weekScheduleRepository;
 
     @Autowired
     public RuzApiSchedulerRepository(WeekScheduleRepository weekScheduleRepository) {

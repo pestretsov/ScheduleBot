@@ -2,7 +2,6 @@ package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
 import org.anstreth.ruzapi.response.WeekSchedule;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
-import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForDayResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForWeekResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.ScheduleResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.WeekResponse;

@@ -13,7 +13,7 @@ import java.util.Calendar;
 
 @Log4j
 abstract class OneDayScheduleRequestHandler implements SchedulerRequestHandler {
-    private SchedulerRepository schedulerRepository;
+    private final SchedulerRepository schedulerRepository;
 
     OneDayScheduleRequestHandler(SchedulerRepository schedulerRepository) {
         this.schedulerRepository = schedulerRepository;

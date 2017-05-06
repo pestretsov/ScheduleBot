@@ -40,6 +40,6 @@ class SchedulerBotRegisterer implements ApplicationRunner {
 
     @PreDestroy
     private void tearDown() {
-        botSession.close();
+        botSession.stop();
     }
 }

@@ -21,10 +21,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserManagerTest {
+public class UserGroupManagerTest {
 
     @InjectMocks
-    private UserManager userManager;
+    private UserGroupManager userGroupManager;
 
     @Mock
     private UserRepository userRepository;
@@ -45,14 +45,14 @@ public class UserManagerTest {
     public void ifUserRepositoryReturnsNullGetGroupOfUserReturnsEmptyOptional() throws Exception {
         when(userRepository.getUserById(userId)).thenReturn(null);
 
-        assertThat(userManager.getGroupIdOfUser(userId), is(Optional.empty()));
+        assertThat(userGroupManager.getGroupIdOfUser(userId), is(Optional.empty()));
     }
 
     @Test
     public void ifUserRepositoryReturnsUserWithoutGroupThenGetGroupOfUserReturnsEmptyOptional() throws Exception {
         when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
 
-        assertThat(userManager.getGroupIdOfUser(userId), is(Optional.empty()));
+        assertThat(userGroupManager.getGroupIdOfUser(userId), is(Optional.empty()));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class UserManagerTest {
         int groupId = 2;
         when(userRepository.getUserById(userId)).thenReturn(new User(userId, groupId));
 
-        assertThat(userManager.getGroupIdOfUser(userId), is(Optional.of(groupId)));
+        assertThat(userGroupManager.getGroupIdOfUser(userId), is(Optional.of(groupId)));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class UserManagerTest {
         String noGroupSpecifiedMessage = "Send me your group number like '12345/6' to get your schedule.";
         when(userRepository.getUserById(userId)).thenReturn(null);
 
-        userManager.handleUserAbsense(userRequest, messageSender);
+        userGroupManager.handleUserAbsense(userRequest, messageSender);
 
         verify(userRepository).save(userWithoutGroup);
         verify(messageSender).sendMessage(noGroupSpecifiedMessage);
@@ -84,7 +84,7 @@ public class UserManagerTest {
         when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
         when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groups);
 
-        userManager.handleUserAbsense(userRequest, messageSender);
+        userGroupManager.handleUserAbsense(userRequest, messageSender);
 
         verify(userRepository).save(new User(userId, foundGroupId));
         verify(messageSender).sendMessage("Your group is set to 'found group name'.");
@@ -96,7 +96,7 @@ public class UserManagerTest {
         when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
         when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groupsWithNull);
 
-        userManager.handleUserAbsense(userRequest, messageSender);
+        userGroupManager.handleUserAbsense(userRequest, messageSender);
 
         verify(messageSender).sendMessage(noGroupFoundMessage);
     }
@@ -108,7 +108,7 @@ public class UserManagerTest {
         when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
         when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groupsWithZeroGroups);
 
-        userManager.handleUserAbsense(userRequest, messageSender);
+        userGroupManager.handleUserAbsense(userRequest, messageSender);
 
         verify(messageSender).sendMessage(noGroupFoundMessage);
     }

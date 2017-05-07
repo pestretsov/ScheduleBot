@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-class UserManager {
+class UserGroupManager {
     private final UserRepository userRepository;
     private final GroupsRepository groupsRepository;
 
     @Autowired
-    UserManager(UserRepository userRepository, GroupsRepository groupsRepository) {
+    UserGroupManager(UserRepository userRepository, GroupsRepository groupsRepository) {
         this.userRepository = userRepository;
         this.groupsRepository = groupsRepository;
     }
@@ -53,8 +53,8 @@ class UserManager {
         messageSender.sendMessage(message);
     }
 
-    private User saveUserWithoutGroup(long userId) {
-        return userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
+    private void saveUserWithoutGroup(long userId) {
+        userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
     }
 
     private void askUserForGroup(MessageSender messageSender) {
@@ -70,8 +70,8 @@ class UserManager {
         return Optional.empty();
     }
 
-    private User updateUserWithGroup(User user, Group group) {
-        return userRepository.save(new User(user.getId(), group.getId()));
+    private void updateUserWithGroup(User user, Group group) {
+        userRepository.save(new User(user.getId(), group.getId()));
     }
 
     private void sendMessageAboutProperGroupSetting(MessageSender messageSender, Group group) {

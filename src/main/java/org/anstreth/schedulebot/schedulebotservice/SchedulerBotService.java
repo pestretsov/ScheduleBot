@@ -10,12 +10,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SchedulerBotService {
-    private final UserManager userManager;
+    private final UserGroupManager userGroupManager;
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
 
     @Autowired
-    public SchedulerBotService(UserManager userManager, SchedulerBotCommandsHandler schedulerBotCommandsHandler) {
-        this.userManager = userManager;
+    public SchedulerBotService(UserGroupManager userGroupManager, SchedulerBotCommandsHandler schedulerBotCommandsHandler) {
+        this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
     }
 
@@ -24,7 +24,7 @@ public class SchedulerBotService {
         try {
             findUserAndScheduleForHisGroup(userRequest, messageSender);
         } catch (NoGroupForUserException e) {
-            userManager.handleUserAbsense(userRequest, messageSender);
+            userGroupManager.handleUserAbsense(userRequest, messageSender);
         }
     }
 
@@ -35,7 +35,7 @@ public class SchedulerBotService {
     }
 
     private int getUserGroupId(UserRequest userRequest) {
-        return userManager.getGroupIdOfUser(userRequest.getUserId()).orElseThrow(NoGroupForUserException::new);
+        return userGroupManager.getGroupIdOfUser(userRequest.getUserId()).orElseThrow(NoGroupForUserException::new);
     }
 
 }

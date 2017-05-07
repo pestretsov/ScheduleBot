@@ -1,6 +1,7 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler;
 
 import org.anstreth.schedulebot.schedulebotservice.MessageSender;
+import org.anstreth.schedulebot.schedulebotservice.MessageWithRepliesSender;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.ScheduleRequestHandlersRouter;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.SchedulerRequestHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -11,6 +12,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,7 +29,7 @@ public class SchedulerBotCommandsHandlerTest {
     private SchedulerFormatter formatter;
 
     @Mock
-    private MessageSender sender;
+    private MessageWithRepliesSender sender;
 
     @Mock
     private ScheduleRequestHandlersRouter scheduleRequestHandlersRouter;
@@ -36,16 +40,22 @@ public class SchedulerBotCommandsHandlerTest {
     @Mock
     private ScheduleResponse reponseToRequest;
 
+    @Mock
+    private MessageSender senderWithReplies;
+
+    private List<String> repliesToAdd = Arrays.asList("/today", "/tomorrow", "/week");
+
     @Test
-    public void commandsHandlerTakesHandlerFromSupplierAndAsksHimToHandleRequest() {
+    public void commandsHandler_TakesHandlerFromRouter_AndAsksHimToHandleRequest_withCertainReplies() {
         int groupId = 2;
         String command = "command";
         ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
         when(scheduleRequestHandlersRouter.getHandlerForCommand(command)).thenReturn(mockRequestHandler);
         when(mockRequestHandler.handle(requestToHandle)).thenReturn(reponseToRequest);
+        when(sender.withReplies(repliesToAdd)).thenReturn(senderWithReplies);
 
         schedulerBotCommandsHandler.handleRequest(requestToHandle, sender);
 
-        verify(reponseToRequest).formatAndSend(formatter, sender);
+        verify(reponseToRequest).formatAndSend(formatter, senderWithReplies);
     }
 }

@@ -20,7 +20,7 @@ public class SchedulerBotService {
     }
 
     @Async
-    public void handleRequest(UserRequest userRequest, MessageSender messageSender) {
+    public void handleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         try {
             findUserAndScheduleForHisGroup(userRequest, messageSender);
         } catch (NoGroupForUserException e) {
@@ -28,7 +28,7 @@ public class SchedulerBotService {
         }
     }
 
-    private void findUserAndScheduleForHisGroup(UserRequest userRequest, MessageSender messageSender) {
+    private void findUserAndScheduleForHisGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         int id = getUserGroupId(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, userRequest.getMessage());
         schedulerBotCommandsHandler.handleRequest(scheduleRequest, messageSender);

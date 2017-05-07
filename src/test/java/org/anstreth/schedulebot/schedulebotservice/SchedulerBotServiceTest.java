@@ -25,7 +25,7 @@ public class SchedulerBotServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private MessageSender messageSender;
+    private MessageWithRepliesSender messageSender;
 
     @Mock
     private UserGroupManager userGroupManager;

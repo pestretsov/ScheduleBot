@@ -28,22 +28,22 @@ public class SchedulerBotServiceTest {
     private MessageSender messageSender;
 
     @Mock
-    private UserManager userManager;
+    private UserGroupManager userGroupManager;
 
     @Before
     public void setUp() throws Exception {
-        schedulerBotService = new SchedulerBotService(userManager, schedulerBotCommandsHandler);
+        schedulerBotService = new SchedulerBotService(userGroupManager, schedulerBotCommandsHandler);
     }
 
     @Test
     public void ifUserManagerReturnsEmptyGroupIdRequestIsRedirectedToUserManager() throws Exception {
         long userId = 1L;
         String requestMessage = "message";
-        when(userManager.getGroupIdOfUser(userId)).thenReturn(Optional.empty());
+        when(userGroupManager.getGroupIdOfUser(userId)).thenReturn(Optional.empty());
 
         schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
-        verify(userManager).handleUserAbsense(new UserRequest(userId, requestMessage), messageSender);
+        verify(userGroupManager).handleUserAbsense(new UserRequest(userId, requestMessage), messageSender);
         verifyZeroInteractions(messageSender, schedulerBotCommandsHandler, userRepository);
 
     }
@@ -53,7 +53,7 @@ public class SchedulerBotServiceTest {
         long userId = 1L;
         String requestMessage = "message";
         int groupId = 2;
-        when(userManager.getGroupIdOfUser(userId)).thenReturn(Optional.of(groupId));
+        when(userGroupManager.getGroupIdOfUser(userId)).thenReturn(Optional.of(groupId));
 
         schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 

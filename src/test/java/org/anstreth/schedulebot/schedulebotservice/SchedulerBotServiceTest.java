@@ -1,9 +1,10 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
-import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,17 +23,17 @@ public class SchedulerBotServiceTest {
     private SchedulerBotCommandsHandler schedulerBotCommandsHandler;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private MessageWithRepliesSender messageSender;
 
     @Mock
     private UserGroupManager userGroupManager;
 
+    @Mock
+    private ScheduleCommandParser scheduleCommandParser;
+
     @Before
     public void setUp() throws Exception {
-        schedulerBotService = new SchedulerBotService(userGroupManager, schedulerBotCommandsHandler);
+        schedulerBotService = new SchedulerBotService(userGroupManager, schedulerBotCommandsHandler, scheduleCommandParser);
     }
 
     @Test
@@ -44,20 +45,21 @@ public class SchedulerBotServiceTest {
         schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
         verify(userGroupManager).handleUserAbsense(new UserRequest(userId, requestMessage), messageSender);
-        verifyZeroInteractions(messageSender, schedulerBotCommandsHandler, userRepository);
+        verifyZeroInteractions(messageSender, schedulerBotCommandsHandler);
 
     }
 
     @Test
     public void ifUserManagerReturnsGroupNumberItIsPassedToCommandsHandler() throws Exception {
         long userId = 1L;
-        String requestMessage = "message";
         int groupId = 2;
+        String requestMessage = "message";
         when(userGroupManager.getGroupIdOfUser(userId)).thenReturn(Optional.of(groupId));
+        when(scheduleCommandParser.parse(requestMessage)).thenReturn(ScheduleCommand.UNKNOWN);
 
         schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
-        verify(schedulerBotCommandsHandler).handleRequest(new ScheduleRequest(groupId, requestMessage), messageSender);
+        verify(schedulerBotCommandsHandler).handleRequest(new ScheduleRequest(groupId, ScheduleCommand.UNKNOWN), messageSender);
     }
 
 }

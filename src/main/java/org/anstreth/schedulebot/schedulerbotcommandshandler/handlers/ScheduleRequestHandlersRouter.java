@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
+import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.springframework.stereotype.Component;
 
@@ -11,18 +12,13 @@ public class ScheduleRequestHandlersRouter {
         this.schedulerRepository = schedulerRepository;
     }
 
-    public SchedulerRequestHandler getHandlerForCommand(String command) {
-        String trimmedCommand = command.trim();
-        return getScheduleRequestHandler(trimmedCommand);
-    }
-
-    private SchedulerRequestHandler getScheduleRequestHandler(String trimmedCommand) {
-        switch (trimmedCommand) {
-            case "/today":
+    public SchedulerRequestHandler getHandlerForCommand(ScheduleCommand command) {
+        switch (command) {
+            case TODAY:
                 return new TodayScheduleRequestHandler(schedulerRepository);
-            case "/tomorrow":
+            case TOMORROW:
                 return new TommorowScheduleRequestHandler(schedulerRepository);
-            case "/week":
+            case WEEK:
                 return new WeekScheduleRequestHandler(schedulerRepository);
             default:
                 return new UnrecognizedCommandHandler();

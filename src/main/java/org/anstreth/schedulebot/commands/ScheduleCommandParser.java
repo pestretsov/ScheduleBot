@@ -1,9 +1,12 @@
 package org.anstreth.schedulebot.commands;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
-class ScheduleCommandParser {
+@Component
+public class ScheduleCommandParser {
     private final Map<String, ScheduleCommand> possibleNames = new HashMap<>();
 
     {
@@ -17,7 +20,7 @@ class ScheduleCommandParser {
         possibleNames.put("Week", ScheduleCommand.WEEK);
     }
 
-    ScheduleCommand parse(String command) {
+    public ScheduleCommand parse(String command) {
         String trimmedCommand = command.trim();
         return possibleNames.getOrDefault(trimmedCommand, ScheduleCommand.UNKNOWN);
     }

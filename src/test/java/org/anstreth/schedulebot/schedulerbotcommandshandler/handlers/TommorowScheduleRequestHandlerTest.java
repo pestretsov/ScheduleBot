@@ -1,6 +1,7 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
 import org.anstreth.ruzapi.response.Day;
+import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.DayResponse;
@@ -33,11 +34,10 @@ public class TommorowScheduleRequestHandlerTest {
     @Test
     public void tomorrowHandlerGetsCurrentDayFromRepoAndReturnsDayResponse() {
         int groupId = 1;
-        String message = "message";
         Day day = new Day();
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenReturn(day);
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, ScheduleCommand.TOMORROW));
 
         assertThat(response, is(instanceOf(DayResponse.class)));
     }
@@ -45,10 +45,9 @@ public class TommorowScheduleRequestHandlerTest {
     @Test
     public void ifRepositoryThrowsNoScheduleException_Then_NoScheduleResponseIsReturned() {
         int groupId = 1;
-        String message = "message";
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenThrow(new NoScheduleForDay());
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, ScheduleCommand.TOMORROW));
 
         assertThat(response, is(instanceOf(NoScheduleForDayResponse.class)));
     }
@@ -56,10 +55,9 @@ public class TommorowScheduleRequestHandlerTest {
     @Test
     public void ifRepositoryThrowsException_Then_SimpleStringResponseIsReturned() {
         int groupId = 1;
-        String message = "message";
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenThrow(new RuntimeException());
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, ScheduleCommand.TOMORROW));
 
         assertThat(response, is(instanceOf(SimpleStringResponse.class)));
     }

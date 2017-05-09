@@ -1,5 +1,7 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
@@ -12,11 +14,13 @@ import org.springframework.stereotype.Service;
 public class SchedulerBotService {
     private final UserGroupManager userGroupManager;
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
+    private final ScheduleCommandParser scheduleCommandParser;
 
     @Autowired
-    public SchedulerBotService(UserGroupManager userGroupManager, SchedulerBotCommandsHandler schedulerBotCommandsHandler) {
+    public SchedulerBotService(UserGroupManager userGroupManager, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser) {
         this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
+        this.scheduleCommandParser = scheduleCommandParser;
     }
 
     @Async
@@ -30,12 +34,18 @@ public class SchedulerBotService {
 
     private void findUserAndScheduleForHisGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         int id = getUserGroupId(userRequest);
-        ScheduleRequest scheduleRequest = new ScheduleRequest(id, userRequest.getMessage());
+        ScheduleCommand command = getCommand(userRequest);
+        ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
         schedulerBotCommandsHandler.handleRequest(scheduleRequest, messageSender);
     }
 
     private int getUserGroupId(UserRequest userRequest) {
-        return userGroupManager.getGroupIdOfUser(userRequest.getUserId()).orElseThrow(NoGroupForUserException::new);
+        return userGroupManager.getGroupIdOfUser(userRequest.getUserId())
+                .orElseThrow(NoGroupForUserException::new);
+    }
+
+    private ScheduleCommand getCommand(UserRequest userRequest) {
+        return scheduleCommandParser.parse(userRequest.getMessage());
     }
 
 }

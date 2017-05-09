@@ -33,4 +33,8 @@ public class ScheduleCommandParserTest {
         assertThat(parser.parse("testtest"), is(UNKNOWN));
     }
 
+    @Test
+    public void commandWithNotTrimmedSpacesIscorrectlyParsed() throws Exception {
+        assertThat(parser.parse("  /today  "), is(TODAY));
+    }
 }

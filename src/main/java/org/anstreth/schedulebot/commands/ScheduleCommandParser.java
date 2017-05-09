@@ -18,6 +18,7 @@ class ScheduleCommandParser {
     }
 
     ScheduleCommand parse(String command) {
-        return possibleNames.getOrDefault(command, ScheduleCommand.UNKNOWN);
+        String trimmedCommand = command.trim();
+        return possibleNames.getOrDefault(trimmedCommand, ScheduleCommand.UNKNOWN);
     }
 }

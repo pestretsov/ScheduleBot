@@ -9,12 +9,15 @@ import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 class UserGroupManager {
     private final UserRepository userRepository;
     private final GroupsRepository groupsRepository;
+    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Autowired
     UserGroupManager(UserRepository userRepository, GroupsRepository groupsRepository) {
@@ -28,7 +31,7 @@ class UserGroupManager {
                 .map(User::getGroupId);
     }
 
-    void handleUserAbsense(UserRequest userRequest, MessageSender messageSender) {
+    void handleUserAbsense(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         User user = userRepository.getUserById(userRequest.getUserId());
 
         if (user == null) {
@@ -74,9 +77,9 @@ class UserGroupManager {
         userRepository.save(new User(user.getId(), group.getId()));
     }
 
-    private void sendMessageAboutProperGroupSetting(MessageSender messageSender, Group group) {
+    private void sendMessageAboutProperGroupSetting(MessageWithRepliesSender messageSender, Group group) {
         String message = String.format("Your group is set to '%s'.", group.getName());
-        messageSender.sendMessage(message);
+        messageSender.sendMessage(message, possibleReplies);
     }
 
     private boolean userGroupIsSpecified(User user) {

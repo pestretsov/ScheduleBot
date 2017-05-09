@@ -12,7 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
@@ -30,10 +32,12 @@ public class UserGroupManagerTest {
     private UserRepository userRepository;
 
     @Mock
-    private MessageSender messageSender;
+    private MessageWithRepliesSender messageSender;
 
     @Mock
     private GroupsRepository groupRepository;
+
+    private final List<String> repliesToAdd = Arrays.asList("Today", "Tomorrow", "Week");
 
     private final long userId = 1L;
     private final String requestMessage = "request message";
@@ -87,7 +91,7 @@ public class UserGroupManagerTest {
         userGroupManager.handleUserAbsense(userRequest, messageSender);
 
         verify(userRepository).save(new User(userId, foundGroupId));
-        verify(messageSender).sendMessage("Your group is set to 'found group name'.");
+        verify(messageSender).sendMessage("Your group is set to 'found group name'.", repliesToAdd);
     }
 
     @Test

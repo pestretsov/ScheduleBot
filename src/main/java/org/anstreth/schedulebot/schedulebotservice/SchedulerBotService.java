@@ -10,11 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 public class SchedulerBotService {
     private final UserGroupManager userGroupManager;
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
     private final ScheduleCommandParser scheduleCommandParser;
+
+    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
+
 
     @Autowired
     public SchedulerBotService(UserGroupManager userGroupManager, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser) {
@@ -36,7 +42,10 @@ public class SchedulerBotService {
         int id = getUserGroupId(userRequest);
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
-        schedulerBotCommandsHandler.handleRequest(scheduleRequest, messageSender);
+        schedulerBotCommandsHandler.handleRequest(
+                scheduleRequest,
+                messageSender.withReplies(possibleReplies)
+        );
     }
 
     private int getUserGroupId(UserRequest userRequest) {

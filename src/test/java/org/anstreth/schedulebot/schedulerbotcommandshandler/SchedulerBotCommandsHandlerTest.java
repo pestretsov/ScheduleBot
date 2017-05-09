@@ -2,7 +2,6 @@ package org.anstreth.schedulebot.schedulerbotcommandshandler;
 
 import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.schedulebotservice.MessageSender;
-import org.anstreth.schedulebot.schedulebotservice.MessageWithRepliesSender;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.ScheduleRequestHandlersRouter;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.SchedulerRequestHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -13,9 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,9 +26,6 @@ public class SchedulerBotCommandsHandlerTest {
     private SchedulerFormatter formatter;
 
     @Mock
-    private MessageWithRepliesSender sender;
-
-    @Mock
     private ScheduleRequestHandlersRouter scheduleRequestHandlersRouter;
 
     @Mock
@@ -42,21 +35,18 @@ public class SchedulerBotCommandsHandlerTest {
     private ScheduleResponse reponseToRequest;
 
     @Mock
-    private MessageSender senderWithReplies;
-
-    private List<String> repliesToAdd = Arrays.asList("/today", "/tomorrow", "/week");
+    private MessageSender sender;
 
     @Test
-    public void commandsHandler_TakesHandlerFromRouter_AndAsksHimToHandleRequest_withCertainReplies() {
+    public void commandsHandler_TakesHandlerFromRouter_AndAsksHimToHandleRequest() {
         int groupId = 2;
         ScheduleCommand command = ScheduleCommand.WEEK;
         ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
         when(scheduleRequestHandlersRouter.getHandlerForCommand(command)).thenReturn(mockRequestHandler);
         when(mockRequestHandler.handle(requestToHandle)).thenReturn(reponseToRequest);
-        when(sender.withReplies(repliesToAdd)).thenReturn(senderWithReplies);
 
         schedulerBotCommandsHandler.handleRequest(requestToHandle, sender);
 
-        verify(reponseToRequest).formatAndSend(formatter, senderWithReplies);
+        verify(reponseToRequest).formatAndSend(formatter, sender);
     }
 }

@@ -4,6 +4,7 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
 import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -106,6 +108,18 @@ public class UserGroupManagerTest {
         verify(messageSender).sendMessage(noGroupFoundMessage);
     }
 
+    @Test
+    public void ifUserGroupIsNotSpecifiedAndGroupRepositoryReturnsGroupsWithNoGroupsThenUserIsAskedAgain() throws Exception {
+        Groups groupsWithZeroGroups = new Groups();
+        groupsWithZeroGroups.setGroups(Collections.emptyList());
+        when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
+        when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groupsWithZeroGroups);
+
+        userGroupManager.handleUserAbsense(userRequest, messageSender);
+
+        verify(messageSender).sendMessage(noGroupFoundMessage);
+    }
+
     @Test(expected = NoSuchUserException.class)
     public void ifThereAreNoSuchUserInRepoThen_NoSuchUserException_isThrown() throws Exception {
         doReturn(null).when(userRepository).getUserById(userId);
@@ -133,15 +147,46 @@ public class UserGroupManagerTest {
     }
 
     @Test
-    public void ifUserGroupIsNotSpecifiedAndGroupRepositoryReturnsGroupsWithNoGroupsThenUserIsAskedAgain() throws Exception {
-        Groups groupsWithZeroGroups = new Groups();
-        groupsWithZeroGroups.setGroups(Collections.emptyList());
-        when(userRepository.getUserById(userId)).thenReturn(userWithoutGroup);
-        when(groupRepository.findGroupsByName(requestMessage)).thenReturn(groupsWithZeroGroups);
+    public void createUserWithNoGroup_createsNewUserInRepository() {
+        userGroupManager.saveUserWithoutGroup(userId);
 
-        userGroupManager.handleUserAbsense(userRequest, messageSender);
+        then(userRepository).should().save(new User(userId, User.NO_GROUP_SPECIFIED));
+    }
 
-        verify(messageSender).sendMessage(noGroupFoundMessage);
+    @Test
+    public void findAndSetGroupForUser_setsGroupIdIfFindsGroupIn_groupsRepository_andSavesUser() {
+        int groupId = 2;
+        Groups groups = new Groups();
+        Group group = new Group();
+        group.setId(groupId);
+        groups.setGroups(Collections.singletonList(group));
+        String groupName = "group name";
+        doReturn(groups).when(groupRepository).findGroupsByName(groupName);
+        doReturn(new User(userId, User.NO_GROUP_SPECIFIED)).when(userRepository).getUserById(userId);
+
+        userGroupManager.findAndSetGroupForUser(userId, groupName);
+
+        then(userRepository).should().save(new User(userId, groupId));
+    }
+
+    @Test(expected = NoGroupFoundException.class)
+    public void if_groupsRepository_returnsGroupsWithNullThen_NoGroupFoundException_isThrown() {
+        String groupName = "group name";
+        doReturn(new User(userId, User.NO_GROUP_SPECIFIED)).when(userRepository).getUserById(userId);
+        doReturn(new Groups()).when(groupRepository).findGroupsByName(groupName);
+
+        userGroupManager.findAndSetGroupForUser(userId, groupName);
+    }
+
+    @Test(expected = NoGroupFoundException.class)
+    public void if_groupsRepository_returnsGroupsWithNoGroupsThen_NoGroupFoundException_isThrown() {
+        String groupName = "group name";
+        Groups groups = new Groups();
+        groups.setGroups(Collections.emptyList());
+        doReturn(new User(userId, User.NO_GROUP_SPECIFIED)).when(userRepository).getUserById(userId);
+        doReturn(groups).when(groupRepository).findGroupsByName(groupName);
+
+        userGroupManager.findAndSetGroupForUser(userId, groupName);
     }
 
     private Groups createGroupsWithGroupInside(Group group) {
@@ -156,4 +201,5 @@ public class UserGroupManagerTest {
         group.setId(foundGroupId);
         return group;
     }
+
 }

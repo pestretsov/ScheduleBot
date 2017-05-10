@@ -4,6 +4,7 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
 import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
@@ -27,7 +28,7 @@ class UserGroupManager {
         this.groupsRepository = groupsRepository;
     }
 
-    public int getGroupIdOfUserWithExceptions(long userId) {
+    int getGroupIdOfUserWithExceptions(long userId) {
         User user = getUser(userId)
                 .orElseThrow(() -> new NoSuchUserException(userId));
         assertGroupIsSpecified(user);
@@ -74,7 +75,7 @@ class UserGroupManager {
         messageSender.sendMessage(message);
     }
 
-    private void saveUserWithoutGroup(long userId) {
+    void saveUserWithoutGroup(long userId) {
         userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
     }
 
@@ -91,10 +92,6 @@ class UserGroupManager {
         return Optional.empty();
     }
 
-    private void updateUserWithGroup(User user, Group group) {
-        userRepository.save(new User(user.getId(), group.getId()));
-    }
-
     private void sendMessageAboutProperGroupSetting(MessageWithRepliesSender messageSender, Group group) {
         String message = String.format("Your group is set to '%s'.", group.getName());
         messageSender.sendMessage(message, possibleReplies);
@@ -102,5 +99,23 @@ class UserGroupManager {
 
     private boolean userGroupIsSpecified(User user) {
         return user.getGroupId() != User.NO_GROUP_SPECIFIED;
+    }
+
+    void findAndSetGroupForUser(long userId, String groupName) {
+        User user = userRepository.getUserById(userId);
+        Group group = findGroupByName(groupName);
+        updateUserWithGroup(user, group);
+    }
+
+    private Group findGroupByName(String groupName) {
+        Groups groups = groupsRepository.findGroupsByName(groupName);
+        if (groups.getGroups() == null || groups.getGroups().isEmpty())
+            throw new NoGroupFoundException(groupName);
+
+        return groups.getGroups().get(0);
+    }
+
+    private void updateUserWithGroup(User user, Group group) {
+        userRepository.save(new User(user.getId(), group.getId()));
     }
 }

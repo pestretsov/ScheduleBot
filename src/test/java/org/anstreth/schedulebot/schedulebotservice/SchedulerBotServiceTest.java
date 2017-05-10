@@ -50,7 +50,6 @@ public class SchedulerBotServiceTest {
 
         verify(userGroupManager).handleUserAbsense(new UserRequest(userId, requestMessage), messageSender);
         verifyZeroInteractions(messageSender, schedulerBotCommandsHandler);
-
     }
 
     @Test

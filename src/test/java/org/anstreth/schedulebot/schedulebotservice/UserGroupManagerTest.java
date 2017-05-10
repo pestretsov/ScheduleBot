@@ -3,6 +3,8 @@ package org.anstreth.schedulebot.schedulebotservice;
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
 import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
+import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
@@ -19,8 +21,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserGroupManagerTest {
@@ -103,6 +104,32 @@ public class UserGroupManagerTest {
         userGroupManager.handleUserAbsense(userRequest, messageSender);
 
         verify(messageSender).sendMessage(noGroupFoundMessage);
+    }
+
+    @Test(expected = NoSuchUserException.class)
+    public void ifThereAreNoSuchUserInRepoThen_NoSuchUserException_isThrown() throws Exception {
+        doReturn(null).when(userRepository).getUserById(userId);
+
+        userGroupManager.getGroupIdOfUserWithExceptions(userId);
+    }
+
+    @Test(expected = NoGroupForUserException.class)
+    public void ifUser_groupId_isNotSetThen_NoGroupForUser__isThrown() throws Exception {
+        User userWithNoGroup = new User(userId, User.NO_GROUP_SPECIFIED);
+        doReturn(userWithNoGroup).when(userRepository).getUserById(userId);
+
+        userGroupManager.getGroupIdOfUserWithExceptions(userId);
+    }
+
+    @Test
+    public void ifUserIsInRepoAndGroupIdIsOk_ThenGroupIdIsReturned() throws Exception {
+        int groupId = 2;
+        User userWithNoGroup = new User(userId, groupId);
+        doReturn(userWithNoGroup).when(userRepository).getUserById(userId);
+
+        int receivedId = userGroupManager.getGroupIdOfUserWithExceptions(userId);
+
+        assertThat(receivedId, is(groupId));
     }
 
     @Test

@@ -3,6 +3,8 @@ package org.anstreth.schedulebot.schedulebotservice;
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
 import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
+import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
@@ -23,6 +25,22 @@ class UserGroupManager {
     UserGroupManager(UserRepository userRepository, GroupsRepository groupsRepository) {
         this.userRepository = userRepository;
         this.groupsRepository = groupsRepository;
+    }
+
+    public int getGroupIdOfUserWithExceptions(long userId) {
+        User user = getUser(userId)
+                .orElseThrow(() -> new NoSuchUserException(userId));
+        assertGroupIsSpecified(user);
+        return user.getGroupId();
+    }
+
+    private void assertGroupIsSpecified(User user) {
+        if (!userGroupIsSpecified(user))
+            throw new NoGroupForUserException(user.getId());
+    }
+
+    private Optional<User> getUser(long userId) {
+        return Optional.ofNullable(userRepository.getUserById(userId));
     }
 
     Optional<Integer> getGroupIdOfUser(long userId) {

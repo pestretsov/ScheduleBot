@@ -101,10 +101,11 @@ class UserGroupManager {
         return user.getGroupId() != User.NO_GROUP_SPECIFIED;
     }
 
-    void findAndSetGroupForUser(long userId, String groupName) {
+    Group findAndSetGroupForUser(long userId, String groupName) {
         User user = userRepository.getUserById(userId);
         Group group = findGroupByName(groupName);
         updateUserWithGroup(user, group);
+        return group;
     }
 
     private Group findGroupByName(String groupName) {

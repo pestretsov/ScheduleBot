@@ -1,8 +1,11 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoGroupFoundException;
+import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -36,6 +39,58 @@ public class SchedulerBotService {
         } catch (NoGroupForUserException e) {
             userGroupManager.handleUserAbsense(userRequest, messageSender);
         }
+    }
+
+    private void otherHandleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        try {
+            handleUserCommand(userRequest, messageSender);
+        } catch (NoSuchUserException e) {
+            createUser(userRequest);
+            askForGroup(messageSender);
+        } catch (NoGroupForUserException e) {
+            tryToFindUserGroup(userRequest, messageSender);
+        }
+    }
+
+    private void askForGroup(MessageWithRepliesSender messageSender) {
+        messageSender.sendMessage("Send me your group number like '12345/6' to get your schedule.");
+    }
+
+    private void createUser(UserRequest userRequest) {
+        userGroupManager.saveUserWithoutGroup(userRequest.getUserId());
+    }
+
+    private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        int id = userGroupManager.getGroupIdOfUserWithExceptions(userRequest.getUserId());
+        ScheduleCommand command = getCommand(userRequest);
+        ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
+        schedulerBotCommandsHandler.handleRequest(
+                scheduleRequest,
+                messageSender.withReplies(possibleReplies)
+        );
+    }
+
+    private void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        try {
+            Group userGroup = findUserGroup(userRequest);
+            sendMessageAboutProperGroupSetting(messageSender, userGroup);
+        } catch (NoGroupFoundException e) {
+            sendMessageAboutIncorrectGroupName(messageSender, userRequest);
+        }
+    }
+
+    private Group findUserGroup(UserRequest userRequest) {
+        return userGroupManager.findAndSetGroupForUser(userRequest.getUserId(), userRequest.getMessage());
+    }
+
+    private void sendMessageAboutProperGroupSetting(MessageWithRepliesSender messageSender, Group group) {
+        String message = String.format("Your group is set to '%s'.", group.getName());
+        messageSender.sendMessage(message, possibleReplies);
+    }
+
+    private void sendMessageAboutIncorrectGroupName(MessageSender messageSender, UserRequest userRequest) {
+        String message = String.format("No group by name '%s' is found! Try again.", userRequest.getMessage());
+        messageSender.sendMessage(message);
     }
 
     private void findUserAndScheduleForHisGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {

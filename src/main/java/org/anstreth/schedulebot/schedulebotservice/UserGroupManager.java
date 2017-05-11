@@ -4,7 +4,7 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
 import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
-import org.anstreth.schedulebot.exceptions.NoGroupFoundException;
+import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
@@ -111,7 +111,7 @@ class UserGroupManager {
     private Group findGroupByName(String groupName) {
         Groups groups = groupsRepository.findGroupsByName(groupName);
         if (groups.getGroups() == null || groups.getGroups().isEmpty())
-            throw new NoGroupFoundException(groupName);
+            throw new NoSuchGroupFoundException(groupName);
 
         return groups.getGroups().get(0);
     }

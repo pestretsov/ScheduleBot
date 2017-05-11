@@ -4,7 +4,7 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
-import org.anstreth.schedulebot.exceptions.NoGroupFoundException;
+import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
@@ -41,7 +41,7 @@ public class SchedulerBotService {
         }
     }
 
-    private void otherHandleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+    void otherHandleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         try {
             handleUserCommand(userRequest, messageSender);
         } catch (NoSuchUserException e) {
@@ -74,7 +74,7 @@ public class SchedulerBotService {
         try {
             Group userGroup = findUserGroup(userRequest);
             sendMessageAboutProperGroupSetting(messageSender, userGroup);
-        } catch (NoGroupFoundException e) {
+        } catch (NoSuchGroupFoundException e) {
             sendMessageAboutIncorrectGroupName(messageSender, userRequest);
         }
     }

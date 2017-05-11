@@ -4,7 +4,7 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
 import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
-import org.anstreth.schedulebot.exceptions.NoGroupFoundException;
+import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
@@ -169,7 +169,7 @@ public class UserGroupManagerTest {
         then(userRepository).should().save(new User(userId, groupId));
     }
 
-    @Test(expected = NoGroupFoundException.class)
+    @Test(expected = NoSuchGroupFoundException.class)
     public void if_groupsRepository_returnsGroupsWithNullThen_NoGroupFoundException_isThrown() {
         String groupName = "group name";
         doReturn(new User(userId, User.NO_GROUP_SPECIFIED)).when(userRepository).getUserById(userId);
@@ -178,7 +178,7 @@ public class UserGroupManagerTest {
         userGroupManager.findAndSetGroupForUser(userId, groupName);
     }
 
-    @Test(expected = NoGroupFoundException.class)
+    @Test(expected = NoSuchGroupFoundException.class)
     public void if_groupsRepository_returnsGroupsWithNoGroupsThen_NoGroupFoundException_isThrown() {
         String groupName = "group name";
         Groups groups = new Groups();

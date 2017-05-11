@@ -1,6 +1,5 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
-import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
@@ -15,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,12 +60,25 @@ public class SchedulerBotServiceTest {
 
         String requestMessage = "message";
         when(userGroupManager.getGroupIdOfUser(userId)).thenReturn(Optional.of(groupId));
-        when(scheduleCommandParser.parse(requestMessage)).thenReturn(ScheduleCommand.UNKNOWN);
+        when(scheduleCommandParser.parse(requestMessage)).thenReturn(UNKNOWN);
         when(messageSender.withReplies(possibleReplies)).thenReturn(senderWithReplies);
 
         schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
 
-        verify(schedulerBotCommandsHandler).handleRequest(new ScheduleRequest(groupId, ScheduleCommand.UNKNOWN), senderWithReplies);
+        verify(schedulerBotCommandsHandler).handleRequest(new ScheduleRequest(groupId, UNKNOWN), senderWithReplies);
     }
 
+    @Test
+    public void if_userGroupManager_returnsGroupIdThen_ScheduleRequest_and_sender_withRepliesArePassedToHandler() {
+        long userId = 1;
+        int groupId = 2;
+        String message = "message";
+        doReturn(UNKNOWN).when(scheduleCommandParser).parse(message);
+        doReturn(groupId).when(userGroupManager).getGroupIdOfUserWithExceptions(userId);
+        doReturn(senderWithReplies).when(messageSender).withReplies(possibleReplies);
+
+        schedulerBotService.otherHandleRequest(new UserRequest(userId, message), messageSender);
+
+        then(schedulerBotCommandsHandler).should().handleRequest(new ScheduleRequest(groupId, UNKNOWN), senderWithReplies);
+    }
 }

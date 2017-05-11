@@ -1,10 +1,8 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
-import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
-import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
@@ -21,15 +19,17 @@ public class SchedulerBotService {
     private final UserGroupManager userGroupManager;
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
     private final ScheduleCommandParser scheduleCommandParser;
+    private final UserGroupSearchService userGroupSearcherService;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
 
     @Autowired
-    public SchedulerBotService(UserGroupManager userGroupManager, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser) {
+    public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser) {
         this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;
+        this.userGroupSearcherService = userGroupSearcherService;
     }
 
     @Async
@@ -71,26 +71,7 @@ public class SchedulerBotService {
     }
 
     private void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        try {
-            Group userGroup = findUserGroup(userRequest);
-            sendMessageAboutProperGroupSetting(messageSender, userGroup);
-        } catch (NoSuchGroupFoundException e) {
-            sendMessageAboutIncorrectGroupName(messageSender, userRequest);
-        }
-    }
-
-    private Group findUserGroup(UserRequest userRequest) {
-        return userGroupManager.findAndSetGroupForUser(userRequest.getUserId(), userRequest.getMessage());
-    }
-
-    private void sendMessageAboutProperGroupSetting(MessageWithRepliesSender messageSender, Group group) {
-        String message = String.format("Your group is set to '%s'.", group.getName());
-        messageSender.sendMessage(message, possibleReplies);
-    }
-
-    private void sendMessageAboutIncorrectGroupName(MessageSender messageSender, UserRequest userRequest) {
-        String message = String.format("No group by name '%s' is found! Try again.", userRequest.getMessage());
-        messageSender.sendMessage(message);
+        userGroupSearcherService.tryToFindUserGroup(userRequest, messageSender, possibleReplies);
     }
 
     private void findUserAndScheduleForHisGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {

@@ -4,9 +4,11 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class UserGroupSearchService {
 
     private UserGroupManager userGroupManager;

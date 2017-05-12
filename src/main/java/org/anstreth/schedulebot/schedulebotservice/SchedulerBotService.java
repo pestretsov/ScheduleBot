@@ -20,16 +20,18 @@ public class SchedulerBotService {
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
     private final ScheduleCommandParser scheduleCommandParser;
     private final UserGroupSearchService userGroupSearcherService;
+    private final UserCreationService userCreationService;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
 
     @Autowired
-    public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser) {
+    public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService) {
         this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;
         this.userGroupSearcherService = userGroupSearcherService;
+        this.userCreationService = userCreationService;
     }
 
     @Async
@@ -45,19 +47,14 @@ public class SchedulerBotService {
         try {
             handleUserCommand(userRequest, messageSender);
         } catch (NoSuchUserException e) {
-            createUser(userRequest);
-            askForGroup(messageSender);
+            createUserAndAskForGroup(userRequest, messageSender);
         } catch (NoGroupForUserException e) {
             tryToFindUserGroup(userRequest, messageSender);
         }
     }
 
-    private void askForGroup(MessageWithRepliesSender messageSender) {
-        messageSender.sendMessage("Send me your group number like '12345/6' to get your schedule.");
-    }
-
-    private void createUser(UserRequest userRequest) {
-        userGroupManager.saveUserWithoutGroup(userRequest.getUserId());
+    private void createUserAndAskForGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        userCreationService.createUserAndAskForGroup(userRequest, messageSender);
     }
 
     private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {

@@ -2,6 +2,7 @@ package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -42,6 +43,9 @@ public class SchedulerBotServiceTest {
 
     @Mock
     private UserGroupSearchService userGroupSearchService;
+
+    @Mock
+    private UserCreationService userCreationService;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
@@ -96,5 +100,17 @@ public class SchedulerBotServiceTest {
         schedulerBotService.otherHandleRequest(userRequest, messageSender);
 
         then(userGroupSearchService).should().tryToFindUserGroup(userRequest, messageSender, possibleReplies);
+    }
+
+    @Test
+    public void if_userGroupManager_throws_NoSuchUserException_then_UserCreatorService_isCalled() {
+        long userId = 1;
+        String message = "message";
+        UserRequest userRequest = new UserRequest(userId, message);
+        doThrow(NoSuchUserException.class).when(userGroupManager).getGroupIdOfUserWithExceptions(userId);
+
+        schedulerBotService.otherHandleRequest(userRequest, messageSender);
+
+        then(userCreationService).should().createUserAndAskForGroup(userRequest, messageSender);
     }
 }

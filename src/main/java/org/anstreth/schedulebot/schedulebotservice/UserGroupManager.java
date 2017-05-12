@@ -7,20 +7,16 @@ import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
-import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 @Component
 class UserGroupManager {
     private final UserRepository userRepository;
     private final GroupsRepository groupsRepository;
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Autowired
     UserGroupManager(UserRepository userRepository, GroupsRepository groupsRepository) {
@@ -28,11 +24,22 @@ class UserGroupManager {
         this.groupsRepository = groupsRepository;
     }
 
-    int getGroupIdOfUserWithExceptions(long userId) {
+    int getGroupIdOfUser(long userId) {
         User user = getUser(userId)
                 .orElseThrow(() -> new NoSuchUserException(userId));
         assertGroupIsSpecified(user);
         return user.getGroupId();
+    }
+
+    void saveUserWithoutGroup(long userId) {
+        userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
+    }
+
+    Group findAndSetGroupForUser(long userId, String groupName) {
+        Group group = findGroupByName(groupName);
+        User user = userRepository.getUserById(userId);
+        updateUserWithGroup(user, group);
+        return group;
     }
 
     private void assertGroupIsSpecified(User user) {
@@ -44,68 +51,8 @@ class UserGroupManager {
         return Optional.ofNullable(userRepository.getUserById(userId));
     }
 
-    Optional<Integer> getGroupIdOfUser(long userId) {
-        return Optional.ofNullable(userRepository.getUserById(userId))
-                .filter(this::userGroupIsSpecified)
-                .map(User::getGroupId);
-    }
-
-    void handleUserAbsense(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        User user = userRepository.getUserById(userRequest.getUserId());
-
-        if (user == null) {
-            saveUserWithoutGroup(userRequest.getUserId());
-            askUserForGroup(messageSender);
-            return;
-        }
-
-        if (!userGroupIsSpecified(user)) {
-            Optional<Group> group = findUserGroupByGroupName(userRequest);
-            if (group.isPresent()) {
-                updateUserWithGroup(user, group.get());
-                sendMessageAboutProperGroupSetting(messageSender, group.get());
-            } else {
-                sendMessageAboutIncorrectGroupName(messageSender, userRequest);
-            }
-        }
-    }
-
-    private void sendMessageAboutIncorrectGroupName(MessageSender messageSender, UserRequest userRequest) {
-        String message = String.format("No group by name '%s' is found! Try again.", userRequest.getMessage());
-        messageSender.sendMessage(message);
-    }
-
-    void saveUserWithoutGroup(long userId) {
-        userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
-    }
-
-    private void askUserForGroup(MessageSender messageSender) {
-        messageSender.sendMessage("Send me your group number like '12345/6' to get your schedule.");
-    }
-
-    private Optional<Group> findUserGroupByGroupName(UserRequest userRequest) {
-        Groups groups = groupsRepository.findGroupsByName(userRequest.getMessage());
-        if (groups.getGroups() != null && !groups.getGroups().isEmpty()) {
-            return Optional.of(groups.getGroups().get(0));
-        }
-
-        return Optional.empty();
-    }
-
-    private void sendMessageAboutProperGroupSetting(MessageWithRepliesSender messageSender, Group group) {
-        String message = String.format("Your group is set to '%s'.", group.getName());
-        messageSender.sendMessage(message, possibleReplies);
-    }
-
     private boolean userGroupIsSpecified(User user) {
         return user.getGroupId() != User.NO_GROUP_SPECIFIED;
-    }
-
-    Group findAndSetGroupForUser(long userId, String groupName) {
-        User user = userRepository.getUserById(userId);
-        Group group = findGroupByName(groupName);
-        updateUserWithGroup(user, group);
-        return group;
     }
 
     private Group findGroupByName(String groupName) {

@@ -14,11 +14,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchedulerBotServiceTest {
@@ -50,42 +50,15 @@ public class SchedulerBotServiceTest {
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Test
-    public void ifUserManagerReturnsEmptyGroupIdRequestIsRedirectedToUserManager() throws Exception {
-        long userId = 1L;
-        String requestMessage = "message";
-        when(userGroupManager.getGroupIdOfUser(userId)).thenReturn(Optional.empty());
-
-        schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
-
-        verify(userGroupManager).handleUserAbsense(new UserRequest(userId, requestMessage), messageSender);
-        verifyZeroInteractions(messageSender, schedulerBotCommandsHandler);
-    }
-
-    @Test
-    public void ifUserManagerReturnsGroupNumberItIsPassedToCommandsHandler() throws Exception {
-        long userId = 1L;
-        int groupId = 2;
-
-        String requestMessage = "message";
-        when(userGroupManager.getGroupIdOfUser(userId)).thenReturn(Optional.of(groupId));
-        when(scheduleCommandParser.parse(requestMessage)).thenReturn(UNKNOWN);
-        when(messageSender.withReplies(possibleReplies)).thenReturn(senderWithReplies);
-
-        schedulerBotService.handleRequest(new UserRequest(userId, requestMessage), messageSender);
-
-        verify(schedulerBotCommandsHandler).handleRequest(new ScheduleRequest(groupId, UNKNOWN), senderWithReplies);
-    }
-
-    @Test
     public void if_userGroupManager_returnsGroupIdThen_ScheduleRequest_and_sender_withRepliesArePassedToHandler() {
         long userId = 1;
         int groupId = 2;
         String message = "message";
         doReturn(UNKNOWN).when(scheduleCommandParser).parse(message);
-        doReturn(groupId).when(userGroupManager).getGroupIdOfUserWithExceptions(userId);
+        doReturn(groupId).when(userGroupManager).getGroupIdOfUser(userId);
         doReturn(senderWithReplies).when(messageSender).withReplies(possibleReplies);
 
-        schedulerBotService.otherHandleRequest(new UserRequest(userId, message), messageSender);
+        schedulerBotService.handleRequest(new UserRequest(userId, message), messageSender);
 
         then(schedulerBotCommandsHandler).should().handleRequest(new ScheduleRequest(groupId, UNKNOWN), senderWithReplies);
     }
@@ -95,9 +68,9 @@ public class SchedulerBotServiceTest {
         long userId = 1;
         String message = "message";
         UserRequest userRequest = new UserRequest(userId, message);
-        doThrow(NoGroupForUserException.class).when(userGroupManager).getGroupIdOfUserWithExceptions(userId);
+        doThrow(NoGroupForUserException.class).when(userGroupManager).getGroupIdOfUser(userId);
 
-        schedulerBotService.otherHandleRequest(userRequest, messageSender);
+        schedulerBotService.handleRequest(userRequest, messageSender);
 
         then(userGroupSearchService).should().tryToFindUserGroup(userRequest, messageSender, possibleReplies);
     }
@@ -107,9 +80,9 @@ public class SchedulerBotServiceTest {
         long userId = 1;
         String message = "message";
         UserRequest userRequest = new UserRequest(userId, message);
-        doThrow(NoSuchUserException.class).when(userGroupManager).getGroupIdOfUserWithExceptions(userId);
+        doThrow(NoSuchUserException.class).when(userGroupManager).getGroupIdOfUser(userId);
 
-        schedulerBotService.otherHandleRequest(userRequest, messageSender);
+        schedulerBotService.handleRequest(userRequest, messageSender);
 
         then(userCreationService).should().createUserAndAskForGroup(userRequest, messageSender);
     }

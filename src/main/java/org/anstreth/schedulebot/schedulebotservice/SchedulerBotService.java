@@ -24,7 +24,6 @@ public class SchedulerBotService {
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
-
     @Autowired
     public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService) {
         this.userGroupManager = userGroupManager;
@@ -37,14 +36,6 @@ public class SchedulerBotService {
     @Async
     public void handleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         try {
-            findUserAndScheduleForHisGroup(userRequest, messageSender);
-        } catch (NoGroupForUserException e) {
-            userGroupManager.handleUserAbsense(userRequest, messageSender);
-        }
-    }
-
-    void otherHandleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        try {
             handleUserCommand(userRequest, messageSender);
         } catch (NoSuchUserException e) {
             createUserAndAskForGroup(userRequest, messageSender);
@@ -53,37 +44,22 @@ public class SchedulerBotService {
         }
     }
 
+    private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        int id = userGroupManager.getGroupIdOfUser(userRequest.getUserId());
+        ScheduleCommand command = getCommand(userRequest);
+        ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
+        schedulerBotCommandsHandler.handleRequest(
+                scheduleRequest,
+                messageSender.withReplies(possibleReplies)
+        );
+    }
+
     private void createUserAndAskForGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         userCreationService.createUserAndAskForGroup(userRequest, messageSender);
     }
 
-    private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        int id = userGroupManager.getGroupIdOfUserWithExceptions(userRequest.getUserId());
-        ScheduleCommand command = getCommand(userRequest);
-        ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
-        schedulerBotCommandsHandler.handleRequest(
-                scheduleRequest,
-                messageSender.withReplies(possibleReplies)
-        );
-    }
-
     private void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         userGroupSearcherService.tryToFindUserGroup(userRequest, messageSender, possibleReplies);
-    }
-
-    private void findUserAndScheduleForHisGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        int id = getUserGroupId(userRequest);
-        ScheduleCommand command = getCommand(userRequest);
-        ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
-        schedulerBotCommandsHandler.handleRequest(
-                scheduleRequest,
-                messageSender.withReplies(possibleReplies)
-        );
-    }
-
-    private int getUserGroupId(UserRequest userRequest) {
-        return userGroupManager.getGroupIdOfUser(userRequest.getUserId())
-                .orElseThrow(NoGroupForUserException::new);
     }
 
     private ScheduleCommand getCommand(UserRequest userRequest) {

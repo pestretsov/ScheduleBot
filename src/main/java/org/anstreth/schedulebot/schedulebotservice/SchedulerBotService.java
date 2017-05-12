@@ -1,6 +1,9 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -8,34 +11,59 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 public class SchedulerBotService {
     private final UserGroupManager userGroupManager;
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
+    private final ScheduleCommandParser scheduleCommandParser;
+    private final UserGroupSearchService userGroupSearcherService;
+    private final UserCreationService userCreationService;
+
+    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Autowired
-    public SchedulerBotService(UserGroupManager userGroupManager, SchedulerBotCommandsHandler schedulerBotCommandsHandler) {
+    public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService) {
         this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
+        this.scheduleCommandParser = scheduleCommandParser;
+        this.userGroupSearcherService = userGroupSearcherService;
+        this.userCreationService = userCreationService;
     }
 
     @Async
-    public void handleRequest(UserRequest userRequest, MessageSender messageSender) {
+    public void handleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         try {
-            findUserAndScheduleForHisGroup(userRequest, messageSender);
+            handleUserCommand(userRequest, messageSender);
+        } catch (NoSuchUserException e) {
+            createUserAndAskForGroup(userRequest, messageSender);
         } catch (NoGroupForUserException e) {
-            userGroupManager.handleUserAbsense(userRequest, messageSender);
+            tryToFindUserGroup(userRequest, messageSender);
         }
     }
 
-    private void findUserAndScheduleForHisGroup(UserRequest userRequest, MessageSender messageSender) {
-        int id = getUserGroupId(userRequest);
-        ScheduleRequest scheduleRequest = new ScheduleRequest(id, userRequest.getMessage());
-        schedulerBotCommandsHandler.handleRequest(scheduleRequest, messageSender);
+    private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        int id = userGroupManager.getGroupIdOfUser(userRequest.getUserId());
+        ScheduleCommand command = getCommand(userRequest);
+        ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
+        schedulerBotCommandsHandler.handleRequest(
+                scheduleRequest,
+                messageSender.withReplies(possibleReplies)
+        );
     }
 
-    private int getUserGroupId(UserRequest userRequest) {
-        return userGroupManager.getGroupIdOfUser(userRequest.getUserId()).orElseThrow(NoGroupForUserException::new);
+    private void createUserAndAskForGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        userCreationService.createUserAndAskForGroup(userRequest, messageSender);
+    }
+
+    private void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        userGroupSearcherService.tryToFindUserGroup(userRequest, messageSender, possibleReplies);
+    }
+
+    private ScheduleCommand getCommand(UserRequest userRequest) {
+        return scheduleCommandParser.parse(userRequest.getMessage());
     }
 
 }

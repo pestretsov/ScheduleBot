@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler;
 
+import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.ScheduleRequestHandlersRouter;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.SchedulerRequestHandler;
@@ -25,9 +26,6 @@ public class SchedulerBotCommandsHandlerTest {
     private SchedulerFormatter formatter;
 
     @Mock
-    private MessageSender sender;
-
-    @Mock
     private ScheduleRequestHandlersRouter scheduleRequestHandlersRouter;
 
     @Mock
@@ -36,10 +34,13 @@ public class SchedulerBotCommandsHandlerTest {
     @Mock
     private ScheduleResponse reponseToRequest;
 
+    @Mock
+    private MessageSender sender;
+
     @Test
-    public void commandsHandlerTakesHandlerFromSupplierAndAsksHimToHandleRequest() {
+    public void commandsHandler_TakesHandlerFromRouter_AndAsksHimToHandleRequest() {
         int groupId = 2;
-        String command = "command";
+        ScheduleCommand command = ScheduleCommand.WEEK;
         ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
         when(scheduleRequestHandlersRouter.getHandlerForCommand(command)).thenReturn(mockRequestHandler);
         when(mockRequestHandler.handle(requestToHandle)).thenReturn(reponseToRequest);

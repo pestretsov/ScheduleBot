@@ -3,8 +3,10 @@ package org.anstreth.schedulebot.schedulebotservice;
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
 import org.anstreth.ruzapi.ruzapirepository.GroupsRepository;
+import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
+import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
+import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
-import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,64 +24,46 @@ class UserGroupManager {
         this.groupsRepository = groupsRepository;
     }
 
-    Optional<Integer> getGroupIdOfUser(long userId) {
-        return Optional.ofNullable(userRepository.getUserById(userId))
-                .filter(this::userGroupIsSpecified)
-                .map(User::getGroupId);
+    int getGroupIdOfUser(long userId) {
+        User user = getUser(userId)
+                .orElseThrow(() -> new NoSuchUserException(userId));
+        assertGroupIsSpecified(user);
+        return user.getGroupId();
     }
 
-    void handleUserAbsense(UserRequest userRequest, MessageSender messageSender) {
-        User user = userRepository.getUserById(userRequest.getUserId());
-
-        if (user == null) {
-            saveUserWithoutGroup(userRequest.getUserId());
-            askUserForGroup(messageSender);
-            return;
-        }
-
-        if (!userGroupIsSpecified(user)) {
-            Optional<Group> group = findUserGroupByGroupName(userRequest);
-            if (group.isPresent()) {
-                updateUserWithGroup(user, group.get());
-                sendMessageAboutProperGroupSetting(messageSender, group.get());
-            } else {
-                sendMessageAboutIncorrectGroupName(messageSender, userRequest);
-            }
-        }
-    }
-
-    private void sendMessageAboutIncorrectGroupName(MessageSender messageSender, UserRequest userRequest) {
-        String message = String.format("No group by name '%s' is found! Try again.", userRequest.getMessage());
-        messageSender.sendMessage(message);
-    }
-
-    private void saveUserWithoutGroup(long userId) {
+    void saveUserWithoutGroup(long userId) {
         userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
     }
 
-    private void askUserForGroup(MessageSender messageSender) {
-        messageSender.sendMessage("Send me your group number like '12345/6' to get your schedule.");
+    Group findAndSetGroupForUser(long userId, String groupName) {
+        Group group = findGroupByName(groupName);
+        User user = userRepository.getUserById(userId);
+        updateUserWithGroup(user, group);
+        return group;
     }
 
-    private Optional<Group> findUserGroupByGroupName(UserRequest userRequest) {
-        Groups groups = groupsRepository.findGroupsByName(userRequest.getMessage());
-        if (groups.getGroups() != null && !groups.getGroups().isEmpty()) {
-            return Optional.of(groups.getGroups().get(0));
-        }
-
-        return Optional.empty();
+    private void assertGroupIsSpecified(User user) {
+        if (!userGroupIsSpecified(user))
+            throw new NoGroupForUserException(user.getId());
     }
 
-    private void updateUserWithGroup(User user, Group group) {
-        userRepository.save(new User(user.getId(), group.getId()));
-    }
-
-    private void sendMessageAboutProperGroupSetting(MessageSender messageSender, Group group) {
-        String message = String.format("Your group is set to '%s'.", group.getName());
-        messageSender.sendMessage(message);
+    private Optional<User> getUser(long userId) {
+        return Optional.ofNullable(userRepository.getUserById(userId));
     }
 
     private boolean userGroupIsSpecified(User user) {
         return user.getGroupId() != User.NO_GROUP_SPECIFIED;
+    }
+
+    private Group findGroupByName(String groupName) {
+        Groups groups = groupsRepository.findGroupsByName(groupName);
+        if (groups.getGroups() == null || groups.getGroups().isEmpty())
+            throw new NoSuchGroupFoundException(groupName);
+
+        return groups.getGroups().get(0);
+    }
+
+    private void updateUserWithGroup(User user, Group group) {
+        userRepository.save(new User(user.getId(), group.getId()));
     }
 }

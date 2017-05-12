@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Calendar;
 
+import static org.anstreth.schedulebot.commands.ScheduleCommand.TODAY;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,11 +36,10 @@ public class TodayScheduleRequestHandlerTest {
     @Test
     public void todaySchedulerGetsCurrentDayFromRepoAndReturnsDayResponse() {
         int groupId = 1;
-        String message = "message";
         Day day = new Day();
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenReturn(day);
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, TODAY));
 
         assertThat(response, is(instanceOf(DayResponse.class)));
     }
@@ -47,10 +47,9 @@ public class TodayScheduleRequestHandlerTest {
     @Test
     public void ifRepositoryThrowsNoScheduleException_Then_NoScheduleResponseIsReturned() {
         int groupId = 1;
-        String message = "message";
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenThrow(new NoScheduleForDay());
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, TODAY));
 
         assertThat(response, is(instanceOf(NoScheduleForDayResponse.class)));
     }
@@ -58,10 +57,9 @@ public class TodayScheduleRequestHandlerTest {
     @Test
     public void ifRepositoryThrowsException_Then_SimpleStringResponseIsReturned() {
         int groupId = 1;
-        String message = "message";
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenThrow(new RuntimeException());
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, TODAY));
 
         assertThat(response, is(instanceOf(SimpleStringResponse.class)));
     }

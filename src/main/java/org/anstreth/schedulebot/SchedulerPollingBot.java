@@ -1,13 +1,20 @@
 package org.anstreth.schedulebot;
 
 import lombok.extern.log4j.Log4j;
-import org.anstreth.schedulebot.schedulebotservice.MessageSender;
+import org.anstreth.schedulebot.schedulebotservice.MessageWithRepliesSender;
 import org.anstreth.schedulebot.schedulebotservice.SchedulerBotService;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+
+import java.util.Collections;
+import java.util.List;
 
 @Log4j
 class SchedulerPollingBot extends TelegramLongPollingBot {
@@ -37,7 +44,7 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         if (updateHasMessageWithText(update)) {
             Long chatId = update.getMessage().getChatId();
             UserRequest userRequest = getUserRequestFromUpdate(update);
-            MessageSender messageSender = getMessageSenderForChatId(chatId);
+            MessageWithRepliesSender messageSender = getMessageSenderForChatId(chatId);
             schedulerBotService.handleRequest(userRequest, messageSender);
             log.info("Update is handled: " + userRequest);
         }
@@ -53,8 +60,8 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         return new UserRequest(chatId, messageText);
     }
 
-    private MessageSender getMessageSenderForChatId(Long chatId) {
-        return (message) -> sendMessageQuietly(getSendMessageForChatIdWithText(chatId, message));
+    private MessageWithRepliesSender getMessageSenderForChatId(Long chatId) {
+        return (message, replies) -> sendMessageQuietly(getSendMessageForChatIdWithText(chatId, message, replies));
     }
 
     private void sendMessageQuietly(SendMessage sendMessageForChatWithText) {
@@ -65,8 +72,26 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         }
     }
 
-    private SendMessage getSendMessageForChatIdWithText(Long chatId, String message) {
-        return new SendMessage().setChatId(chatId).setText(message);
+    private SendMessage getSendMessageForChatIdWithText(Long chatId, String message, List<String> replies) {
+        return new SendMessage()
+                .setChatId(chatId)
+                .setText(message)
+                .setReplyMarkup(getReplyMarkup(replies));
+    }
+
+    private ReplyKeyboard getReplyMarkup(List<String> replies) {
+        if (replies.isEmpty()) return new ReplyKeyboardRemove();
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setKeyboard(getRowsWithReplies(replies));
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        return replyKeyboardMarkup;
+    }
+
+    private List<KeyboardRow> getRowsWithReplies(List<String> replies) {
+        KeyboardRow keyboardButtons = new KeyboardRow();
+        replies.forEach(keyboardButtons::add);
+        return Collections.singletonList(keyboardButtons);
     }
 
 }

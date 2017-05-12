@@ -2,6 +2,7 @@ package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
 import org.anstreth.ruzapi.response.Day;
 import org.anstreth.ruzapi.response.WeekSchedule;
+import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForWeekResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.ScheduleResponse;
@@ -9,6 +10,7 @@ import org.anstreth.schedulebot.schedulerbotcommandshandler.response.WeekRespons
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -24,19 +26,20 @@ import static org.mockito.Matchers.eq;
 @RunWith(MockitoJUnitRunner.class)
 public class WeekScheduleRequestHandlerTest {
 
+    @InjectMocks
+    private WeekScheduleRequestHandler weekHandler;
+
     @Mock
     private SchedulerRepository repository;
 
     @Test
     public void handlerShouldTakeWeekFromRepoAndReturnWeekResponse() {
         int groupId = 1;
-        String message = "message";
         WeekSchedule weekFromRepo = new WeekSchedule();
         weekFromRepo.setDays(Collections.singletonList(new Day()));
         given(repository.getScheduleForGroupForWeek(eq(groupId), any())).willReturn(weekFromRepo);
-        WeekScheduleRequestHandler handler = new WeekScheduleRequestHandler(repository);
 
-        WeekResponse response = (WeekResponse) handler.handle(new ScheduleRequest(groupId, message));
+        WeekResponse response = (WeekResponse) weekHandler.handle(new ScheduleRequest(groupId, ScheduleCommand.WEEK));
 
         assertThat(response.getWeekSchedule(), is(weekFromRepo));
     }
@@ -44,13 +47,11 @@ public class WeekScheduleRequestHandlerTest {
     @Test
     public void ifWeekDaysAreNullThen_noScheduleForWeek_isReturned() {
         int groupId = 1;
-        String message = "message";
         WeekSchedule weekFromRepo = new WeekSchedule();
         weekFromRepo.setDays(null);
         given(repository.getScheduleForGroupForWeek(eq(groupId), any())).willReturn(weekFromRepo);
-        WeekScheduleRequestHandler handler = new WeekScheduleRequestHandler(repository);
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = weekHandler.handle(new ScheduleRequest(groupId, ScheduleCommand.WEEK));
 
         assertThat(response, is(instanceOf(NoScheduleForWeekResponse.class)));
     }
@@ -58,13 +59,11 @@ public class WeekScheduleRequestHandlerTest {
     @Test
     public void ifWeekDaysAreEmptyThen_noSheduleForWeek_isReturned() {
         int groupId = 1;
-        String message = "message";
         WeekSchedule weekFromRepo = new WeekSchedule();
         weekFromRepo.setDays(Collections.emptyList());
         given(repository.getScheduleForGroupForWeek(eq(groupId), any())).willReturn(weekFromRepo);
-        WeekScheduleRequestHandler handler = new WeekScheduleRequestHandler(repository);
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, message));
+        ScheduleResponse response = weekHandler.handle(new ScheduleRequest(groupId, ScheduleCommand.WEEK));
 
         assertThat(response, is(instanceOf(NoScheduleForWeekResponse.class)));
     }

@@ -49,7 +49,7 @@ public class SchedulerBotService {
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
         MessageSender withReplies = messageSender.withReplies(possibleReplies);
-        List<String> scheduleMessages = schedulerBotCommandsHandler.handleRequestWithResponse(scheduleRequest);
+        List<String> scheduleMessages = schedulerBotCommandsHandler.handleRequest(scheduleRequest);
         scheduleMessages.forEach(withReplies::sendMessage);
     }
 

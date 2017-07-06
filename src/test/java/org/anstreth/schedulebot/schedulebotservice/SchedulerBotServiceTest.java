@@ -61,7 +61,7 @@ public class SchedulerBotServiceTest {
         doReturn(UNKNOWN).when(scheduleCommandParser).parse(message);
         doReturn(groupId).when(userGroupManager).getGroupIdOfUser(userId);
         doReturn(senderWithReplies).when(messageSender).withReplies(possibleReplies);
-        doReturn(scheduleMessages).when(schedulerBotCommandsHandler).handleRequestWithResponse(scheduleRequest);
+        doReturn(scheduleMessages).when(schedulerBotCommandsHandler).handleRequest(scheduleRequest);
 
         schedulerBotService.handleRequest(new UserRequest(userId, message), messageSender);
 

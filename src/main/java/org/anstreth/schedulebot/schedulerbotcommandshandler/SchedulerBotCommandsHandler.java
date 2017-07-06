@@ -1,7 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler;
 
 import lombok.extern.log4j.Log4j;
-import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.ScheduleRequestHandlersRouter;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.SchedulerRequestHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -24,12 +23,7 @@ public class SchedulerBotCommandsHandler {
         this.schedulerFormatter = schedulerFormatter;
     }
 
-    public void handleRequest(ScheduleRequest userRequest, MessageSender messageSender) {
-        List<String> messages = handleRequestWithResponse(userRequest);
-        messages.forEach(messageSender::sendMessage);
-    }
-
-    public List<String> handleRequestWithResponse(ScheduleRequest userRequest) {
+    public List<String> handleRequest(ScheduleRequest userRequest) {
         log.info("Handling command: " + userRequest.getCommand());
         SchedulerRequestHandler requestHandler = scheduleRequestHandlersRouter.getHandlerForCommand(userRequest.getCommand());
         ScheduleResponse response = requestHandler.handle(userRequest);

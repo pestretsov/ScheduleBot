@@ -8,6 +8,7 @@ import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommands
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -19,6 +20,7 @@ import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchedulerBotServiceTest {
@@ -54,13 +56,18 @@ public class SchedulerBotServiceTest {
         long userId = 1;
         int groupId = 2;
         String message = "message";
+        List<String> scheduleMessages = Arrays.asList("one", "two");
+        ScheduleRequest scheduleRequest = new ScheduleRequest(groupId, UNKNOWN);
         doReturn(UNKNOWN).when(scheduleCommandParser).parse(message);
         doReturn(groupId).when(userGroupManager).getGroupIdOfUser(userId);
         doReturn(senderWithReplies).when(messageSender).withReplies(possibleReplies);
+        doReturn(scheduleMessages).when(schedulerBotCommandsHandler).handleRequestWithResponse(scheduleRequest);
 
         schedulerBotService.handleRequest(new UserRequest(userId, message), messageSender);
 
-        then(schedulerBotCommandsHandler).should().handleRequest(new ScheduleRequest(groupId, UNKNOWN), senderWithReplies);
+        InOrder inOrder = inOrder(senderWithReplies);
+        then(senderWithReplies).should(inOrder).sendMessage("one");
+        then(senderWithReplies).should(inOrder).sendMessage("two");
     }
 
     @Test

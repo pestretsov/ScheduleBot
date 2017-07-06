@@ -48,10 +48,9 @@ public class SchedulerBotService {
         int id = userGroupManager.getGroupIdOfUser(userRequest.getUserId());
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
-        schedulerBotCommandsHandler.handleRequest(
-                scheduleRequest,
-                messageSender.withReplies(possibleReplies)
-        );
+        MessageSender withReplies = messageSender.withReplies(possibleReplies);
+        List<String> scheduleMessages = schedulerBotCommandsHandler.handleRequestWithResponse(scheduleRequest);
+        scheduleMessages.forEach(withReplies::sendMessage);
     }
 
     private void createUserAndAskForGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {

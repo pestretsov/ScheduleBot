@@ -39,7 +39,7 @@ public class SchedulerBotService {
         try {
             messageSender.sendResponse(handleUserCommand(userRequest));
         } catch (NoSuchUserException e) {
-            createUserAndAskForGroup(userRequest, messageSender);
+            messageSender.sendResponse(createUserAndAskForGroup(userRequest));
         } catch (NoGroupForUserException e) {
             tryToFindUserGroup(userRequest, messageSender);
         }
@@ -57,8 +57,13 @@ public class SchedulerBotService {
         return schedulerBotCommandsHandler.handleRequest(scheduleRequest);
     }
 
-    private void createUserAndAskForGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        userCreationService.createUserAndAskForGroup(userRequest, messageSender);
+    private BotResponse createUserAndAskForGroup(UserRequest userRequest) {
+        userCreationService.createNewUser(userRequest);
+        return getAskForGroupResponse();
+    }
+
+    private BotResponse getAskForGroupResponse() {
+        return new BotResponse("Send me your group number like '12345/6' to get your schedule.");
     }
 
     private void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {

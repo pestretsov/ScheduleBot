@@ -9,19 +9,18 @@ import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommands
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchedulerBotServiceTest {
@@ -89,6 +88,7 @@ public class SchedulerBotServiceTest {
 
         schedulerBotService.handleRequest(userRequest, messageSender);
 
-        then(userCreationService).should().createUserAndAskForGroup(userRequest, messageSender);
+        then(userCreationService).should().createNewUser(userRequest);
+        then(messageSender).should().sendResponse(new BotResponse("Send me your group number like '12345/6' to get your schedule."));
     }
 }

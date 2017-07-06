@@ -13,16 +13,8 @@ public class UserCreationService {
         this.userGroupManager = userGroupManager;
     }
 
-    void createUserAndAskForGroup(UserRequest userRequest, MessageSender messageSender) {
-        createUser(userRequest);
-        askForGroup(messageSender);
-    }
-
-    private void askForGroup(MessageSender messageSender) {
-        messageSender.sendMessage("Send me your group number like '12345/6' to get your schedule.");
-    }
-
-    private void createUser(UserRequest userRequest) {
+    void createNewUser(UserRequest userRequest) {
         userGroupManager.saveUserWithoutGroup(userRequest.getUserId());
     }
+
 }

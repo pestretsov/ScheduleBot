@@ -3,6 +3,7 @@ package org.anstreth.schedulebot.schedulebotservice;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
+import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -60,14 +61,11 @@ public class SchedulerBotServiceTest {
         ScheduleRequest scheduleRequest = new ScheduleRequest(groupId, UNKNOWN);
         doReturn(UNKNOWN).when(scheduleCommandParser).parse(message);
         doReturn(groupId).when(userGroupManager).getGroupIdOfUser(userId);
-        doReturn(senderWithReplies).when(messageSender).withReplies(possibleReplies);
         doReturn(scheduleMessages).when(schedulerBotCommandsHandler).handleRequest(scheduleRequest);
 
         schedulerBotService.handleRequest(new UserRequest(userId, message), messageSender);
 
-        InOrder inOrder = inOrder(senderWithReplies);
-        then(senderWithReplies).should(inOrder).sendMessage("one");
-        then(senderWithReplies).should(inOrder).sendMessage("two");
+        then(messageSender).should().sendResponse(new BotResponse(scheduleMessages, possibleReplies));
     }
 
     @Test

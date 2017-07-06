@@ -4,6 +4,7 @@ import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
+import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -45,12 +46,16 @@ public class SchedulerBotService {
     }
 
     private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        List<String> scheduleMessages = getScheduleReplies(userRequest);
+        BotResponse botResponse = new BotResponse(scheduleMessages, possibleReplies);
+        messageSender.sendResponse(botResponse);
+    }
+
+    private List<String> getScheduleReplies(UserRequest userRequest) {
         int id = userGroupManager.getGroupIdOfUser(userRequest.getUserId());
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
-        MessageSender withReplies = messageSender.withReplies(possibleReplies);
-        List<String> scheduleMessages = schedulerBotCommandsHandler.handleRequest(scheduleRequest);
-        scheduleMessages.forEach(withReplies::sendMessage);
+        return schedulerBotCommandsHandler.handleRequest(scheduleRequest);
     }
 
     private void createUserAndAskForGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {

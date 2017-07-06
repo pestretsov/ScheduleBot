@@ -31,5 +31,4 @@ public class SchedulerBotCommandsHandler {
         return response.format(schedulerFormatter);
     }
 
-
 }

@@ -36,12 +36,16 @@ public class SchedulerBotService {
 
     @Async
     public void handleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+        messageSender.sendResponse(handleRequest(userRequest));
+    }
+
+    private BotResponse handleRequest(UserRequest userRequest) {
         try {
-            messageSender.sendResponse(handleUserCommand(userRequest));
+            return handleUserCommand(userRequest);
         } catch (NoSuchUserException e) {
-            messageSender.sendResponse(createUserAndAskForGroup(userRequest));
+            return createUserAndAskForGroup(userRequest);
         } catch (NoGroupForUserException e) {
-            messageSender.sendResponse(tryToFindUserGroup(userRequest));
+            return tryToFindUserGroup(userRequest);
         }
     }
 

@@ -7,7 +7,6 @@ import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,16 +14,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchedulerBotServiceTest {
@@ -34,12 +30,6 @@ public class SchedulerBotServiceTest {
 
     @Mock
     private SchedulerBotCommandsHandler schedulerBotCommandsHandler;
-
-    @Mock
-    private MessageWithRepliesSender messageSender;
-
-    @Mock
-    private MessageSender senderWithReplies;
 
     @Mock
     private UserGroupManager userGroupManager;

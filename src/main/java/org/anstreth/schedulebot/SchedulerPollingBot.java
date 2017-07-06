@@ -1,7 +1,7 @@
 package org.anstreth.schedulebot;
 
 import lombok.extern.log4j.Log4j;
-import org.anstreth.schedulebot.schedulebotservice.MessageWithRepliesSender;
+import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.SchedulerBotService;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -15,6 +15,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j
 class SchedulerPollingBot extends TelegramLongPollingBot {
@@ -44,9 +45,8 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         if (updateHasMessageWithText(update)) {
             Long chatId = update.getMessage().getChatId();
             UserRequest userRequest = getUserRequestFromUpdate(update);
-            MessageWithRepliesSender messageSender = getMessageSenderForChatId(chatId);
             schedulerBotService.handleRequestAsync(userRequest)
-                    .thenAccept(messageSender::sendResponse);
+                    .thenAccept(response -> sendBotResponseToChat(chatId, response));
         }
     }
 
@@ -60,8 +60,15 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         return new UserRequest(chatId, messageText);
     }
 
-    private MessageWithRepliesSender getMessageSenderForChatId(Long chatId) {
-        return (message, replies) -> sendMessageQuietly(getSendMessageForChatIdWithText(chatId, message, replies));
+    private void sendBotResponseToChat(Long chatId, BotResponse botResponse) {
+        getSendMessagesForBotResponse(chatId, botResponse)
+                .forEach(this::sendMessageQuietly);
+    }
+
+    private List<SendMessage> getSendMessagesForBotResponse(Long chatId, BotResponse botResponse) {
+        return botResponse.getMessages().stream()
+                .map(message -> getSendMessage(chatId, message, botResponse.getReplies()))
+                .collect(Collectors.toList());
     }
 
     private void sendMessageQuietly(SendMessage sendMessageForChatWithText) {
@@ -72,7 +79,7 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         }
     }
 
-    private SendMessage getSendMessageForChatIdWithText(Long chatId, String message, List<String> replies) {
+    private SendMessage getSendMessage(Long chatId, String message, List<String> replies) {
         return new SendMessage()
                 .setChatId(chatId)
                 .setText(message)

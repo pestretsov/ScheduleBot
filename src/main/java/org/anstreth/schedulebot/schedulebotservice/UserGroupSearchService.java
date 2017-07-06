@@ -19,15 +19,6 @@ public class UserGroupSearchService {
         this.userGroupManager = userGroupManager;
     }
 
-    void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender, List<String> successReplies) {
-        try {
-            Group userGroup = findUserGroup(userRequest);
-            sendMessageAboutProperGroupSetting(messageSender.withReplies(successReplies), userGroup);
-        } catch (NoSuchGroupFoundException e) {
-            sendMessageAboutIncorrectGroupName(messageSender, userRequest);
-        }
-    }
-
     BotResponse tryToFindUserGroup(UserRequest userRequest, List<String> successReplies) {
         try {
             Group userGroup = findUserGroup(userRequest);
@@ -42,19 +33,9 @@ public class UserGroupSearchService {
         return userGroupManager.findAndSetGroupForUser(userRequest.getUserId(), userRequest.getMessage());
     }
 
-    private void sendMessageAboutProperGroupSetting(MessageSender messageSender, Group group) {
-        String message = String.format("Your group is set to '%s'.", group.getName());
-        messageSender.sendMessage(message);
-    }
-
     private BotResponse getResponseAboutProperGroupSetting(Group group, List<String> replies) {
         String message = String.format("Your group is set to '%s'.", group.getName());
         return new BotResponse(message, replies);
-    }
-
-    private void sendMessageAboutIncorrectGroupName(MessageSender messageSender, UserRequest userRequest) {
-        String message = String.format("No group by name '%s' is found! Try again.", userRequest.getMessage());
-        messageSender.sendMessage(message);
     }
 
     private BotResponse sendMessageAboutIncorrectGroupName(UserRequest userRequest) {

@@ -1,6 +1,5 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.response;
 
-import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 
 import java.util.Collections;
@@ -11,11 +10,6 @@ public class SimpleStringResponse implements ScheduleResponse {
 
     public SimpleStringResponse(String message) {
         this.message = message;
-    }
-
-    @Override
-    public void formatAndSend(SchedulerFormatter schedulerFormatter, MessageSender messageSender) {
-        messageSender.sendMessage(message);
     }
 
     @Override

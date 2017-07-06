@@ -16,6 +16,10 @@ public class BotResponse {
         this(messages, Collections.emptyList());
     }
 
+    public BotResponse(String message, List<String> replies) {
+        this(Collections.singletonList(message), replies);
+    }
+
     public BotResponse(String messages) {
         this(Collections.singletonList(messages));
     }

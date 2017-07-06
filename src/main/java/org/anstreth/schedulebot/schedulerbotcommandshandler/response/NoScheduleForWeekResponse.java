@@ -4,6 +4,8 @@ import org.anstreth.schedulebot.schedulebotservice.MessageSender;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 public class NoScheduleForWeekResponse implements ScheduleResponse {
     private final Calendar date;
@@ -15,5 +17,10 @@ public class NoScheduleForWeekResponse implements ScheduleResponse {
     @Override
     public void formatAndSend(SchedulerFormatter schedulerFormatter, MessageSender messageSender) {
         messageSender.sendMessage(schedulerFormatter.getNoScheduleForWeekMessage(date));
+    }
+
+    @Override
+    public List<String> format(SchedulerFormatter formatter) {
+        return Collections.singletonList(formatter.getNoScheduleForWeekMessage(date));
     }
 }

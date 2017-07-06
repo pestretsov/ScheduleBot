@@ -9,6 +9,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Calendar;
 
+import static org.hamcrest.Matchers.contains;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -29,5 +31,14 @@ public class NoScheduleForWeekResponseTest {
         new NoScheduleForWeekResponse(date).formatAndSend(formatter, sender);
 
         then(sender).should().sendMessage(message);
+    }
+
+    @Test
+    public void responseUses_formatter_toFormatItself() throws Exception {
+        String message = "message";
+        Calendar date = Calendar.getInstance();
+        given(formatter.getNoScheduleForWeekMessage(date)).willReturn(message);
+
+        assertThat(new NoScheduleForWeekResponse(date).format(formatter), contains(message));
     }
 }

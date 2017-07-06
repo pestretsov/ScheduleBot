@@ -41,7 +41,7 @@ public class SchedulerBotService {
         } catch (NoSuchUserException e) {
             messageSender.sendResponse(createUserAndAskForGroup(userRequest));
         } catch (NoGroupForUserException e) {
-            tryToFindUserGroup(userRequest, messageSender);
+            messageSender.sendResponse(tryToFindUserGroup(userRequest));
         }
     }
 
@@ -66,8 +66,8 @@ public class SchedulerBotService {
         return new BotResponse("Send me your group number like '12345/6' to get your schedule.");
     }
 
-    private void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        userGroupSearcherService.tryToFindUserGroup(userRequest, messageSender, possibleReplies);
+    private BotResponse tryToFindUserGroup(UserRequest userRequest) {
+        return userGroupSearcherService.tryToFindUserGroup(userRequest, possibleReplies);
     }
 
     private ScheduleCommand getCommand(UserRequest userRequest) {

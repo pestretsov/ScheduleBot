@@ -21,6 +21,7 @@ import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchedulerBotServiceTest {
@@ -73,10 +74,12 @@ public class SchedulerBotServiceTest {
         String message = "message";
         UserRequest userRequest = new UserRequest(userId, message);
         doThrow(NoGroupForUserException.class).when(userGroupManager).getGroupIdOfUser(userId);
+        BotResponse responseFromGroupSearchService = mock(BotResponse.class);
+        doReturn(responseFromGroupSearchService).when(userGroupSearchService).tryToFindUserGroup(userRequest, possibleReplies);
 
         schedulerBotService.handleRequest(userRequest, messageSender);
 
-        then(userGroupSearchService).should().tryToFindUserGroup(userRequest, messageSender, possibleReplies);
+        then(messageSender).should().sendResponse(responseFromGroupSearchService);
     }
 
     @Test

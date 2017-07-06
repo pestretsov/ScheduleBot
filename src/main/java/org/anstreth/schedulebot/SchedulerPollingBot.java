@@ -45,8 +45,8 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
             Long chatId = update.getMessage().getChatId();
             UserRequest userRequest = getUserRequestFromUpdate(update);
             MessageWithRepliesSender messageSender = getMessageSenderForChatId(chatId);
-            schedulerBotService.handleRequest(userRequest, messageSender);
-            log.info("Update is handled: " + userRequest);
+            schedulerBotService.handleRequestAsync(userRequest)
+                    .thenAccept(messageSender::sendResponse);
         }
     }
 

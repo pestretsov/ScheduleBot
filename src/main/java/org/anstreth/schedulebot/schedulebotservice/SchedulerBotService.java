@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class SchedulerBotService {
@@ -35,11 +36,11 @@ public class SchedulerBotService {
     }
 
     @Async
-    public void handleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        messageSender.sendResponse(handleRequest(userRequest));
+    public CompletableFuture<BotResponse> handleRequestAsync(UserRequest userRequest) {
+        return CompletableFuture.completedFuture(handleRequest(userRequest));
     }
 
-    public BotResponse handleRequest(UserRequest userRequest) {
+    BotResponse handleRequest(UserRequest userRequest) {
         try {
             return handleUserCommand(userRequest);
         } catch (NoSuchUserException e) {

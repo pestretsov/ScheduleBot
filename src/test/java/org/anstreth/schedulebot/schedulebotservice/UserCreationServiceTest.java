@@ -16,20 +16,15 @@ public class UserCreationServiceTest {
     private UserCreationService userCreationService;
 
     @Mock
-    private MessageSender messageSender;
-
-    @Mock
     private UserGroupManager userGroupManager;
 
     @Test
     public void serviceCreatesUserAndAsksForGroup() {
         long userId = 1;
         UserRequest userRequest = new UserRequest(userId, "message");
-        String noGroupSpecifiedMessage = "Send me your group number like '12345/6' to get your schedule.";
 
-        userCreationService.createUserAndAskForGroup(userRequest, messageSender);
+        userCreationService.createNewUser(userRequest);
 
         verify(userGroupManager).saveUserWithoutGroup(userId);
-        verify(messageSender).sendMessage(noGroupSpecifiedMessage);
     }
 }

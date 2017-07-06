@@ -4,6 +4,7 @@ import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
+import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class SchedulerBotService {
@@ -34,32 +36,43 @@ public class SchedulerBotService {
     }
 
     @Async
-    public void handleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+    public CompletableFuture<BotResponse> handleRequestAsync(UserRequest userRequest) {
+        return CompletableFuture.completedFuture(handleRequest(userRequest));
+    }
+
+    BotResponse handleRequest(UserRequest userRequest) {
         try {
-            handleUserCommand(userRequest, messageSender);
+            return handleUserCommand(userRequest);
         } catch (NoSuchUserException e) {
-            createUserAndAskForGroup(userRequest, messageSender);
+            return createUserAndAskForGroup(userRequest);
         } catch (NoGroupForUserException e) {
-            tryToFindUserGroup(userRequest, messageSender);
+            return tryToFindUserGroup(userRequest);
         }
     }
 
-    private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+    private BotResponse handleUserCommand(UserRequest userRequest) {
+        List<String> scheduleMessages = getScheduleReplies(userRequest);
+        return new BotResponse(scheduleMessages, possibleReplies);
+    }
+
+    private List<String> getScheduleReplies(UserRequest userRequest) {
         int id = userGroupManager.getGroupIdOfUser(userRequest.getUserId());
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
-        schedulerBotCommandsHandler.handleRequest(
-                scheduleRequest,
-                messageSender.withReplies(possibleReplies)
-        );
+        return schedulerBotCommandsHandler.handleRequest(scheduleRequest);
     }
 
-    private void createUserAndAskForGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        userCreationService.createUserAndAskForGroup(userRequest, messageSender);
+    private BotResponse createUserAndAskForGroup(UserRequest userRequest) {
+        userCreationService.createNewUser(userRequest);
+        return getAskForGroupResponse();
     }
 
-    private void tryToFindUserGroup(UserRequest userRequest, MessageWithRepliesSender messageSender) {
-        userGroupSearcherService.tryToFindUserGroup(userRequest, messageSender, possibleReplies);
+    private BotResponse getAskForGroupResponse() {
+        return new BotResponse("Send me your group number like '12345/6' to get your schedule.");
+    }
+
+    private BotResponse tryToFindUserGroup(UserRequest userRequest) {
+        return userGroupSearcherService.tryToFindUserGroup(userRequest, possibleReplies);
     }
 
     private ScheduleCommand getCommand(UserRequest userRequest) {

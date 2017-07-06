@@ -7,6 +7,7 @@ import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -63,9 +66,10 @@ public class SchedulerBotServiceTest {
         doReturn(groupId).when(userGroupManager).getGroupIdOfUser(userId);
         doReturn(scheduleMessages).when(schedulerBotCommandsHandler).handleRequest(scheduleRequest);
 
-        schedulerBotService.handleRequest(new UserRequest(userId, message), messageSender);
-
-        then(messageSender).should().sendResponse(new BotResponse(scheduleMessages, possibleReplies));
+        assertThat(
+                schedulerBotService.handleRequest(new UserRequest(userId, message)),
+                is(new BotResponse(scheduleMessages, possibleReplies))
+        );
     }
 
     @Test
@@ -77,9 +81,7 @@ public class SchedulerBotServiceTest {
         BotResponse responseFromGroupSearchService = mock(BotResponse.class);
         doReturn(responseFromGroupSearchService).when(userGroupSearchService).tryToFindUserGroup(userRequest, possibleReplies);
 
-        schedulerBotService.handleRequest(userRequest, messageSender);
-
-        then(messageSender).should().sendResponse(responseFromGroupSearchService);
+        assertThat(schedulerBotService.handleRequest(userRequest), is(responseFromGroupSearchService));
     }
 
     @Test
@@ -89,9 +91,8 @@ public class SchedulerBotServiceTest {
         UserRequest userRequest = new UserRequest(userId, message);
         doThrow(NoSuchUserException.class).when(userGroupManager).getGroupIdOfUser(userId);
 
-        schedulerBotService.handleRequest(userRequest, messageSender);
+        assertThat(schedulerBotService.handleRequest(userRequest), is(new BotResponse("Send me your group number like '12345/6' to get your schedule.")));
 
         then(userCreationService).should().createNewUser(userRequest);
-        then(messageSender).should().sendResponse(new BotResponse("Send me your group number like '12345/6' to get your schedule."));
     }
 }

@@ -39,7 +39,7 @@ public class SchedulerBotService {
         messageSender.sendResponse(handleRequest(userRequest));
     }
 
-    private BotResponse handleRequest(UserRequest userRequest) {
+    public BotResponse handleRequest(UserRequest userRequest) {
         try {
             return handleUserCommand(userRequest);
         } catch (NoSuchUserException e) {

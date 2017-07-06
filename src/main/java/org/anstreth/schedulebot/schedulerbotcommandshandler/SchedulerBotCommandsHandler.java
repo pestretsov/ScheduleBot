@@ -10,6 +10,8 @@ import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Log4j
 public class SchedulerBotCommandsHandler {
@@ -26,7 +28,8 @@ public class SchedulerBotCommandsHandler {
         log.info("Handling command: " + userRequest.getCommand());
         SchedulerRequestHandler requestHandler = scheduleRequestHandlersRouter.getHandlerForCommand(userRequest.getCommand());
         ScheduleResponse response = requestHandler.handle(userRequest);
-        response.formatAndSend(schedulerFormatter, messageSender);
+        List<String> messages = response.format(schedulerFormatter);
+        messages.forEach(messageSender::sendMessage);
     }
 
 }

@@ -9,11 +9,15 @@ import org.anstreth.schedulebot.schedulerbotcommandshandler.response.ScheduleRes
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.verify;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,15 +42,19 @@ public class SchedulerBotCommandsHandlerTest {
     private MessageSender sender;
 
     @Test
-    public void commandsHandler_TakesHandlerFromRouter_AndAsksHimToHandleRequest() {
+    public void commandsHandler_TakesHandlerFromRouter_ThenFormatsWith_Formatter_thenSends() {
         int groupId = 2;
         ScheduleCommand command = ScheduleCommand.WEEK;
+        List<String> formattedMessages = Arrays.asList("one", "two");
         ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
         when(scheduleRequestHandlersRouter.getHandlerForCommand(command)).thenReturn(mockRequestHandler);
         when(mockRequestHandler.handle(requestToHandle)).thenReturn(reponseToRequest);
+        when(reponseToRequest.format(formatter)).thenReturn(formattedMessages);
 
         schedulerBotCommandsHandler.handleRequest(requestToHandle, sender);
 
-        verify(reponseToRequest).formatAndSend(formatter, sender);
+        InOrder inOrder = inOrder(sender);
+        inOrder.verify(sender).sendMessage("one");
+        inOrder.verify(sender).sendMessage("two");
     }
 }

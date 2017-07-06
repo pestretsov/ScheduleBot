@@ -17,6 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
@@ -56,5 +58,21 @@ public class SchedulerBotCommandsHandlerTest {
         InOrder inOrder = inOrder(sender);
         inOrder.verify(sender).sendMessage("one");
         inOrder.verify(sender).sendMessage("two");
+    }
+
+    @Test
+    public void commandsHandler_TakesHandlerFromRouter_ThenFormatsWith_Formatter_andReturnThem() {
+        int groupId = 2;
+        ScheduleCommand command = ScheduleCommand.WEEK;
+        List<String> formattedMessages = Arrays.asList("one", "two");
+        ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
+        when(scheduleRequestHandlersRouter.getHandlerForCommand(command)).thenReturn(mockRequestHandler);
+        when(mockRequestHandler.handle(requestToHandle)).thenReturn(reponseToRequest);
+        when(reponseToRequest.format(formatter)).thenReturn(formattedMessages);
+
+        assertThat(
+                schedulerBotCommandsHandler.handleRequestWithResponse(requestToHandle),
+                contains("one", "two")
+        );
     }
 }

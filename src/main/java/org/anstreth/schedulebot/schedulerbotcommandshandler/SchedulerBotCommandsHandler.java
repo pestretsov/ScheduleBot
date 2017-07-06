@@ -25,11 +25,17 @@ public class SchedulerBotCommandsHandler {
     }
 
     public void handleRequest(ScheduleRequest userRequest, MessageSender messageSender) {
+        List<String> messages = handleRequestWithResponse(userRequest);
+        messages.forEach(messageSender::sendMessage);
+    }
+
+    public List<String> handleRequestWithResponse(ScheduleRequest userRequest) {
         log.info("Handling command: " + userRequest.getCommand());
         SchedulerRequestHandler requestHandler = scheduleRequestHandlersRouter.getHandlerForCommand(userRequest.getCommand());
         ScheduleResponse response = requestHandler.handle(userRequest);
-        List<String> messages = response.format(schedulerFormatter);
-        messages.forEach(messageSender::sendMessage);
+
+        return response.format(schedulerFormatter);
     }
+
 
 }

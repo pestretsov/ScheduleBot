@@ -37,7 +37,7 @@ public class SchedulerBotService {
     @Async
     public void handleRequest(UserRequest userRequest, MessageWithRepliesSender messageSender) {
         try {
-            handleUserCommand(userRequest, messageSender);
+            messageSender.sendResponse(handleUserCommand(userRequest));
         } catch (NoSuchUserException e) {
             createUserAndAskForGroup(userRequest, messageSender);
         } catch (NoGroupForUserException e) {
@@ -45,10 +45,9 @@ public class SchedulerBotService {
         }
     }
 
-    private void handleUserCommand(UserRequest userRequest, MessageWithRepliesSender messageSender) {
+    private BotResponse handleUserCommand(UserRequest userRequest) {
         List<String> scheduleMessages = getScheduleReplies(userRequest);
-        BotResponse botResponse = new BotResponse(scheduleMessages, possibleReplies);
-        messageSender.sendResponse(botResponse);
+        return new BotResponse(scheduleMessages, possibleReplies);
     }
 
     private List<String> getScheduleReplies(UserRequest userRequest) {

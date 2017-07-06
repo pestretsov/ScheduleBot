@@ -19,6 +19,7 @@ public interface MessageWithRepliesSender extends MessageSender {
     }
 
     default void sendResponse(BotResponse response) {
-        sendMessage(response.getMessage(), response.getResponses());
+        MessageSender withResponses = withReplies(response.getReplies());
+        response.getMessages().forEach(withResponses::sendMessage);
     }
 }

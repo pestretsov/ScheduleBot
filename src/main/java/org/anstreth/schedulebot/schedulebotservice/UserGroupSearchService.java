@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class UserGroupSearchService {
 
-    private UserGroupManager userGroupManager;
+    private final UserGroupManager userGroupManager;
 
     @Autowired
     public UserGroupSearchService(UserGroupManager userGroupManager) {

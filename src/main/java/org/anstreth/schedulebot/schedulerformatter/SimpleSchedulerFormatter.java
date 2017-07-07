@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.anstreth.ruzapi.response.Day;
-import org.anstreth.schedulebot.schedulerbotcommandshandler.response.DayResponse;
-import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForDayResponse;
-import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForWeekResponse;
-import org.anstreth.schedulebot.schedulerbotcommandshandler.response.WeekResponse;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +17,6 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
     @Autowired
     public SimpleSchedulerFormatter(DayFormatter dateFormatter) {
         this.dateFormatter = dateFormatter;
-    }
-
-    @Override
-    public String formatDay(Day scheduleForToday) {
-        return dateFormatter.formatDay(scheduleForToday);
     }
 
     @Override
@@ -49,4 +41,12 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
         return Collections.singletonList("There are no schedule for this week!");
     }
 
+    @Override
+    public List<String> format(SimpleStringResponse response) {
+        return Collections.singletonList(response.getMessage());
+    }
+
+    private String formatDay(Day scheduleForToday) {
+        return dateFormatter.formatDay(scheduleForToday);
+    }
 }

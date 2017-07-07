@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 class SimpleSchedulerFormatter implements SchedulerFormatter {
-
+    private static final String NO_SCHEDULE_FOR_DAY_MESSAGE = "There are no lessons!";
+    private static final String NO_SCHEDULE_FOR_WEEK_MESSAGE = "There are no schedule for this week!";
     private final DayFormatter dateFormatter;
 
     @Autowired
@@ -33,12 +34,12 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
 
     @Override
     public List<String> format(NoScheduleForDayResponse response) {
-        return Collections.singletonList("There are no lessons!");
+        return Collections.singletonList(NO_SCHEDULE_FOR_DAY_MESSAGE);
     }
 
     @Override
     public List<String> format(NoScheduleForWeekResponse response) {
-        return Collections.singletonList("There are no schedule for this week!");
+        return Collections.singletonList(NO_SCHEDULE_FOR_WEEK_MESSAGE);
     }
 
     @Override

@@ -11,18 +11,14 @@ import org.anstreth.schedulebot.schedulerbotcommandshandler.response.SimpleStrin
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.WeekResponse;
 import org.springframework.stereotype.Component;
 
-import java.util.Calendar;
-
 @Component
 public interface SchedulerFormatter {
     @Deprecated
     String formatDay(Day scheduleForToday);
 
-    @Deprecated
-    String getNoScheduleForDateMessage(Calendar calendar);
+    List<String> format(NoScheduleForDayResponse response);
 
-    @Deprecated
-    String getNoScheduleForWeekMessage(Calendar calendar);
+    List<String> format(NoScheduleForWeekResponse response);
 
     default List<String> format(DayResponse dayResponse) {
         return Collections.singletonList(formatDay(dayResponse.getDay()));
@@ -32,14 +28,6 @@ public interface SchedulerFormatter {
         return weekResponse.getWeekSchedule().getDays().stream()
             .map(this::formatDay)
             .collect(Collectors.toList());
-    }
-
-    default List<String> format(NoScheduleForDayResponse response) {
-        return Collections.singletonList(getNoScheduleForDateMessage(response.getDate()));
-    }
-
-    default List<String> format(NoScheduleForWeekResponse response) {
-        return Collections.singletonList(getNoScheduleForWeekMessage(response.getDate()));
     }
 
     default List<String> format(SimpleStringResponse response) {

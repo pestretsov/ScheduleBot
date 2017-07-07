@@ -1,15 +1,17 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
+import java.util.List;
 import org.anstreth.ruzapi.response.Day;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForDayResponse;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForWeekResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Calendar;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -32,17 +34,17 @@ public class SimpleSchedulerFormatterTest {
     }
 
     @Test
-    public void getNoScheduleForDayMessageInsertsPassedDateToMessage() throws Exception {
-        String message = schedulerFormatter.getNoScheduleForDateMessage(Calendar.getInstance());
+    public void NoScheduleForDay_reponseIsFormattedCorrectly() throws Exception {
+        List<String> messages = schedulerFormatter.format(mock(NoScheduleForDayResponse.class));
 
-        assertThat(message, is("There are no lessons!"));
+        assertThat(messages, contains("There are no lessons!"));
     }
 
     @Test
-    public void getNoScheduleForWeekReturnsCorrectMessage() {
-        String message = schedulerFormatter.getNoScheduleForWeekMessage(Calendar.getInstance());
+    public void NoScheduleForWeek_reponseIsFormattedCorrectly() {
+        List<String> messages = schedulerFormatter.format(mock(NoScheduleForWeekResponse.class));
 
-        assertThat(message, is("There are no schedule for this week!"));
+        assertThat(messages, contains("There are no schedule for this week!"));
     }
 
 }

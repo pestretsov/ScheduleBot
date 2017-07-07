@@ -17,7 +17,7 @@ public class WeekResponse implements ScheduleResponse {
     }
 
     @Override
-    public List<String> format(SchedulerFormatter schedulerFormatter) {
+    public List<String> formatWith(SchedulerFormatter schedulerFormatter) {
         return weekSchedule.getDays().stream()
                 .map(schedulerFormatter::formatDay)
                 .collect(Collectors.toList());

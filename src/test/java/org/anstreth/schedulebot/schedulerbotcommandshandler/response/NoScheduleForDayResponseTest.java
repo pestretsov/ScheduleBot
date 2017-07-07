@@ -25,7 +25,7 @@ public class NoScheduleForDayResponseTest {
         String noScheduleMessage = "no schedule!";
         when(formatter.getNoScheduleForDateMessage(date)).thenReturn(noScheduleMessage);
 
-        assertThat(response.format(formatter), contains(noScheduleMessage));
+        assertThat(response.formatWith(formatter), contains(noScheduleMessage));
     }
 
 }

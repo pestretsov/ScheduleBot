@@ -45,7 +45,7 @@ public class SchedulerBotCommandsHandlerTest {
         ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
         when(scheduleRequestHandlersRouter.getHandlerForCommand(command)).thenReturn(mockRequestHandler);
         when(mockRequestHandler.handle(requestToHandle)).thenReturn(reponseToRequest);
-        when(reponseToRequest.format(formatter)).thenReturn(formattedMessages);
+        when(reponseToRequest.formatWith(formatter)).thenReturn(formattedMessages);
 
         assertThat(
                 schedulerBotCommandsHandler.handleRequest(requestToHandle),

@@ -17,7 +17,7 @@ public class DayResponse implements ScheduleResponse {
     }
 
     @Override
-    public List<String> format(SchedulerFormatter formatter) {
+    public List<String> formatWith(SchedulerFormatter formatter) {
         return Collections.singletonList(formatter.formatDay(day));
     }
 }

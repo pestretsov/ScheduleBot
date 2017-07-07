@@ -24,6 +24,6 @@ public class DayResponseTest {
         String formattedDay = "formatted day";
         when(formatter.formatDay(day)).thenReturn(formattedDay);
 
-        assertThat(response.format(formatter), contains(formattedDay));
+        assertThat(response.formatWith(formatter), contains(formattedDay));
     }
 }

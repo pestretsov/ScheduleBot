@@ -23,6 +23,6 @@ public class NoScheduleForWeekResponseTest {
         Calendar date = Calendar.getInstance();
         given(formatter.getNoScheduleForWeekMessage(date)).willReturn(message);
 
-        assertThat(new NoScheduleForWeekResponse(date).format(formatter), contains(message));
+        assertThat(new NoScheduleForWeekResponse(date).formatWith(formatter), contains(message));
     }
 }

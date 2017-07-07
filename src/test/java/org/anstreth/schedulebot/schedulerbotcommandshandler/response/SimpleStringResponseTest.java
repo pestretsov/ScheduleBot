@@ -15,6 +15,6 @@ public class SimpleStringResponseTest {
         String message = "message";
         SimpleStringResponse response = new SimpleStringResponse(message);
 
-        Assert.assertThat(response.format(null), contains(message));
+        Assert.assertThat(response.formatWith(null), contains(message));
     }
 }

@@ -33,6 +33,6 @@ public class WeekResponseTest {
         given(formatter.formatDay(dayOne)).willReturn(formattedDayOne);
         given(formatter.formatDay(dayTwo)).willReturn(formattedDayTwo);
 
-        assertThat(weekResponse.format(formatter), contains(formattedDayOne, formattedDayTwo));
+        assertThat(weekResponse.formatWith(formatter), contains(formattedDayOne, formattedDayTwo));
     }
 }

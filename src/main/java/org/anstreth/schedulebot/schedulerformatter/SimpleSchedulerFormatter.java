@@ -1,54 +1,53 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
-import org.anstreth.ruzapi.response.Day;
-import org.anstreth.ruzapi.response.Lesson;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.anstreth.ruzapi.response.Day;
+import org.anstreth.schedulebot.schedulerbotcommandshandler.response.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 @Component
 class SimpleSchedulerFormatter implements SchedulerFormatter {
-
-    private final LessonFormatter lessonFormatter;
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, yyyy-MM-dd");
+    private static final String NO_SCHEDULE_FOR_DAY_MESSAGE = "There are no lessons!";
+    private static final String NO_SCHEDULE_FOR_WEEK_MESSAGE = "There are no schedule for this week!";
+    private final DayFormatter dateFormatter;
 
     @Autowired
-    public SimpleSchedulerFormatter(LessonFormatter lessonFormatter) {
-        this.lessonFormatter = lessonFormatter;
+    public SimpleSchedulerFormatter(DayFormatter dateFormatter) {
+        this.dateFormatter = dateFormatter;
     }
 
     @Override
-    public String getNoScheduleForDateMessage(Calendar calendar) {
-        return "There are no lessons!";
+    public List<String> format(DayResponse dayResponse) {
+        return Collections.singletonList(formatDay(dayResponse.getDay()));
     }
 
     @Override
-    public String getNoScheduleForWeekMessage(Calendar calendar) {
-        return "There are no schedule for this week!";
+    public List<String> format(WeekResponse weekResponse) {
+        return weekResponse.getWeekSchedule().getDays().stream()
+                .map(this::formatDay)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public String formatDay(Day scheduleForToday) {
-        String lessons = getLessonsString(scheduleForToday.getLessons());
-        return String.format("Schedule for %s:\n\n%s", formatDate(scheduleForToday), lessons);
+    public List<String> format(NoScheduleForDayResponse response) {
+        return Collections.singletonList(NO_SCHEDULE_FOR_DAY_MESSAGE);
     }
 
-    private String formatDate(Day scheduleForToday) {
-        return simpleDateFormat.format(scheduleForToday.getDate());
+    @Override
+    public List<String> format(NoScheduleForWeekResponse response) {
+        return Collections.singletonList(NO_SCHEDULE_FOR_WEEK_MESSAGE);
     }
 
-    private String getLessonsString(List<Lesson> lessons) {
-        if (lessons.isEmpty()) {
-            return "There are no lessons for this day!";
-        }
-
-        return lessons.stream()
-                .map(lessonFormatter::formatLesson)
-                .collect(Collectors.joining("\n\n"));
+    @Override
+    public List<String> format(SimpleStringResponse response) {
+        return Collections.singletonList(response.getMessage());
     }
 
+    private String formatDay(Day scheduleForToday) {
+        return dateFormatter.formatDay(scheduleForToday);
+    }
 }

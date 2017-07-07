@@ -28,7 +28,7 @@ public class SchedulerBotCommandsHandler {
         SchedulerRequestHandler requestHandler = scheduleRequestHandlersRouter.getHandlerForCommand(userRequest.getCommand());
         ScheduleResponse response = requestHandler.handle(userRequest);
 
-        return response.format(schedulerFormatter);
+        return response.formatWith(schedulerFormatter);
     }
 
 }

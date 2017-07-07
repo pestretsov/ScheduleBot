@@ -1,24 +1,18 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
+import java.util.Calendar;
 import org.anstreth.ruzapi.response.Day;
-import org.anstreth.ruzapi.response.Lesson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 class SimpleSchedulerFormatter implements SchedulerFormatter {
 
-    private final LessonFormatter lessonFormatter;
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE, yyyy-MM-dd");
+    private final DayFormatter dateFormatter;
 
     @Autowired
-    public SimpleSchedulerFormatter(LessonFormatter lessonFormatter) {
-        this.lessonFormatter = lessonFormatter;
+    public SimpleSchedulerFormatter(LessonFormatter lessonFormatter, DayFormatter dateFormatter) {
+        this.dateFormatter = dateFormatter;
     }
 
     @Override
@@ -33,22 +27,7 @@ class SimpleSchedulerFormatter implements SchedulerFormatter {
 
     @Override
     public String formatDay(Day scheduleForToday) {
-        String lessons = getLessonsString(scheduleForToday.getLessons());
-        return String.format("Schedule for %s:\n\n%s", formatDate(scheduleForToday), lessons);
-    }
-
-    private String formatDate(Day scheduleForToday) {
-        return simpleDateFormat.format(scheduleForToday.getDate());
-    }
-
-    private String getLessonsString(List<Lesson> lessons) {
-        if (lessons.isEmpty()) {
-            return "There are no lessons for this day!";
-        }
-
-        return lessons.stream()
-                .map(lessonFormatter::formatLesson)
-                .collect(Collectors.joining("\n\n"));
+        return dateFormatter.formatDay(scheduleForToday);
     }
 
 }

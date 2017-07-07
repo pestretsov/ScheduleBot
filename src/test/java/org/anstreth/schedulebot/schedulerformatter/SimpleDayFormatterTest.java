@@ -53,6 +53,18 @@ public class SimpleDayFormatterTest {
         assertThat(formattedResult, endsWith(formattedLessonString));
     }
 
+    @Test
+    public void ifThereAreNoLessonsThereAreExpectedPlaceholder() throws Exception {
+        Day dayWithoutLessons = new Day();
+        dayWithoutLessons.setDate(new Date());
+        dayWithoutLessons.setLessons(Collections.emptyList());
+        String expectedPlaceholder = "There are no lessons for this day!";
+
+        String formattedReslut = dayFormatter.formatDay(dayWithoutLessons);
+
+        assertThat(formattedReslut, endsWith(expectedPlaceholder));
+    }
+
     private String getExpectedDayFormat(Date date) {
         return new SimpleDateFormat("EEEE, yyyy-MM-dd").format(date);
     }

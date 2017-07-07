@@ -7,9 +7,9 @@ import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
 public class WeekResponse implements ScheduleResponse {
 
+    @Getter
     private final WeekSchedule weekSchedule;
 
     public WeekResponse(WeekSchedule weekSchedule) {

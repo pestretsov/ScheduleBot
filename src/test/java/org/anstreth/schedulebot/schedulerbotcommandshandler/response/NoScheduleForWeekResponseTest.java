@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.response;
 
+import java.util.Collections;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +22,9 @@ public class NoScheduleForWeekResponseTest {
     public void responseUses_formatter_toFormatItself() throws Exception {
         String message = "message";
         Calendar date = Calendar.getInstance();
-        given(formatter.getNoScheduleForWeekMessage(date)).willReturn(message);
+        NoScheduleForWeekResponse noScheduleForWeekResponse = new NoScheduleForWeekResponse(date);
+        given(formatter.format(noScheduleForWeekResponse)).willReturn(Collections.singletonList(message));
 
-        assertThat(new NoScheduleForWeekResponse(date).formatWith(formatter), contains(message));
+        assertThat(noScheduleForWeekResponse.formatWith(formatter), contains(message));
     }
 }

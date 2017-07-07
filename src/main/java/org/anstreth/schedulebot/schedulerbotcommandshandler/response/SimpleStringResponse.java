@@ -1,10 +1,8 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.response;
 
+import java.util.List;
 import lombok.Getter;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
-
-import java.util.Collections;
-import java.util.List;
 
 public class SimpleStringResponse implements ScheduleResponse {
 
@@ -17,6 +15,6 @@ public class SimpleStringResponse implements ScheduleResponse {
 
     @Override
     public List<String> formatWith(SchedulerFormatter formatter) {
-        return Collections.singletonList(message);
+        return formatter.format(this);
     }
 }

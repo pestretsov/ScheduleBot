@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.response;
 
+import java.util.Collections;
 import org.anstreth.ruzapi.response.Day;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.junit.Test;
@@ -19,10 +20,9 @@ public class DayResponseTest {
 
     @Test
     public void dayResponseShouldUseFormatterToFormatItself() throws Exception {
-        Day day = new Day();
-        DayResponse response = new DayResponse(day);
+        DayResponse response = new DayResponse(new Day());
         String formattedDay = "formatted day";
-        when(formatter.formatDay(day)).thenReturn(formattedDay);
+        when(formatter.format(response)).thenReturn(Collections.singletonList(formattedDay));
 
         assertThat(response.formatWith(formatter), contains(formattedDay));
     }

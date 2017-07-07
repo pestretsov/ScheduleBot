@@ -1,16 +1,16 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.response;
 
+import java.util.Calendar;
+import java.util.Collections;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Calendar;
-
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NoScheduleForDayResponseTest {
@@ -23,7 +23,7 @@ public class NoScheduleForDayResponseTest {
         Calendar date = Calendar.getInstance();
         NoScheduleForDayResponse response = new NoScheduleForDayResponse(date);
         String noScheduleMessage = "no schedule!";
-        when(formatter.getNoScheduleForDateMessage(date)).thenReturn(noScheduleMessage);
+        doReturn(Collections.singletonList(noScheduleMessage)).when(formatter).format(response);
 
         assertThat(response.formatWith(formatter), contains(noScheduleMessage));
     }

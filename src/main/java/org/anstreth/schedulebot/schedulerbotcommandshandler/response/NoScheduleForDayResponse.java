@@ -1,11 +1,9 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.response;
 
+import java.util.Calendar;
+import java.util.List;
 import lombok.Getter;
 import org.anstreth.schedulebot.schedulerformatter.SchedulerFormatter;
-
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
 
 public class NoScheduleForDayResponse implements ScheduleResponse {
 
@@ -18,6 +16,6 @@ public class NoScheduleForDayResponse implements ScheduleResponse {
 
     @Override
     public List<String> formatWith(SchedulerFormatter formatter) {
-        return Collections.singletonList(formatter.getNoScheduleForDateMessage(date));
+        return formatter.format(this);
     }
 }

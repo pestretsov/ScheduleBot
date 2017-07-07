@@ -15,8 +15,13 @@ import java.util.Calendar;
 
 @Component
 public interface SchedulerFormatter {
+    @Deprecated
     String formatDay(Day scheduleForToday);
+
+    @Deprecated
     String getNoScheduleForDateMessage(Calendar calendar);
+
+    @Deprecated
     String getNoScheduleForWeekMessage(Calendar calendar);
 
     default List<String> format(DayResponse dayResponse) {

@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class SchedulerBotService {
-    private final UserGroupManager userGroupManager;
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
     private final ScheduleCommandParser scheduleCommandParser;
     private final UserGroupSearchService userGroupSearcherService;
@@ -33,10 +32,9 @@ public class SchedulerBotService {
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Autowired
-    public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService,
+    public SchedulerBotService(UserGroupSearchService userGroupSearcherService,
                                SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
                                UserStateManager userStateManager, UserRepository userRepository) {
-        this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;
         this.userGroupSearcherService = userGroupSearcherService;
@@ -68,13 +66,6 @@ public class SchedulerBotService {
         }
 
         return null;
-//        try {
-//            return handleUserCommand(userRequest);
-//        } catch (NoSuchUserException e) {
-//            return createUserAndAskForGroup(userRequest);
-//        } catch (NoGroupForUserException e) {
-//            return tryToFindUserGroup(userRequest);
-//        }
     }
 
     private BotResponse handleUserCommand(UserRequest userRequest) {

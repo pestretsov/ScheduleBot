@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
@@ -9,7 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserCreationServiceTest {
@@ -23,10 +27,10 @@ public class UserCreationServiceTest {
     @Test
     public void serviceCreatesUserAndAsksForGroup() {
         long userId = 1;
+        User createdUser = mock(User.class);
         UserRequest userRequest = new UserRequest(userId, "message");
+        doReturn(createdUser).when(userGroupManager).saveUserWithoutGroup(userId);
 
-        userCreationService.createNewUser(userRequest);
-
-        verify(userGroupManager).saveUserWithoutGroup(userId);
+        assertThat(userCreationService.createNewUser(userRequest), is(createdUser));
     }
 }

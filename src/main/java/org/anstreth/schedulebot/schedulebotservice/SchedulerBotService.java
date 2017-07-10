@@ -57,6 +57,11 @@ public class SchedulerBotService {
             return createUserAndAskForGroup(userRequest);
         }
 
+        switch (user.getState()) {
+            case ASKED_FOR_GROUP:
+                return tryToFindUserGroup(userRequest);
+        }
+
         return null;
 //        try {
 //            return handleUserCommand(userRequest);

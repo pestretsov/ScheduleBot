@@ -3,6 +3,7 @@ package org.anstreth.schedulebot.schedulebotservice;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
+import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
+import static org.anstreth.schedulebot.model.UserState.ASKED_FOR_GROUP;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -70,6 +72,20 @@ public class SchedulerBotServiceTest {
 
         then(userCreationService).should().createNewUser(request);
         then(userStateManager).should().transitToAskedForGroup(userId);
+    }
+
+    @Test
+    public void whenUserStateIs_ASKED_FOR_GROUP_thenBotLooksForHisGroupByMessage() throws Exception {
+        long userId = 1;
+        UserRequest request = new UserRequest(userId, "command");
+        BotResponse groupSearchBotResponse = mock(BotResponse.class);
+        doReturn(new User(userId, 2, ASKED_FOR_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(groupSearchBotResponse).when(userGroupSearchService).tryToFindUserGroup(request, possibleReplies);
+
+        assertThat(
+                schedulerBotService.handleRequest(request),
+                is(groupSearchBotResponse)
+        );
     }
 
     @Test

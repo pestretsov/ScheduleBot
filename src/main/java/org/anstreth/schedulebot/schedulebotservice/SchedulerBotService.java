@@ -54,10 +54,13 @@ public class SchedulerBotService {
         User user = userRepository.getUserById(userRequest.getUserId());
 
         if (user == null) {
-            return createUserAndAskForGroup(userRequest);
+            user = userCreationService.createNewUser(userRequest);
         }
 
         switch (user.getState()) {
+            case NO_GROUP:
+                userStateManager.transitToAskedForGroup(user);
+                return getAskForGroupResponse();
             case ASKED_FOR_GROUP:
                 return tryToFindUserGroup(userRequest);
             case WITH_GROUP:
@@ -84,12 +87,6 @@ public class SchedulerBotService {
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
         return schedulerBotCommandsHandler.handleRequest(scheduleRequest);
-    }
-
-    private BotResponse createUserAndAskForGroup(UserRequest userRequest) {
-        userCreationService.createNewUser(userRequest);
-        userStateManager.transitToAskedForGroup(userRequest.getUserId());
-        return getAskForGroupResponse();
     }
 
     private BotResponse getAskForGroupResponse() {

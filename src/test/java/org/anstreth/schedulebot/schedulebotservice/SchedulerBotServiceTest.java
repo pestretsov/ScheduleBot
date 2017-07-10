@@ -26,6 +26,7 @@ import java.util.List;
 import static org.anstreth.schedulebot.commands.ScheduleCommand.TODAY;
 import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
 import static org.anstreth.schedulebot.model.UserState.ASKED_FOR_GROUP;
+import static org.anstreth.schedulebot.model.UserState.NO_GROUP;
 import static org.anstreth.schedulebot.model.UserState.WITH_GROUP;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -66,14 +67,15 @@ public class SchedulerBotServiceTest {
         long userId = 1;
         UserRequest request = new UserRequest(userId, "command");
         doReturn(null).when(userRepository).getUserById(userId);
+        User createdUser = new User(userId, 1, NO_GROUP);
+        User userAskedForGroup = new User(userId, 1, ASKED_FOR_GROUP);
+        doReturn(createdUser).when(userCreationService).createNewUser(request);
+        doReturn(userAskedForGroup).when(userStateManager).transitToAskedForGroup(createdUser);
 
         assertThat(
                 schedulerBotService.handleRequest(request),
                 is(new BotResponse("Send me your group number like '12345/6' to get your schedule."))
         );
-
-        then(userCreationService).should().createNewUser(request);
-        then(userStateManager).should().transitToAskedForGroup(userId);
     }
 
     @Test

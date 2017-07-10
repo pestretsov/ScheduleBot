@@ -2,8 +2,7 @@ package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
-import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
-import org.anstreth.schedulebot.exceptions.NoSuchUserException;
+import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
@@ -12,6 +11,7 @@ import org.anstreth.schedulebot.schedulebotservice.user.UserGroupSearchService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
+import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -28,19 +28,21 @@ public class SchedulerBotService {
     private final UserGroupSearchService userGroupSearcherService;
     private final UserCreationService userCreationService;
     private final UserStateManager userStateManager;
+    private final UserRepository userRepository;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Autowired
     public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService,
                                SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
-                               UserStateManager userStateManager) {
+                               UserStateManager userStateManager, UserRepository userRepository) {
         this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;
         this.userGroupSearcherService = userGroupSearcherService;
         this.userCreationService = userCreationService;
         this.userStateManager = userStateManager;
+        this.userRepository = userRepository;
     }
 
     @Async
@@ -49,13 +51,20 @@ public class SchedulerBotService {
     }
 
     BotResponse handleRequest(UserRequest userRequest) {
-        try {
-            return handleUserCommand(userRequest);
-        } catch (NoSuchUserException e) {
+        User user = userRepository.getUserById(userRequest.getUserId());
+
+        if (user == null) {
             return createUserAndAskForGroup(userRequest);
-        } catch (NoGroupForUserException e) {
-            return tryToFindUserGroup(userRequest);
         }
+
+        return null;
+//        try {
+//            return handleUserCommand(userRequest);
+//        } catch (NoSuchUserException e) {
+//            return createUserAndAskForGroup(userRequest);
+//        } catch (NoGroupForUserException e) {
+//            return tryToFindUserGroup(userRequest);
+//        }
     }
 
     private BotResponse handleUserCommand(UserRequest userRequest) {

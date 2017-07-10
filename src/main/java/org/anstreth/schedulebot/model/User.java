@@ -8,4 +8,15 @@ public class User {
 
     final long id;
     final int groupId;
+    public final UserState state;
+
+    private User(long id, int groupId, UserState state) {
+        this.id = id;
+        this.groupId = groupId;
+        this.state = state;
+    }
+
+    public User(long id, int groupId) {
+        this(id, groupId, UserState.NO_GROUP);
+    }
 }

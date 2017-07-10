@@ -5,6 +5,10 @@ import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
+import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
+import org.anstreth.schedulebot.schedulebotservice.user.UserGroupSearchService;
+import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.junit.Test;
@@ -42,6 +46,9 @@ public class SchedulerBotServiceTest {
 
     @Mock
     private UserCreationService userCreationService;
+
+    @Mock
+    private UserStateManager userStateManager;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
@@ -84,5 +91,6 @@ public class SchedulerBotServiceTest {
         assertThat(schedulerBotService.handleRequest(userRequest), is(new BotResponse("Send me your group number like '12345/6' to get your schedule.")));
 
         then(userCreationService).should().createNewUser(userRequest);
+        then(userStateManager).should().transitToAskedForGroup(userId);
     }
 }

@@ -1,4 +1,4 @@
-package org.anstreth.schedulebot.schedulebotservice;
+package org.anstreth.schedulebot.schedulebotservice.user;
 
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ public class UserCreationService {
         this.userGroupManager = userGroupManager;
     }
 
-    void createNewUser(UserRequest userRequest) {
+    public void createNewUser(UserRequest userRequest) {
         userGroupManager.saveUserWithoutGroup(userRequest.getUserId());
     }
 

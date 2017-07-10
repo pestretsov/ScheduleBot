@@ -16,19 +16,19 @@ public class UserStateManager {
         this.userRepository = userRepository;
     }
 
-    User transitToAskedForGroup(User user) {
+    public User transitToAskedForGroup(User user) {
         return updateUserState(user, UserState.ASKED_FOR_GROUP);
     }
 
-    User transitToAskedForGroup(long userId) {
+    public User transitToAskedForGroup(long userId) {
         return transitToAskedForGroup(userRepository.getUserById(userId));
     }
 
-    User transitToWithGroup(User user) {
+    public User transitToWithGroup(User user) {
         return updateUserState(user, UserState.WITH_GROUP);
     }
 
-    User transitToWithGroup(long userId) {
+    public User transitToWithGroup(long userId) {
         return transitToWithGroup(userRepository.getUserById(userId));
     }
 

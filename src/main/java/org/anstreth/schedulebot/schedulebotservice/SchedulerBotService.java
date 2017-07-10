@@ -6,6 +6,7 @@ import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,20 @@ public class SchedulerBotService {
     private final ScheduleCommandParser scheduleCommandParser;
     private final UserGroupSearchService userGroupSearcherService;
     private final UserCreationService userCreationService;
+    private final UserStateManager userStateManager;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Autowired
-    public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService, SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService) {
+    public SchedulerBotService(UserGroupManager userGroupManager, UserGroupSearchService userGroupSearcherService,
+                               SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
+                               UserStateManager userStateManager) {
         this.userGroupManager = userGroupManager;
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;
         this.userGroupSearcherService = userGroupSearcherService;
         this.userCreationService = userCreationService;
+        this.userStateManager = userStateManager;
     }
 
     @Async
@@ -64,6 +69,7 @@ public class SchedulerBotService {
 
     private BotResponse createUserAndAskForGroup(UserRequest userRequest) {
         userCreationService.createNewUser(userRequest);
+        userStateManager.transitToAskedForGroup(userRequest.getUserId());
         return getAskForGroupResponse();
     }
 

@@ -33,6 +33,18 @@ public class UserStateManagerTest {
     }
 
     @Test
+    public void transitToAskedForGroup_getsUserFrom_repository_setsUserStateTo_ASKED_FOR_GROUP_andUpdates_repository() throws Exception {
+        long userId = 1;
+        User user = new User(userId, 2, UserState.NO_GROUP);
+        User updatedUser = new User(userId, 2, UserState.ASKED_FOR_GROUP);
+        doReturn(user).when(userRepository).getUserById(userId);
+        doReturn(updatedUser).when(userRepository).save(updatedUser);
+
+        assertThat(userStateManager.transitToAskedForGroup(userId),
+            is(updatedUser));
+    }
+
+    @Test
     public void transitToWithGroup_setsUserStateTo_WITH_GROUP_andUpdates_Repository() throws Exception {
         User user = new User(1, 2, UserState.NO_GROUP);
         User updatedUser = new User(1, 2, UserState.WITH_GROUP);
@@ -40,6 +52,17 @@ public class UserStateManagerTest {
 
         assertThat(userStateManager.transitToWithGroup(user),
             is(updatedUser));
+    }
 
+    @Test
+    public void transitToWithGroup_getsUserFrom_repository_setsUserStateTo_WITH_GROUP_andUpdates_Repository() throws Exception {
+        long userId = 1;
+        User user = new User(userId, 2, UserState.NO_GROUP);
+        User updatedUser = new User(userId, 2, UserState.WITH_GROUP);
+        doReturn(user).when(userRepository).getUserById(userId);
+        doReturn(updatedUser).when(userRepository).save(updatedUser);
+
+        assertThat(userStateManager.transitToWithGroup(userId),
+            is(updatedUser));
     }
 }

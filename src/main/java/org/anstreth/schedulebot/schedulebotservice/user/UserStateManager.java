@@ -20,8 +20,16 @@ public class UserStateManager {
         return updateUserState(user, UserState.ASKED_FOR_GROUP);
     }
 
+    User transitToAskedForGroup(long userId) {
+        return transitToAskedForGroup(userRepository.getUserById(userId));
+    }
+
     User transitToWithGroup(User user) {
         return updateUserState(user, UserState.WITH_GROUP);
+    }
+
+    User transitToWithGroup(long userId) {
+        return transitToWithGroup(userRepository.getUserById(userId));
     }
 
     private User updateUserState(User user, UserState state) {

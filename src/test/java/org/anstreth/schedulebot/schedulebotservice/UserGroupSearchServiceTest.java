@@ -4,6 +4,7 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
@@ -25,6 +27,9 @@ public class UserGroupSearchServiceTest {
     private UserGroupSearchService userGroupSearchService;
     @Mock
     private UserGroupManager userGroupManager;
+
+    @Mock
+    private UserStateManager userStateManager;
 
     @Test
     public void if_UserGroupManager_findsGroup_thenSuccessMessageIsSentWithSuccessReplies() {
@@ -40,6 +45,8 @@ public class UserGroupSearchServiceTest {
                 userGroupSearchService.tryToFindUserGroup(userRequest, successReplies),
                 Matchers.is(new BotResponse("Your group is set to 'groupName'.", successReplies))
         );
+
+        then(userStateManager).should().transitToWithGroup(userId);
     }
 
     @Test

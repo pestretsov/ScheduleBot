@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.anstreth.schedulebot.model.UserState.NO_GROUP;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -65,7 +66,7 @@ public class UserGroupManagerTest {
     public void createUserWithNoGroup_createsNewUserInRepository() {
         userGroupManager.saveUserWithoutGroup(userId);
 
-        then(userRepository).should().save(new User(userId, User.NO_GROUP_SPECIFIED));
+        then(userRepository).should().save(new User(userId, User.NO_GROUP_SPECIFIED, NO_GROUP));
     }
 
     @Test

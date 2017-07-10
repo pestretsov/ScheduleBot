@@ -10,7 +10,7 @@ public class User {
     final int groupId;
     public final UserState state;
 
-    private User(long id, int groupId, UserState state) {
+    public User(long id, int groupId, UserState state) {
         this.id = id;
         this.groupId = groupId;
         this.state = state;

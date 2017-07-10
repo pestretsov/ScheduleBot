@@ -1,9 +1,10 @@
-package org.anstreth.schedulebot.schedulebotservice;
+package org.anstreth.schedulebot.schedulebotservice.user;
 
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ public class UserGroupSearchService {
         this.userStateManager = userStateManager;
     }
 
-    BotResponse tryToFindUserGroup(UserRequest userRequest, List<String> successReplies) {
+    public BotResponse tryToFindUserGroup(UserRequest userRequest, List<String> successReplies) {
         try {
             Group userGroup = findUserGroup(userRequest);
             userStateManager.transitToWithGroup(userRequest.getUserId());

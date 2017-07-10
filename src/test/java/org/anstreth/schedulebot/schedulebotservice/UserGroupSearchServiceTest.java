@@ -4,6 +4,8 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
+import org.anstreth.schedulebot.schedulebotservice.user.UserGroupSearchService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.hamcrest.Matchers;
 import org.junit.Assert;

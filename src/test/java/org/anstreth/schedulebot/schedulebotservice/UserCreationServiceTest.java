@@ -1,6 +1,8 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
+import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
+import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

@@ -7,6 +7,7 @@ import org.anstreth.schedulebot.exceptions.NoGroupForUserException;
 import org.anstreth.schedulebot.exceptions.NoSuchGroupFoundException;
 import org.anstreth.schedulebot.exceptions.NoSuchUserException;
 import org.anstreth.schedulebot.model.User;
+import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;

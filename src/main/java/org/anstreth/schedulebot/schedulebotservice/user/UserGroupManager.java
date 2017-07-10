@@ -1,4 +1,4 @@
-package org.anstreth.schedulebot.schedulebotservice;
+package org.anstreth.schedulebot.schedulebotservice.user;
 
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.ruzapi.response.Groups;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-class UserGroupManager {
+public class UserGroupManager {
     private final UserRepository userRepository;
     private final GroupsRepository groupsRepository;
 
@@ -24,18 +24,18 @@ class UserGroupManager {
         this.groupsRepository = groupsRepository;
     }
 
-    int getGroupIdOfUser(long userId) {
+    public int getGroupIdOfUser(long userId) {
         User user = getUser(userId)
                 .orElseThrow(() -> new NoSuchUserException(userId));
         assertGroupIsSpecified(user);
         return user.getGroupId();
     }
 
-    void saveUserWithoutGroup(long userId) {
+    public void saveUserWithoutGroup(long userId) {
         userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
     }
 
-    Group findAndSetGroupForUser(long userId, String groupName) {
+    public Group findAndSetGroupForUser(long userId, String groupName) {
         Group group = findGroupByName(groupName);
         User user = userRepository.getUserById(userId);
         updateUserWithGroup(user, group);

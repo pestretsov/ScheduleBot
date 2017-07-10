@@ -60,6 +60,8 @@ public class SchedulerBotService {
         switch (user.getState()) {
             case ASKED_FOR_GROUP:
                 return tryToFindUserGroup(userRequest);
+            case WITH_GROUP:
+                return handleUserCommand(userRequest);
         }
 
         return null;
@@ -78,7 +80,7 @@ public class SchedulerBotService {
     }
 
     private List<String> getScheduleReplies(UserRequest userRequest) {
-        int id = userGroupManager.getGroupIdOfUser(userRequest.getUserId());
+        int id = userRepository.getUserById(userRequest.getUserId()).getGroupId();
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
         return schedulerBotCommandsHandler.handleRequest(scheduleRequest);

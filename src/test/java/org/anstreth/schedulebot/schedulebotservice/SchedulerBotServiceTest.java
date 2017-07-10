@@ -23,8 +23,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.anstreth.schedulebot.commands.ScheduleCommand.TODAY;
 import static org.anstreth.schedulebot.commands.ScheduleCommand.UNKNOWN;
 import static org.anstreth.schedulebot.model.UserState.ASKED_FOR_GROUP;
+import static org.anstreth.schedulebot.model.UserState.WITH_GROUP;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -85,6 +87,24 @@ public class SchedulerBotServiceTest {
         assertThat(
                 schedulerBotService.handleRequest(request),
                 is(groupSearchBotResponse)
+        );
+    }
+
+    @Test
+    public void whenUserStateIs_WITH_GROUP_thenRequestIsPassedTo_commandsHandler() throws Exception {
+        long userId = 1;
+        int groupId = 2;
+        String command = "command";
+        UserRequest request = new UserRequest(userId, command);
+        doReturn(new User(userId, groupId, WITH_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(TODAY).when(scheduleCommandParser).parse(command);
+        List<String> scheduleMessages = Arrays.asList("one", "two");
+        doReturn(scheduleMessages)
+                .when(schedulerBotCommandsHandler).handleRequest(new ScheduleRequest(groupId, TODAY));
+
+        assertThat(
+                schedulerBotService.handleRequest(request),
+                is(new BotResponse(scheduleMessages, possibleReplies))
         );
     }
 

@@ -31,8 +31,8 @@ public class UserGroupManager {
         return user.getGroupId();
     }
 
-    public void saveUserWithoutGroup(long userId) {
-        userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
+    public User saveUserWithoutGroup(long userId) {
+        return userRepository.save(new User(userId, User.NO_GROUP_SPECIFIED));
     }
 
     public Group findAndSetGroupForUser(long userId, String groupName) {

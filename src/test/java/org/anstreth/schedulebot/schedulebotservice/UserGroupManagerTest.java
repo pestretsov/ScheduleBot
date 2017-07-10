@@ -65,9 +65,14 @@ public class UserGroupManagerTest {
 
     @Test
     public void createUserWithNoGroup_createsNewUserInRepository() {
-        userGroupManager.saveUserWithoutGroup(userId);
+        User userToSave = new User(userId, User.NO_GROUP_SPECIFIED, NO_GROUP);
+        User savedUser = new User(userId, User.NO_GROUP_SPECIFIED, NO_GROUP);
+        doReturn(savedUser).when(userRepository).save(userToSave);
 
-        then(userRepository).should().save(new User(userId, User.NO_GROUP_SPECIFIED, NO_GROUP));
+        assertThat(
+                userGroupManager.saveUserWithoutGroup(userId),
+                is(savedUser)
+        );
     }
 
     @Test

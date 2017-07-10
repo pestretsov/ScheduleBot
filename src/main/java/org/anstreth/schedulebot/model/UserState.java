@@ -12,10 +12,9 @@ public enum UserState {
     NO_GROUP,
 
     /**
-     * Second state. Means that user already tried to find his group but nothing has been found
-     * and he needs to try again.
+     * Second state. Means that user has been asked for group, and expected to send his group number.
      */
-    NO_GROUP_FOUND,
+    ASKED_FOR_GROUP,
 
     /**
      * Third state, means that user's group is successfully found and user can query his schedule.

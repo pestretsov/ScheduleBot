@@ -6,7 +6,6 @@ import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
-import org.anstreth.schedulebot.schedulebotservice.user.UserGroupSearchService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -26,7 +25,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchedulerBotServiceTest {
@@ -39,9 +37,6 @@ public class SchedulerBotServiceTest {
 
     @Mock
     private ScheduleCommandParser scheduleCommandParser;
-
-    @Mock
-    private UserGroupSearchService userGroupSearchService;
 
     @Mock
     private UserCreationService userCreationService;
@@ -104,9 +99,22 @@ public class SchedulerBotServiceTest {
                 .when(groupManager).findGroupByName(command);
 
         assertThat(schedulerBotService.handleRequest(request),
-            is(new BotResponse("Your group is set to 'groupName'.", possibleReplies))
-        );
+            is(new BotResponse("Your group is set to 'groupName'.", possibleReplies)));
 
         then(userRepository).should().save(new User(userId, foundGroupId, WITH_GROUP));
+    }
+
+    @Test
+    public void whenUserStateIs_ASKED_FOR_GROUP_andNoneIsFoundErrorMessageIsReturned() throws Exception {
+        long userId = 1;
+        int groupId = 0;
+        String command = "command";
+        UserRequest request = new UserRequest(userId, command);
+        doReturn(new User(userId, groupId, ASKED_FOR_GROUP))
+                .when(userRepository).getUserById(userId);
+        doReturn(null).when(groupManager).findGroupByName(command);
+
+        assertThat(schedulerBotService.handleRequest(request),
+                is(new BotResponse("No group by name 'command' is found! Try again.")));
     }
 }

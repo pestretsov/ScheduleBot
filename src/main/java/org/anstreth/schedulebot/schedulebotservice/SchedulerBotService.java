@@ -65,8 +65,9 @@ public class SchedulerBotService {
                 if (foundGroup != null) {
                     userRepository.save(new User(user.getId(), foundGroup.getId(), UserState.WITH_GROUP));
                     return new BotResponse(String.format("Your group is set to '%s'.", foundGroup.getName()), possibleReplies);
+                } else {
+                    return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
                 }
-                return null;
             case WITH_GROUP:
                 return handleUserCommand(userRequest);
         }

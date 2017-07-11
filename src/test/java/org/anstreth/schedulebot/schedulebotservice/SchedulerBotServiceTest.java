@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.response.BotResponse;
@@ -23,6 +24,7 @@ import static org.anstreth.schedulebot.commands.ScheduleCommand.TODAY;
 import static org.anstreth.schedulebot.model.UserState.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -52,6 +54,9 @@ public class SchedulerBotServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private GroupManager groupManager;
+
     @Test
     public void if_userRepository_returnsNull_thenUserIsCreatedAndAskedForGroup() throws Exception {
         long userId = 1;
@@ -65,20 +70,6 @@ public class SchedulerBotServiceTest {
         assertThat(
                 schedulerBotService.handleRequest(request),
                 is(new BotResponse("Send me your group number like '12345/6' to get your schedule."))
-        );
-    }
-
-    @Test
-    public void whenUserStateIs_ASKED_FOR_GROUP_thenBotLooksForHisGroupByMessage() throws Exception {
-        long userId = 1;
-        UserRequest request = new UserRequest(userId, "command");
-        BotResponse groupSearchBotResponse = mock(BotResponse.class);
-        doReturn(new User(userId, 2, ASKED_FOR_GROUP)).when(userRepository).getUserById(userId);
-        doReturn(groupSearchBotResponse).when(userGroupSearchService).tryToFindUserGroup(request, possibleReplies);
-
-        assertThat(
-                schedulerBotService.handleRequest(request),
-                is(groupSearchBotResponse)
         );
     }
 
@@ -100,4 +91,22 @@ public class SchedulerBotServiceTest {
         );
     }
 
+    @Test
+    public void whenUserStateIs_ASKED_FOR_GROUP_andHisGroupIsFoundThenSuccess_BotResponse_returned() throws Exception {
+        long userId = 1;
+        int groupId = 0;
+        int foundGroupId = 3;
+        String command = "command";
+        UserRequest request = new UserRequest(userId, command);
+        doReturn(new User(userId, groupId, ASKED_FOR_GROUP))
+                .when(userRepository).getUserById(userId);
+        doReturn(new Group(foundGroupId, "groupName", "spec"))
+                .when(groupManager).findGroupByName(command);
+
+        assertThat(schedulerBotService.handleRequest(request),
+            is(new BotResponse("Your group is set to 'groupName'.", possibleReplies))
+        );
+
+        then(userRepository).should().save(new User(userId, foundGroupId, WITH_GROUP));
+    }
 }

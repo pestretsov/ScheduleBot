@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.anstreth.schedulebot.commands.ScheduleCommand.TODAY;
 import static org.anstreth.schedulebot.model.UserState.*;
@@ -44,10 +45,10 @@ public class SchedulerBotServiceTest {
     @Mock
     private UserStateManager userStateManager;
 
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
-
     @Mock
     private UserRepository userRepository;
+
+    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Mock
     private GroupManager groupManager;
@@ -95,7 +96,7 @@ public class SchedulerBotServiceTest {
         UserRequest request = new UserRequest(userId, command);
         doReturn(new User(userId, groupId, ASKED_FOR_GROUP))
                 .when(userRepository).getUserById(userId);
-        doReturn(new Group(foundGroupId, "groupName", "spec"))
+        doReturn(Optional.of(new Group(foundGroupId, "groupName", "spec")))
                 .when(groupManager).findGroupByName(command);
 
         assertThat(schedulerBotService.handleRequest(request),
@@ -104,15 +105,15 @@ public class SchedulerBotServiceTest {
         then(userRepository).should().save(new User(userId, foundGroupId, WITH_GROUP));
     }
 
+
     @Test
     public void whenUserStateIs_ASKED_FOR_GROUP_andNoneIsFoundErrorMessageIsReturned() throws Exception {
         long userId = 1;
         int groupId = 0;
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
-        doReturn(new User(userId, groupId, ASKED_FOR_GROUP))
-                .when(userRepository).getUserById(userId);
-        doReturn(null).when(groupManager).findGroupByName(command);
+        doReturn(new User(userId, groupId, ASKED_FOR_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(Optional.empty()).when(groupManager).findGroupByName(command);
 
         assertThat(schedulerBotService.handleRequest(request),
                 is(new BotResponse("No group by name 'command' is found! Try again.")));

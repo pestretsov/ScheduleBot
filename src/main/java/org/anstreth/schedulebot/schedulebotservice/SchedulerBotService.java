@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -61,10 +62,10 @@ public class SchedulerBotService {
                 userStateManager.transitToAskedForGroup(user);
                 return getAskForGroupResponse();
             case ASKED_FOR_GROUP:
-                Group foundGroup = groupManager.findGroupByName(userRequest.getMessage());
-                if (foundGroup != null) {
-                    userRepository.save(new User(user.getId(), foundGroup.getId(), UserState.WITH_GROUP));
-                    return new BotResponse(String.format("Your group is set to '%s'.", foundGroup.getName()), possibleReplies);
+                Optional<Group> foundGroup = groupManager.findGroupByName(userRequest.getMessage());
+                if (foundGroup.isPresent()) {
+                    userRepository.save(new User(user.getId(), foundGroup.get().getId(), UserState.WITH_GROUP));
+                    return new BotResponse(String.format("Your group is set to '%s'.", foundGroup.get().getName()), possibleReplies);
                 } else {
                     return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
                 }

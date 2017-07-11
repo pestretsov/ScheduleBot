@@ -51,7 +51,7 @@ public class SchedulerBotServiceTest {
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
 
     @Mock
-    private GroupManager groupManager;
+    private GroupSearcher groupSearcher;
 
     @Test
     public void if_userRepository_returnsNull_thenUserIsCreatedAndAskedForGroup() throws Exception {
@@ -97,7 +97,7 @@ public class SchedulerBotServiceTest {
         doReturn(new User(userId, groupId, ASKED_FOR_GROUP))
                 .when(userRepository).getUserById(userId);
         doReturn(Optional.of(new Group(foundGroupId, "groupName", "spec")))
-                .when(groupManager).findGroupByName(command);
+                .when(groupSearcher).findGroupByName(command);
 
         assertThat(schedulerBotService.handleRequest(request),
             is(new BotResponse("Your group is set to 'groupName'.", possibleReplies)));
@@ -113,7 +113,7 @@ public class SchedulerBotServiceTest {
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
         doReturn(new User(userId, groupId, ASKED_FOR_GROUP)).when(userRepository).getUserById(userId);
-        doReturn(Optional.empty()).when(groupManager).findGroupByName(command);
+        doReturn(Optional.empty()).when(groupSearcher).findGroupByName(command);
 
         assertThat(schedulerBotService.handleRequest(request),
                 is(new BotResponse("No group by name 'command' is found! Try again.")));

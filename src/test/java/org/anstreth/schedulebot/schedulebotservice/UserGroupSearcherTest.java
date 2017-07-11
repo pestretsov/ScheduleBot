@@ -24,7 +24,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserGroupManagerTest {
+public class UserGroupSearcherTest {
 
     @InjectMocks
     private UserGroupManager userGroupManager;

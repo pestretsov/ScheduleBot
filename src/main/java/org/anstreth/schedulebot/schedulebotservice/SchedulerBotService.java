@@ -31,18 +31,18 @@ public class SchedulerBotService {
     private final UserRepository userRepository;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
-    private final GroupManager groupManager;
+    private final GroupSearcher groupSearcher;
 
     @Autowired
     public SchedulerBotService(UserGroupSearchService userGroupSearcherService,
                                SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
-                               UserStateManager userStateManager, UserRepository userRepository, GroupManager groupManager) {
+                               UserStateManager userStateManager, UserRepository userRepository, GroupSearcher groupSearcher) {
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;
         this.userCreationService = userCreationService;
         this.userStateManager = userStateManager;
         this.userRepository = userRepository;
-        this.groupManager = groupManager;
+        this.groupSearcher = groupSearcher;
     }
 
     @Async
@@ -58,7 +58,7 @@ public class SchedulerBotService {
                 userStateManager.transitToAskedForGroup(user);
                 return getAskForGroupResponse();
             case ASKED_FOR_GROUP:
-                Optional<Group> foundGroup = groupManager.findGroupByName(userRequest.getMessage());
+                Optional<Group> foundGroup = groupSearcher.findGroupByName(userRequest.getMessage());
                 if (foundGroup.isPresent()) {
                     updateUserGroup(user, foundGroup.get());
                     return groupIsFoundBotResponse(foundGroup.get());

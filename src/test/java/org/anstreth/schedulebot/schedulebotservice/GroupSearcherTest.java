@@ -18,10 +18,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GroupManagerTest {
+public class GroupSearcherTest {
 
     @InjectMocks
-    private GroupManager groupManager;
+    private GroupSearcher groupSearcher;
 
     @Mock
     private GroupsRepository groupReposiory;
@@ -31,7 +31,7 @@ public class GroupManagerTest {
         String groupName = "name";
         doReturn(null).when(groupReposiory).findGroupsByName(groupName);
 
-        assertThat(groupManager.findGroupByName(groupName), is(Optional.empty()));
+        assertThat(groupSearcher.findGroupByName(groupName), is(Optional.empty()));
     }
 
     @Test
@@ -39,7 +39,7 @@ public class GroupManagerTest {
         String groupName = "name";
         doReturn(new Groups()).when(groupReposiory).findGroupsByName(groupName);
 
-        assertThat(groupManager.findGroupByName(groupName), is(Optional.empty()));
+        assertThat(groupSearcher.findGroupByName(groupName), is(Optional.empty()));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class GroupManagerTest {
         groups.setGroups(Collections.emptyList());
         doReturn(groups).when(groupReposiory).findGroupsByName(groupName);
 
-        assertThat(groupManager.findGroupByName(groupName), is(Optional.empty()));
+        assertThat(groupSearcher.findGroupByName(groupName), is(Optional.empty()));
     }
 
     @Test
@@ -60,6 +60,6 @@ public class GroupManagerTest {
         groups.setGroups(Collections.singletonList(group));
         doReturn(groups).when(groupReposiory).findGroupsByName(groupName);
 
-        assertThat(groupManager.findGroupByName(groupName), is(Optional.of(group)));
+        assertThat(groupSearcher.findGroupByName(groupName), is(Optional.of(group)));
     }
 }

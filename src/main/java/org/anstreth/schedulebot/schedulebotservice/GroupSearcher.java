@@ -11,12 +11,12 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Component
-class GroupManager {
+class GroupSearcher {
 
     private final GroupsRepository groupsRepository;
 
     @Autowired
-    GroupManager(GroupsRepository groupsRepository) {
+    GroupSearcher(GroupsRepository groupsRepository) {
         this.groupsRepository = groupsRepository;
     }
 

@@ -51,11 +51,7 @@ public class SchedulerBotService {
     }
 
     BotResponse handleRequest(UserRequest userRequest) {
-        User user = userRepository.getUserById(userRequest.getUserId());
-
-        if (user == null) {
-            user = userCreationService.createNewUser(userRequest);
-        }
+        User user = getUser(userRequest);
 
         switch (user.getState()) {
             case NO_GROUP:
@@ -64,16 +60,41 @@ public class SchedulerBotService {
             case ASKED_FOR_GROUP:
                 Optional<Group> foundGroup = groupManager.findGroupByName(userRequest.getMessage());
                 if (foundGroup.isPresent()) {
-                    userRepository.save(new User(user.getId(), foundGroup.get().getId(), UserState.WITH_GROUP));
-                    return new BotResponse(String.format("Your group is set to '%s'.", foundGroup.get().getName()), possibleReplies);
+                    updateUserGroup(user, foundGroup.get());
+                    return groupIsFoundBotResponse(foundGroup.get());
                 } else {
-                    return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
+                    return groupNotFoundBotResponse(userRequest);
                 }
             case WITH_GROUP:
                 return handleUserCommand(userRequest);
         }
 
         return null;
+    }
+
+    private User getUser(UserRequest userRequest) {
+        User user = userRepository.getUserById(userRequest.getUserId());
+
+        if (user == null) {
+            user = userCreationService.createNewUser(userRequest);
+        }
+
+        return user;
+    }
+
+    private void updateUserGroup(User user, Group group) {
+        userRepository.save(new User(user.getId(), group.getId(), UserState.WITH_GROUP));
+    }
+
+    private BotResponse groupIsFoundBotResponse(Group group) {
+        return new BotResponse(
+                String.format("Your group is set to '%s'.", group.getName()),
+                possibleReplies
+        );
+    }
+
+    private BotResponse groupNotFoundBotResponse(UserRequest userRequest) {
+        return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
     }
 
     private BotResponse handleUserCommand(UserRequest userRequest) {

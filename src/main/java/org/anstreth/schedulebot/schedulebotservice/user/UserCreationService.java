@@ -2,7 +2,6 @@ package org.anstreth.schedulebot.schedulebotservice.user;
 
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.model.UserState;
-import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,8 @@ public class UserCreationService {
         this.userRepository = userRepository;
     }
 
-    public User createNewUser(UserRequest userRequest) {
-        return userRepository.save(userWithNoGroup(userRequest.getUserId()));
+    public User createNewUser(long userId) {
+        return userRepository.save(userWithNoGroup(userId));
     }
 
     private User userWithNoGroup(long userId) {

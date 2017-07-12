@@ -49,7 +49,7 @@ public class SchedulerBotService {
     }
 
     BotResponse handleRequest(UserRequest userRequest) {
-        User user = getUser(userRequest);
+        User user = getUser(userRequest.getUserId());
 
         switch (user.getState()) {
             case NO_GROUP:
@@ -70,11 +70,11 @@ public class SchedulerBotService {
         return null;
     }
 
-    private User getUser(UserRequest userRequest) {
-        User user = userRepository.getUserById(userRequest.getUserId());
+    private User getUser(long userId) {
+        User user = userRepository.getUserById(userId);
 
         if (user == null) {
-            user = userCreationService.createNewUser(userRequest);
+            user = userCreationService.createNewUser(userId);
         }
 
         return user;

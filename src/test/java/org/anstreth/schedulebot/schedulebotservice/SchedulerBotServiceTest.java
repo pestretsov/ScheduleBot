@@ -60,7 +60,7 @@ public class SchedulerBotServiceTest {
         doReturn(null).when(userRepository).getUserById(userId);
         User createdUser = new User(userId, 1, NO_GROUP);
         User userAskedForGroup = new User(userId, 1, ASKED_FOR_GROUP);
-        doReturn(createdUser).when(userCreationService).createNewUser(request);
+        doReturn(createdUser).when(userCreationService).createNewUser(userId);
         doReturn(userAskedForGroup).when(userStateManager).transitToAskedForGroup(createdUser);
 
         assertThat(

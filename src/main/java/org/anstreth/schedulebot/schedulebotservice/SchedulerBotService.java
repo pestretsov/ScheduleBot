@@ -8,7 +8,6 @@ import org.anstreth.schedulebot.model.UserState;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
-import org.anstreth.schedulebot.schedulebotservice.user.UserGroupSearchService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -34,8 +33,7 @@ public class SchedulerBotService {
     private final GroupSearcher groupSearcher;
 
     @Autowired
-    public SchedulerBotService(UserGroupSearchService userGroupSearcherService,
-                               SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
+    public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
                                UserStateManager userStateManager, UserRepository userRepository, GroupSearcher groupSearcher) {
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;

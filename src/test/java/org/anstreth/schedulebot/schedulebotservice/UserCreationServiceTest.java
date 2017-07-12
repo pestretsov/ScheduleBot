@@ -1,9 +1,10 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.schedulebot.model.User;
+import org.anstreth.schedulebot.model.UserState;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
-import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
+import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,15 +23,16 @@ public class UserCreationServiceTest {
     private UserCreationService userCreationService;
 
     @Mock
-    private UserGroupManager userGroupManager;
+    private UserRepository userRepository;
 
     @Test
     public void serviceCreatesUserAndAsksForGroup() {
         long userId = 1;
-        User createdUser = mock(User.class);
+        User savedUser = mock(User.class);
         UserRequest userRequest = new UserRequest(userId, "message");
-        doReturn(createdUser).when(userGroupManager).saveUserWithoutGroup(userId);
+        User freshUser = new User(userId, User.NO_GROUP_SPECIFIED, UserState.NO_GROUP);
+        doReturn(savedUser).when(userRepository).save(freshUser);
 
-        assertThat(userCreationService.createNewUser(userRequest), is(createdUser));
+        assertThat(userCreationService.createNewUser(userRequest), is(savedUser));
     }
 }

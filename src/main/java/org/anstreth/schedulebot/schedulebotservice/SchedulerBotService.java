@@ -1,5 +1,9 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.commands.ScheduleCommand;
 import org.anstreth.schedulebot.commands.ScheduleCommandParser;
@@ -16,11 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
 @Service
 public class SchedulerBotService {
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
@@ -33,8 +32,10 @@ public class SchedulerBotService {
     private final GroupSearcher groupSearcher;
 
     @Autowired
-    public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler, ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
-                               UserStateManager userStateManager, UserRepository userRepository, GroupSearcher groupSearcher) {
+    public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler,
+                               ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
+                               UserStateManager userStateManager, UserRepository userRepository,
+                               GroupSearcher groupSearcher) {
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.scheduleCommandParser = scheduleCommandParser;
         this.userCreationService = userCreationService;
@@ -73,22 +74,24 @@ public class SchedulerBotService {
     private User getUser(long userId) {
         User user = userRepository.getUserById(userId);
 
-        if (user == null) {
-            user = userCreationService.createNewUser(userId);
+        if (user != null) {
+            return user;
         }
 
-        return user;
+        return userCreationService.createNewUser(userId);
     }
 
     private void updateUserGroup(User user, Group group) {
         userRepository.save(new User(user.getId(), group.getId(), UserState.WITH_GROUP));
     }
 
+    private BotResponse getAskForGroupResponse() {
+        return new BotResponse("Send me your group number like '12345/6' to get your schedule.");
+    }
+
     private BotResponse groupIsFoundBotResponse(Group group) {
-        return new BotResponse(
-                String.format("Your group is set to '%s'.", group.getName()),
-                possibleReplies
-        );
+        String groupIsFoundMessage = String.format("Your group is set to '%s'.", group.getName());
+        return new BotResponse(groupIsFoundMessage, possibleReplies);
     }
 
     private BotResponse groupNotFoundBotResponse(UserRequest userRequest) {
@@ -105,10 +108,6 @@ public class SchedulerBotService {
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
         return schedulerBotCommandsHandler.handleRequest(scheduleRequest);
-    }
-
-    private BotResponse getAskForGroupResponse() {
-        return new BotResponse("Send me your group number like '12345/6' to get your schedule.");
     }
 
     private ScheduleCommand getCommand(UserRequest userRequest) {

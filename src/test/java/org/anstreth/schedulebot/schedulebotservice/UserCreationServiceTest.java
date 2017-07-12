@@ -1,15 +1,19 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
-import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
+import org.anstreth.schedulebot.model.User;
+import org.anstreth.schedulebot.model.UserState;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
-import org.anstreth.schedulebot.schedulebotservice.user.UserGroupManager;
+import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserCreationServiceTest {
@@ -18,15 +22,15 @@ public class UserCreationServiceTest {
     private UserCreationService userCreationService;
 
     @Mock
-    private UserGroupManager userGroupManager;
+    private UserRepository userRepository;
 
     @Test
     public void serviceCreatesUserAndAsksForGroup() {
         long userId = 1;
-        UserRequest userRequest = new UserRequest(userId, "message");
+        User savedUser = mock(User.class);
+        User freshUser = new User(userId, User.NO_GROUP_SPECIFIED, UserState.NO_GROUP);
+        doReturn(savedUser).when(userRepository).save(freshUser);
 
-        userCreationService.createNewUser(userRequest);
-
-        verify(userGroupManager).saveUserWithoutGroup(userId);
+        assertThat(userCreationService.createNewUser(userId), is(savedUser));
     }
 }

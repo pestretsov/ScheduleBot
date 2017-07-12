@@ -57,15 +57,9 @@ public class SchedulerBotService {
                 userStateManager.transitToAskedForGroup(user);
                 return getAskForGroupResponse();
             case ASKED_FOR_GROUP:
-                Optional<Group> foundGroup = groupSearcher.findGroupByName(userRequest.getMessage());
-                if (foundGroup.isPresent()) {
-                    updateUserGroup(user, foundGroup.get());
-                    return groupIsFoundBotResponse(foundGroup.get());
-                } else {
-                    return groupNotFoundBotResponse(userRequest);
-                }
+                return handleGroupSearchRequest(userRequest, user);
             case WITH_GROUP:
-                return handleUserCommand(userRequest);
+                return handleScheduleRequest(userRequest);
         }
 
         return null;
@@ -79,6 +73,16 @@ public class SchedulerBotService {
         }
 
         return userCreationService.createNewUser(userId);
+    }
+
+    private BotResponse handleGroupSearchRequest(UserRequest userRequest, User user) {
+        Optional<Group> foundGroup = groupSearcher.findGroupByName(userRequest.getMessage());
+        if (foundGroup.isPresent()) {
+            updateUserGroup(user, foundGroup.get());
+            return groupIsFoundBotResponse(foundGroup.get());
+        } else {
+            return groupNotFoundBotResponse(userRequest);
+        }
     }
 
     private void updateUserGroup(User user, Group group) {
@@ -98,12 +102,12 @@ public class SchedulerBotService {
         return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
     }
 
-    private BotResponse handleUserCommand(UserRequest userRequest) {
-        List<String> scheduleMessages = getScheduleReplies(userRequest);
+    private BotResponse handleScheduleRequest(UserRequest userRequest) {
+        List<String> scheduleMessages = getRequestedSchedule(userRequest);
         return new BotResponse(scheduleMessages, possibleReplies);
     }
 
-    private List<String> getScheduleReplies(UserRequest userRequest) {
+    private List<String> getRequestedSchedule(UserRequest userRequest) {
         int id = userRepository.getUserById(userRequest.getUserId()).getGroupId();
         ScheduleCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);

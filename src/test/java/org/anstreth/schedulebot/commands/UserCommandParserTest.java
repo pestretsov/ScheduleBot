@@ -29,6 +29,12 @@ public class UserCommandParserTest {
     }
 
     @Test
+    public void parserCorrectlyParsesMenuCommand() throws Exception {
+        assertThat(parser.parse("/menu"), is(MENU));
+        assertThat(parser.parse("Menu"), is(MENU));
+    }
+
+    @Test
     public void ifCommandIsWierdThen_UNKNOWN_IsReturned() throws Exception {
         assertThat(parser.parse("testtest"), is(UNKNOWN));
     }

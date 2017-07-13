@@ -18,6 +18,9 @@ public class UserCommandParser {
 
         possibleNames.put("/week", UserCommand.WEEK);
         possibleNames.put("Week", UserCommand.WEEK);
+
+        possibleNames.put("/menu", UserCommand.MENU);
+        possibleNames.put("Menu", UserCommand.MENU);
     }
 
     public UserCommand parse(String command) {

@@ -19,5 +19,10 @@ public enum UserState {
     /**
      * Third state, means that user's group is successfully found and user can query his schedule.
      */
-    WITH_GROUP
+    WITH_GROUP,
+
+    /**
+     * User has group and entered the menu.
+     */
+    MENU
 }

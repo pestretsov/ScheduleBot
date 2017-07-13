@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.commands.ScheduleCommand;
-import org.anstreth.schedulebot.commands.ScheduleCommandParser;
+import org.anstreth.schedulebot.commands.UserCommandParser;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.model.UserState;
 import org.anstreth.schedulebot.response.BotResponse;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SchedulerBotService {
     private final SchedulerBotCommandsHandler schedulerBotCommandsHandler;
-    private final ScheduleCommandParser scheduleCommandParser;
+    private final UserCommandParser userCommandParser;
     private final UserCreationService userCreationService;
     private final UserStateManager userStateManager;
     private final UserRepository userRepository;
@@ -33,11 +33,11 @@ public class SchedulerBotService {
 
     @Autowired
     public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler,
-                               ScheduleCommandParser scheduleCommandParser, UserCreationService userCreationService,
+                               UserCommandParser userCommandParser, UserCreationService userCreationService,
                                UserStateManager userStateManager, UserRepository userRepository,
                                GroupSearcher groupSearcher) {
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
-        this.scheduleCommandParser = scheduleCommandParser;
+        this.userCommandParser = userCommandParser;
         this.userCreationService = userCreationService;
         this.userStateManager = userStateManager;
         this.userRepository = userRepository;
@@ -115,7 +115,7 @@ public class SchedulerBotService {
     }
 
     private ScheduleCommand getCommand(UserRequest userRequest) {
-        return scheduleCommandParser.parse(userRequest.getMessage());
+        return userCommandParser.parse(userRequest.getMessage());
     }
 
 }

@@ -1,7 +1,7 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.ruzapi.response.Group;
-import org.anstreth.schedulebot.commands.ScheduleCommandParser;
+import org.anstreth.schedulebot.commands.UserCommandParser;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
@@ -37,7 +37,7 @@ public class SchedulerBotServiceTest {
     private SchedulerBotCommandsHandler schedulerBotCommandsHandler;
 
     @Mock
-    private ScheduleCommandParser scheduleCommandParser;
+    private UserCommandParser userCommandParser;
 
     @Mock
     private UserCreationService userCreationService;
@@ -76,7 +76,7 @@ public class SchedulerBotServiceTest {
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
         doReturn(new User(userId, groupId, WITH_GROUP)).when(userRepository).getUserById(userId);
-        doReturn(TODAY).when(scheduleCommandParser).parse(command);
+        doReturn(TODAY).when(userCommandParser).parse(command);
         List<String> scheduleMessages = Arrays.asList("one", "two");
         doReturn(scheduleMessages)
                 .when(schedulerBotCommandsHandler).handleRequest(new ScheduleRequest(groupId, TODAY));

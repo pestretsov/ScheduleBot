@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class ScheduleCommandParser {
+public class UserCommandParser {
     private final Map<String, ScheduleCommand> possibleNames = new HashMap<>();
 
     {

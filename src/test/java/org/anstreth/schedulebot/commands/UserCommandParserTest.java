@@ -6,9 +6,9 @@ import static org.anstreth.schedulebot.commands.ScheduleCommand.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ScheduleCommandParserTest {
+public class UserCommandParserTest {
 
-    private ScheduleCommandParser parser = new ScheduleCommandParser();
+    private UserCommandParser parser = new UserCommandParser();
 
     @Test
     public void parserCorrectlyParsesTomorrowCommand() throws Exception {

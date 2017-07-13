@@ -2,7 +2,7 @@ package org.anstreth.schedulebot.commands;
 
 import org.junit.Test;
 
-import static org.anstreth.schedulebot.commands.ScheduleCommand.*;
+import static org.anstreth.schedulebot.commands.UserCommand.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

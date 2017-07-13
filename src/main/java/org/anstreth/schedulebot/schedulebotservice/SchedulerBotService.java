@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.anstreth.ruzapi.response.Group;
-import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.commands.UserCommandParser;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.model.UserState;
@@ -109,12 +109,12 @@ public class SchedulerBotService {
 
     private List<String> getRequestedSchedule(UserRequest userRequest) {
         int id = userRepository.getUserById(userRequest.getUserId()).getGroupId();
-        ScheduleCommand command = getCommand(userRequest);
+        UserCommand command = getCommand(userRequest);
         ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
         return schedulerBotCommandsHandler.handleRequest(scheduleRequest);
     }
 
-    private ScheduleCommand getCommand(UserRequest userRequest) {
+    private UserCommand getCommand(UserRequest userRequest) {
         return userCommandParser.parse(userRequest.getMessage());
     }
 

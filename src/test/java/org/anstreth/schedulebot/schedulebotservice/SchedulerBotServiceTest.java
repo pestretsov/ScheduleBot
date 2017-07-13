@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.anstreth.schedulebot.commands.ScheduleCommand.TODAY;
+import static org.anstreth.schedulebot.commands.UserCommand.TODAY;
 import static org.anstreth.schedulebot.model.UserState.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

@@ -1,7 +1,7 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
 import org.anstreth.ruzapi.response.Day;
-import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.exceptions.NoScheduleForDay;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.DayResponse;
@@ -37,7 +37,7 @@ public class TommorowScheduleRequestHandlerTest {
         Day day = new Day();
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenReturn(day);
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, ScheduleCommand.TOMORROW));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, UserCommand.TOMORROW));
 
         assertThat(response, is(instanceOf(DayResponse.class)));
     }
@@ -47,7 +47,7 @@ public class TommorowScheduleRequestHandlerTest {
         int groupId = 1;
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenThrow(new NoScheduleForDay());
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, ScheduleCommand.TOMORROW));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, UserCommand.TOMORROW));
 
         assertThat(response, is(instanceOf(NoScheduleForDayResponse.class)));
     }
@@ -57,7 +57,7 @@ public class TommorowScheduleRequestHandlerTest {
         int groupId = 1;
         when(schedulerRepository.getScheduleForGroupForDay(eq(groupId), any(Calendar.class))).thenThrow(new RuntimeException());
 
-        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, ScheduleCommand.TOMORROW));
+        ScheduleResponse response = handler.handle(new ScheduleRequest(groupId, UserCommand.TOMORROW));
 
         assertThat(response, is(instanceOf(SimpleStringResponse.class)));
     }

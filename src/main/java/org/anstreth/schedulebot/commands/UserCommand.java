@@ -1,5 +1,5 @@
 package org.anstreth.schedulebot.commands;
 
-public enum ScheduleCommand {
+public enum UserCommand {
     UNKNOWN, TODAY, TOMORROW, WEEK
 }

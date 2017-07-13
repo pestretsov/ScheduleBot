@@ -7,21 +7,21 @@ import java.util.Map;
 
 @Component
 public class UserCommandParser {
-    private final Map<String, ScheduleCommand> possibleNames = new HashMap<>();
+    private final Map<String, UserCommand> possibleNames = new HashMap<>();
 
     {
-        possibleNames.put("/tomorrow", ScheduleCommand.TOMORROW);
-        possibleNames.put("Tomorrow", ScheduleCommand.TOMORROW);
+        possibleNames.put("/tomorrow", UserCommand.TOMORROW);
+        possibleNames.put("Tomorrow", UserCommand.TOMORROW);
 
-        possibleNames.put("/today", ScheduleCommand.TODAY);
-        possibleNames.put("Today", ScheduleCommand.TODAY);
+        possibleNames.put("/today", UserCommand.TODAY);
+        possibleNames.put("Today", UserCommand.TODAY);
 
-        possibleNames.put("/week", ScheduleCommand.WEEK);
-        possibleNames.put("Week", ScheduleCommand.WEEK);
+        possibleNames.put("/week", UserCommand.WEEK);
+        possibleNames.put("Week", UserCommand.WEEK);
     }
 
-    public ScheduleCommand parse(String command) {
+    public UserCommand parse(String command) {
         String trimmedCommand = command.trim();
-        return possibleNames.getOrDefault(trimmedCommand, ScheduleCommand.UNKNOWN);
+        return possibleNames.getOrDefault(trimmedCommand, UserCommand.UNKNOWN);
     }
 }

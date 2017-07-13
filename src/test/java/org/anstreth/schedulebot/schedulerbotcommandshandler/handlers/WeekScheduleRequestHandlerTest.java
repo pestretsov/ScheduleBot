@@ -2,7 +2,7 @@ package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
 import org.anstreth.ruzapi.response.Day;
 import org.anstreth.ruzapi.response.WeekSchedule;
-import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.NoScheduleForWeekResponse;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.response.ScheduleResponse;
@@ -39,7 +39,7 @@ public class WeekScheduleRequestHandlerTest {
         weekFromRepo.setDays(Collections.singletonList(new Day()));
         given(repository.getScheduleForGroupForWeek(eq(groupId), any())).willReturn(weekFromRepo);
 
-        WeekResponse response = (WeekResponse) weekHandler.handle(new ScheduleRequest(groupId, ScheduleCommand.WEEK));
+        WeekResponse response = (WeekResponse) weekHandler.handle(new ScheduleRequest(groupId, UserCommand.WEEK));
 
         assertThat(response.getWeekSchedule(), is(weekFromRepo));
     }
@@ -51,7 +51,7 @@ public class WeekScheduleRequestHandlerTest {
         weekFromRepo.setDays(null);
         given(repository.getScheduleForGroupForWeek(eq(groupId), any())).willReturn(weekFromRepo);
 
-        ScheduleResponse response = weekHandler.handle(new ScheduleRequest(groupId, ScheduleCommand.WEEK));
+        ScheduleResponse response = weekHandler.handle(new ScheduleRequest(groupId, UserCommand.WEEK));
 
         assertThat(response, is(instanceOf(NoScheduleForWeekResponse.class)));
     }
@@ -63,7 +63,7 @@ public class WeekScheduleRequestHandlerTest {
         weekFromRepo.setDays(Collections.emptyList());
         given(repository.getScheduleForGroupForWeek(eq(groupId), any())).willReturn(weekFromRepo);
 
-        ScheduleResponse response = weekHandler.handle(new ScheduleRequest(groupId, ScheduleCommand.WEEK));
+        ScheduleResponse response = weekHandler.handle(new ScheduleRequest(groupId, UserCommand.WEEK));
 
         assertThat(response, is(instanceOf(NoScheduleForWeekResponse.class)));
     }

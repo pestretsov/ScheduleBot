@@ -1,6 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler;
 
-import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.ScheduleRequestHandlersRouter;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.handlers.SchedulerRequestHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
@@ -40,7 +40,7 @@ public class SchedulerBotCommandsHandlerTest {
     @Test
     public void commandsHandler_TakesHandlerFromRouter_ThenFormatsWith_Formatter_andReturnThem() {
         int groupId = 2;
-        ScheduleCommand command = ScheduleCommand.WEEK;
+        UserCommand command = UserCommand.WEEK;
         List<String> formattedMessages = Arrays.asList("one", "two");
         ScheduleRequest requestToHandle = new ScheduleRequest(groupId, command);
         when(scheduleRequestHandlersRouter.getHandlerForCommand(command)).thenReturn(mockRequestHandler);

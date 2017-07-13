@@ -14,6 +14,11 @@ public enum MenuCommand {
     /**
      * Command to remove user's group and set his state to NO_GROUP
      */
-    RESET_GROUP
+    RESET_GROUP,
+
+    /**
+     * Unknown command.
+     */
+    UNKNOWN
 
 }

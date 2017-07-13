@@ -26,6 +26,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchedulerBotServiceTest {
@@ -52,6 +53,9 @@ public class SchedulerBotServiceTest {
 
     @Mock
     private GroupSearcher groupSearcher;
+
+    @Mock
+    private SchedulerBotMenu schedulerBotMenu;
 
     @Test
     public void if_userRepository_returnsNull_thenUserIsCreatedAndAskedForGroup() throws Exception {
@@ -117,5 +121,19 @@ public class SchedulerBotServiceTest {
 
         assertThat(schedulerBotService.handleRequest(request),
                 is(new BotResponse("No group by name 'command' is found! Try again.")));
+    }
+
+    @Test
+    public void whenUserStateIs_MENU_thenRequestIsPassedTo_SchedulerBotMenu() throws Exception {
+        long userId = 1;
+        int groupId = 0;
+        String command = "command";
+        UserRequest request = new UserRequest(userId, command);
+        BotResponse menuResponse = mock(BotResponse.class);
+        doReturn(new User(userId, groupId, MENU)).when(userRepository).getUserById(userId);
+        doReturn(menuResponse).when(schedulerBotMenu).handleRequest(request);
+
+        assertThat(schedulerBotService.handleRequest(request),
+            is(menuResponse));
     }
 }

@@ -27,21 +27,23 @@ public class SchedulerBotService {
     private final UserCreationService userCreationService;
     private final UserStateManager userStateManager;
     private final UserRepository userRepository;
+    private final GroupSearcher groupSearcher;
+    private final SchedulerBotMenu scheduleBotMenu;
 
     private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
-    private final GroupSearcher groupSearcher;
 
     @Autowired
     public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler,
                                UserCommandParser userCommandParser, UserCreationService userCreationService,
                                UserStateManager userStateManager, UserRepository userRepository,
-                               GroupSearcher groupSearcher) {
+                               GroupSearcher groupSearcher, SchedulerBotMenu scheduleBotMenu) {
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.userCommandParser = userCommandParser;
         this.userCreationService = userCreationService;
         this.userStateManager = userStateManager;
         this.userRepository = userRepository;
         this.groupSearcher = groupSearcher;
+        this.scheduleBotMenu = scheduleBotMenu;
     }
 
     @Async
@@ -60,6 +62,8 @@ public class SchedulerBotService {
                 return handleGroupSearchRequest(userRequest, user);
             case WITH_GROUP:
                 return handleScheduleRequest(userRequest);
+            case MENU:
+                return scheduleBotMenu.handleRequest(userRequest);
         }
 
         return null;

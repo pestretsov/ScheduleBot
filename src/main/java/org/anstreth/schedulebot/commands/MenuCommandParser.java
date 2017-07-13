@@ -1,13 +1,13 @@
 package org.anstreth.schedulebot.commands;
 
+import org.springframework.stereotype.Component;
+
+@Component
 class MenuCommandParser extends CommandParser<MenuCommand> {
 
     {
-        possibleNames.put("/back", MenuCommand.BACK);
-        possibleNames.put("Back", MenuCommand.BACK);
-
-        possibleNames.put("/reset_group", MenuCommand.RESET_GROUP);
-        possibleNames.put("Reset group", MenuCommand.RESET_GROUP);
+        addCommand(MenuCommand.BACK, "/back", "Back");
+        addCommand(MenuCommand.RESET_GROUP, "/reset_group", "Reset group");
     }
 
     @Override

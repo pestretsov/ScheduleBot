@@ -2,13 +2,8 @@ package org.anstreth.schedulebot.commands;
 
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Component
-public class UserCommandParser {
-    private final Map<String, UserCommand> possibleNames = new HashMap<>();
-
+public class UserCommandParser extends CommandParser<UserCommand> {
     {
         possibleNames.put("/tomorrow", UserCommand.TOMORROW);
         possibleNames.put("Tomorrow", UserCommand.TOMORROW);
@@ -23,8 +18,8 @@ public class UserCommandParser {
         possibleNames.put("Menu", UserCommand.MENU);
     }
 
-    public UserCommand parse(String command) {
-        String trimmedCommand = command.trim();
-        return possibleNames.getOrDefault(trimmedCommand, UserCommand.UNKNOWN);
+    @Override
+    protected UserCommand getDefault() {
+        return UserCommand.UNKNOWN;
     }
 }

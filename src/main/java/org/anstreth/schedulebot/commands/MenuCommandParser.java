@@ -3,7 +3,7 @@ package org.anstreth.schedulebot.commands;
 import org.springframework.stereotype.Component;
 
 @Component
-class MenuCommandParser extends CommandParser<MenuCommand> {
+public class MenuCommandParser extends CommandParser<MenuCommand> {
 
     {
         addCommand(MenuCommand.BACK, "/back", "Back");

@@ -1,6 +1,7 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.ruzapi.response.Group;
+import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.commands.UserCommandParser;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.response.BotResponse;
@@ -49,13 +50,14 @@ public class SchedulerBotServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
-
     @Mock
     private GroupSearcher groupSearcher;
 
     @Mock
     private SchedulerBotMenu schedulerBotMenu;
+
+    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week", "Menu");
+    private final List<String> menuCommands = Arrays.asList("Reset group", "Back");
 
     @Test
     public void if_userRepository_returnsNull_thenUserIsCreatedAndAskedForGroup() throws Exception {
@@ -121,6 +123,21 @@ public class SchedulerBotServiceTest {
 
         assertThat(schedulerBotService.handleRequest(request),
                 is(new BotResponse("No group by name 'command' is found! Try again.")));
+    }
+
+    @Test
+    public void ifUserStateIs_WITH_GROUP_andCommandIsParsedAs_MENU_ThenItsStateIsChangedTo_MENU() throws Exception {
+        long userId = 1;
+        int groupId = 2;
+        String command = "command";
+        UserRequest menuRequest = new UserRequest(userId, command);
+        doReturn(new User(userId, groupId, WITH_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(UserCommand.MENU).when(userCommandParser).parse(command);
+        BotResponse transitToMenuResponse = new BotResponse("What do you want to do?", menuCommands);
+
+        assertThat(schedulerBotService.handleRequest(menuRequest), is(transitToMenuResponse));
+
+        then(userStateManager).should().transitToMenu(userId);
     }
 
     @Test

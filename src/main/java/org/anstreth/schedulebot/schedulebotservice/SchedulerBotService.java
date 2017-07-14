@@ -30,7 +30,8 @@ public class SchedulerBotService {
     private final GroupSearcher groupSearcher;
     private final SchedulerBotMenu scheduleBotMenu;
 
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
+    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week", "Menu");
+    private final List<String> menuCommands = Arrays.asList("Reset group", "Back");
 
     @Autowired
     public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler,
@@ -61,7 +62,7 @@ public class SchedulerBotService {
             case ASKED_FOR_GROUP:
                 return handleGroupSearchRequest(userRequest, user);
             case WITH_GROUP:
-                return handleUserRequest(userRequest);
+                return handleUserCommand(user, getCommand(userRequest));
             case MENU:
                 return scheduleBotMenu.handleRequest(userRequest);
         }
@@ -106,15 +107,18 @@ public class SchedulerBotService {
         return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
     }
 
-    private BotResponse handleUserRequest(UserRequest userRequest) {
-        List<String> scheduleMessages = getRequestedSchedule(userRequest);
-        return new BotResponse(scheduleMessages, possibleReplies);
+    private BotResponse handleUserCommand(User user, UserCommand command) {
+        if (command == UserCommand.MENU) {
+            userStateManager.transitToMenu(user.getId());
+            return new BotResponse("What do you want to do?", menuCommands);
+        } else {
+            List<String> scheduleMessages = handleScheduleCommand(user.getGroupId(), command);
+            return new BotResponse(scheduleMessages, possibleReplies);
+        }
     }
 
-    private List<String> getRequestedSchedule(UserRequest userRequest) {
-        int id = userRepository.getUserById(userRequest.getUserId()).getGroupId();
-        UserCommand command = getCommand(userRequest);
-        ScheduleRequest scheduleRequest = new ScheduleRequest(id, command);
+    private List<String> handleScheduleCommand(int groupId, UserCommand command) {
+        ScheduleRequest scheduleRequest = new ScheduleRequest(groupId, command);
         return schedulerBotCommandsHandler.handleRequest(scheduleRequest);
     }
 

@@ -61,7 +61,7 @@ public class SchedulerBotService {
             case ASKED_FOR_GROUP:
                 return handleGroupSearchRequest(userRequest, user);
             case WITH_GROUP:
-                return handleScheduleRequest(userRequest);
+                return handleUserRequest(userRequest);
             case MENU:
                 return scheduleBotMenu.handleRequest(userRequest);
         }
@@ -106,7 +106,7 @@ public class SchedulerBotService {
         return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
     }
 
-    private BotResponse handleScheduleRequest(UserRequest userRequest) {
+    private BotResponse handleUserRequest(UserRequest userRequest) {
         List<String> scheduleMessages = getRequestedSchedule(userRequest);
         return new BotResponse(scheduleMessages, possibleReplies);
     }

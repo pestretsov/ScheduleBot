@@ -29,7 +29,7 @@ public class SchedulerBotMenuTest {
     private MenuCommandParser menuCommandParser;
     @Mock
     private UserStateManager manager;
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week");
+    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week", "Menu");
     private final List<String> menuCommands = Arrays.asList("Reset group", "Back");
 
     @Test

@@ -13,7 +13,7 @@ import java.util.List;
 class SchedulerBotMenu {
     private final UserStateManager userStateManager;
     private final MenuCommandParser menuCommandsParser;
-    private final List<String> scheduleCommands = Arrays.asList("Today", "Tomorrow", "Week");
+    private final List<String> scheduleCommands = Arrays.asList("Today", "Tomorrow", "Week", "Menu");
     private final List<String> menuCommands = Arrays.asList("Reset group", "Back");
 
     SchedulerBotMenu(UserStateManager userStateManager, MenuCommandParser menuCommandsParser) {

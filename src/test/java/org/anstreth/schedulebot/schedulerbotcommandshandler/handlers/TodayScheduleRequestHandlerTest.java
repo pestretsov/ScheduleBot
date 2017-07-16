@@ -16,7 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Calendar;
 
-import static org.anstreth.schedulebot.commands.ScheduleCommand.TODAY;
+import static org.anstreth.schedulebot.commands.UserCommand.TODAY;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

@@ -65,4 +65,15 @@ public class UserStateManagerTest {
         assertThat(userStateManager.transitToWithGroup(userId),
             is(updatedUser));
     }
+
+    @Test
+    public void transitToMen_getsUserFrom_repository_setsUserStateTo_MENU_andSavesHim() {
+        long userId = 1;
+        User user = new User(userId, 2, UserState.WITH_GROUP);
+        User updatedUser = new User(userId, 2, UserState.MENU);
+        doReturn(user).when(userRepository).getUserById(userId);
+        doReturn(updatedUser).when(userRepository).save(updatedUser);
+
+        assertThat(userStateManager.transitToMenu(userId), is(updatedUser));
+    }
 }

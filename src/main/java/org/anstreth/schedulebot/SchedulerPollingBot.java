@@ -13,7 +13,6 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +66,7 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
 
     private List<SendMessage> getSendMessagesForBotResponse(Long chatId, BotResponse botResponse) {
         return botResponse.getMessages().stream()
-                .map(message -> getSendMessage(chatId, message, botResponse.getReplies()))
+                .map(message -> getSendMessage(chatId, message, botResponse.getRepliesRows()))
                 .collect(Collectors.toList());
     }
 
@@ -79,26 +78,33 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         }
     }
 
-    private SendMessage getSendMessage(Long chatId, String message, List<String> replies) {
+    private SendMessage getSendMessage(Long chatId, String message, List<List<String>> replies) {
         return new SendMessage()
                 .setChatId(chatId)
                 .setText(message)
                 .setReplyMarkup(getReplyMarkup(replies));
     }
 
-    private ReplyKeyboard getReplyMarkup(List<String> replies) {
-        if (replies.isEmpty()) return new ReplyKeyboardRemove();
+    private ReplyKeyboard getReplyMarkup(List<List<String>> replies) {
+        if (replies.isEmpty()) {
+            return new ReplyKeyboardRemove();
+        }
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        replyKeyboardMarkup.setKeyboard(getRowsWithReplies(replies));
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        return replyKeyboardMarkup;
+        return new ReplyKeyboardMarkup()
+                .setKeyboard(getRowsWithReplies(replies))
+                .setResizeKeyboard(true);
     }
 
-    private List<KeyboardRow> getRowsWithReplies(List<String> replies) {
+    private List<KeyboardRow> getRowsWithReplies(List<List<String>> replies) {
+        return replies.stream()
+                .map(this::keyboardRowWithReplies)
+                .collect(Collectors.toList());
+    }
+
+    private KeyboardRow keyboardRowWithReplies(List<String> replies) {
         KeyboardRow keyboardButtons = new KeyboardRow();
         replies.forEach(keyboardButtons::add);
-        return Collections.singletonList(keyboardButtons);
+        return keyboardButtons;
     }
 
 }

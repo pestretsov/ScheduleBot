@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.anstreth.schedulebot.commands.ScheduleCommand.*;
+import static org.anstreth.schedulebot.commands.UserCommand.*;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

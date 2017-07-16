@@ -32,6 +32,10 @@ public class UserStateManager {
         return transitToWithGroup(userRepository.getUserById(userId));
     }
 
+    public User transitToMenu(long userId) {
+        return updateUserState(userRepository.getUserById(userId), UserState.MENU);
+    }
+
     private User updateUserState(User user, UserState state) {
         return userRepository.save(new User(user.getId(), user.getGroupId(), state));
     }

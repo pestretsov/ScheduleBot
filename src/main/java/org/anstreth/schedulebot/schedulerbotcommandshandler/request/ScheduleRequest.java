@@ -1,10 +1,10 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.request;
 
 import lombok.Data;
-import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.UserCommand;
 
 @Data
 public class ScheduleRequest {
     private final int groupId;
-    private final ScheduleCommand command;
+    private final UserCommand command;
 }

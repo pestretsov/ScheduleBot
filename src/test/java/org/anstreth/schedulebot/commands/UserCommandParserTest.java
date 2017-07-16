@@ -2,13 +2,13 @@ package org.anstreth.schedulebot.commands;
 
 import org.junit.Test;
 
-import static org.anstreth.schedulebot.commands.ScheduleCommand.*;
+import static org.anstreth.schedulebot.commands.UserCommand.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ScheduleCommandParserTest {
+public class UserCommandParserTest {
 
-    private ScheduleCommandParser parser = new ScheduleCommandParser();
+    private UserCommandParser parser = new UserCommandParser();
 
     @Test
     public void parserCorrectlyParsesTomorrowCommand() throws Exception {
@@ -26,6 +26,12 @@ public class ScheduleCommandParserTest {
     public void parserCorrectlyParsesWeekCommand() throws Exception {
         assertThat(parser.parse("/week"), is(WEEK));
         assertThat(parser.parse("Week"), is(WEEK));
+    }
+
+    @Test
+    public void parserCorrectlyParsesMenuCommand() throws Exception {
+        assertThat(parser.parse("/menu"), is(MENU));
+        assertThat(parser.parse("Menu"), is(MENU));
     }
 
     @Test

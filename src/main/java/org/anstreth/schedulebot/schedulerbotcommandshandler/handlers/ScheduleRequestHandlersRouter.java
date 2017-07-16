@@ -1,6 +1,6 @@
 package org.anstreth.schedulebot.schedulerbotcommandshandler.handlers;
 
-import org.anstreth.schedulebot.commands.ScheduleCommand;
+import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.schedulerrepository.SchedulerRepository;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ public class ScheduleRequestHandlersRouter {
         this.schedulerRepository = schedulerRepository;
     }
 
-    public SchedulerRequestHandler getHandlerForCommand(ScheduleCommand command) {
+    public SchedulerRequestHandler getHandlerForCommand(UserCommand command) {
         switch (command) {
             case TODAY:
                 return new TodayScheduleRequestHandler(schedulerRepository);

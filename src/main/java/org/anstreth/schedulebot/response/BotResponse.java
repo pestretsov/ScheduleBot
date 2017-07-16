@@ -10,19 +10,14 @@ import java.util.List;
 @AllArgsConstructor
 public class BotResponse {
     private final List<String> messages;
-    private final List<String> replies;
     private final List<List<String>> repliesRows;
 
     private BotResponse(List<String> messages) {
-        this(messages, Collections.emptyList(), Collections.emptyList());
+        this(messages, Collections.emptyList());
     }
 
-    public BotResponse(String message, List<String> replies) {
-        this(Collections.singletonList(message), replies, Collections.singletonList(replies));
-    }
-
-    public BotResponse(List<String> messages, List<String> replies) {
-        this(messages, replies, Collections.singletonList(replies));
+    public BotResponse(String message, List<List<String>> replies) {
+        this(Collections.singletonList(message), replies);
     }
 
     public BotResponse(String message) {

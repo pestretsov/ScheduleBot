@@ -1,6 +1,5 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -10,6 +9,7 @@ import org.anstreth.schedulebot.commands.UserCommandParser;
 import org.anstreth.schedulebot.model.User;
 import org.anstreth.schedulebot.model.UserState;
 import org.anstreth.schedulebot.response.BotResponse;
+import org.anstreth.schedulebot.response.PossibleReplies;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
@@ -29,9 +29,6 @@ public class SchedulerBotService {
     private final UserRepository userRepository;
     private final GroupSearcher groupSearcher;
     private final SchedulerBotMenu scheduleBotMenu;
-
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week", "Menu");
-    private final List<String> menuCommands = Arrays.asList("Reset group", "Back");
 
     @Autowired
     public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler,
@@ -100,7 +97,7 @@ public class SchedulerBotService {
 
     private BotResponse groupIsFoundBotResponse(Group group) {
         String groupIsFoundMessage = String.format("Your group is set to '%s'.", group.getName());
-        return new BotResponse(groupIsFoundMessage, possibleReplies);
+        return new BotResponse(groupIsFoundMessage, PossibleReplies.WITH_GROUP_REPLIES);
     }
 
     private BotResponse groupNotFoundBotResponse(UserRequest userRequest) {
@@ -110,10 +107,10 @@ public class SchedulerBotService {
     private BotResponse handleUserCommand(User user, UserCommand command) {
         if (command == UserCommand.MENU) {
             userStateManager.transitToMenu(user.getId());
-            return new BotResponse("What do you want to do?", menuCommands);
+            return new BotResponse("What do you want to do?", PossibleReplies.MENU_REPLIES);
         } else {
             List<String> scheduleMessages = handleScheduleCommand(user.getGroupId(), command);
-            return new BotResponse(scheduleMessages, possibleReplies);
+            return new BotResponse(scheduleMessages, PossibleReplies.WITH_GROUP_REPLIES);
         }
     }
 

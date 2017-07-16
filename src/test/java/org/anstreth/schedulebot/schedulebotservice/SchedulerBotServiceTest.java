@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.anstreth.schedulebot.commands.UserCommand.TODAY;
 import static org.anstreth.schedulebot.model.UserState.*;
+import static org.anstreth.schedulebot.response.PossibleReplies.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -56,9 +57,6 @@ public class SchedulerBotServiceTest {
     @Mock
     private SchedulerBotMenu schedulerBotMenu;
 
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week", "Menu");
-    private final List<String> menuCommands = Arrays.asList("Reset group", "Back");
-
     @Test
     public void if_userRepository_returnsNull_thenUserIsCreatedAndAskedForGroup() throws Exception {
         long userId = 1;
@@ -89,7 +87,7 @@ public class SchedulerBotServiceTest {
 
         assertThat(
                 schedulerBotService.handleRequest(request),
-                is(new BotResponse(scheduleMessages, possibleReplies))
+                is(new BotResponse(scheduleMessages, WITH_GROUP_REPLIES))
         );
     }
 
@@ -105,8 +103,10 @@ public class SchedulerBotServiceTest {
         doReturn(Optional.of(new Group(foundGroupId, "groupName", "spec")))
                 .when(groupSearcher).findGroupByName(command);
 
-        assertThat(schedulerBotService.handleRequest(request),
-            is(new BotResponse("Your group is set to 'groupName'.", possibleReplies)));
+        assertThat(
+                schedulerBotService.handleRequest(request),
+                is(new BotResponse("Your group is set to 'groupName'.", WITH_GROUP_REPLIES))
+        );
 
         then(userRepository).should().save(new User(userId, foundGroupId, WITH_GROUP));
     }
@@ -133,7 +133,7 @@ public class SchedulerBotServiceTest {
         UserRequest menuRequest = new UserRequest(userId, command);
         doReturn(new User(userId, groupId, WITH_GROUP)).when(userRepository).getUserById(userId);
         doReturn(UserCommand.MENU).when(userCommandParser).parse(command);
-        BotResponse transitToMenuResponse = new BotResponse("What do you want to do?", menuCommands);
+        BotResponse transitToMenuResponse = new BotResponse("What do you want to do?", MENU_REPLIES);
 
         assertThat(schedulerBotService.handleRequest(menuRequest), is(transitToMenuResponse));
 
@@ -151,6 +151,6 @@ public class SchedulerBotServiceTest {
         doReturn(menuResponse).when(schedulerBotMenu).handleRequest(request);
 
         assertThat(schedulerBotService.handleRequest(request),
-            is(menuResponse));
+                is(menuResponse));
     }
 }

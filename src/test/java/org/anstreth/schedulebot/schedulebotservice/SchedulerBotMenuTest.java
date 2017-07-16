@@ -10,10 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.anstreth.schedulebot.commands.MenuCommand.*;
+import static org.anstreth.schedulebot.response.PossibleReplies.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -29,15 +27,13 @@ public class SchedulerBotMenuTest {
     private MenuCommandParser menuCommandParser;
     @Mock
     private UserStateManager manager;
-    private final List<String> possibleReplies = Arrays.asList("Today", "Tomorrow", "Week", "Menu");
-    private final List<String> menuCommands = Arrays.asList("Reset group", "Back");
 
     @Test
     public void whenCommandIs_BACK_thenMenuMovesUserTo_HAS_GROUP_stateAndAsksForSchedule() throws Exception {
         long userId = 1;
         String command = "command";
         UserRequest backRequest = new UserRequest(userId, command);
-        BotResponse askForScheduleCommand = new BotResponse("You can ask for schedule now.", possibleReplies);
+        BotResponse askForScheduleCommand = new BotResponse("You can ask for schedule now.", WITH_GROUP_REPLIES);
         doReturn(BACK).when(menuCommandParser).parse(command);
 
         assertThat(schedulerBotMenu.handleRequest(backRequest), is(askForScheduleCommand));
@@ -63,7 +59,7 @@ public class SchedulerBotMenuTest {
         long userId = 1;
         String command = "command";
         UserRequest backRequest = new UserRequest(userId, command);
-        BotResponse dontUnderstand = new BotResponse("Sorry, don't understand that!", menuCommands);
+        BotResponse dontUnderstand = new BotResponse("Sorry, don't understand that!", MENU_REPLIES);
         doReturn(UNKNOWN).when(menuCommandParser).parse(command);
 
         assertThat(schedulerBotMenu.handleRequest(backRequest), is(dontUnderstand));

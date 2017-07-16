@@ -11,16 +11,21 @@ import java.util.List;
 public class BotResponse {
     private final List<String> messages;
     private final List<String> replies;
+    private final List<List<String>> repliesRows;
 
-    public BotResponse(List<String> messages) {
-        this(messages, Collections.emptyList());
+    private BotResponse(List<String> messages) {
+        this(messages, Collections.emptyList(), Collections.emptyList());
     }
 
     public BotResponse(String message, List<String> replies) {
-        this(Collections.singletonList(message), replies);
+        this(Collections.singletonList(message), replies, Collections.singletonList(replies));
     }
 
-    public BotResponse(String messages) {
-        this(Collections.singletonList(messages));
+    public BotResponse(List<String> messages, List<String> replies) {
+        this(messages, replies, Collections.singletonList(replies));
+    }
+
+    public BotResponse(String message) {
+        this(Collections.singletonList(message));
     }
 }

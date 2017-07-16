@@ -13,7 +13,6 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,12 +86,13 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
     }
 
     private ReplyKeyboard getReplyMarkup(List<List<String>> replies) {
-        if (replies.isEmpty()) return new ReplyKeyboardRemove();
+        if (replies.isEmpty()) {
+            return new ReplyKeyboardRemove();
+        }
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        replyKeyboardMarkup.setKeyboard(getRowsWithReplies(replies));
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        return replyKeyboardMarkup;
+        return new ReplyKeyboardMarkup()
+                .setKeyboard(getRowsWithReplies(replies))
+                .setResizeKeyboard(true);
     }
 
     private List<KeyboardRow> getRowsWithReplies(List<List<String>> replies) {

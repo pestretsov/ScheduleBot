@@ -7,16 +7,14 @@ public class User {
     public final static int NO_GROUP_SPECIFIED = -1;
 
     private final long id;
-    private final int groupId;
     private final UserState state;
 
-    public User(long id, int groupId, UserState state) {
+    public User(long id, UserState state) {
         this.id = id;
-        this.groupId = groupId;
         this.state = state;
     }
 
-    public User(long id, int groupId) {
-        this(id, groupId, UserState.NO_GROUP);
+    public User(long id) {
+        this(id, UserState.NO_GROUP);
     }
 }

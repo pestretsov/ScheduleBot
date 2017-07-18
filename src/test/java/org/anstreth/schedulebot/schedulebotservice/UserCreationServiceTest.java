@@ -28,7 +28,7 @@ public class UserCreationServiceTest {
     public void serviceCreatesUserAndAsksForGroup() {
         long userId = 1;
         User savedUser = mock(User.class);
-        User freshUser = new User(userId, User.NO_GROUP_SPECIFIED, UserState.NO_GROUP);
+        User freshUser = new User(userId, UserState.NO_GROUP);
         doReturn(savedUser).when(userRepository).save(freshUser);
 
         assertThat(userCreationService.createNewUser(userId), is(savedUser));

@@ -20,7 +20,7 @@ public class UserCreationService {
     }
 
     private User userWithNoGroup(long userId) {
-        return new User(userId, User.NO_GROUP_SPECIFIED, UserState.NO_GROUP);
+        return new User(userId, UserState.NO_GROUP);
     }
 
 }

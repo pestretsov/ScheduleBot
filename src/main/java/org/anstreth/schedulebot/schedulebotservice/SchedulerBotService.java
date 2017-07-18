@@ -91,7 +91,7 @@ public class SchedulerBotService {
     }
 
     private void updateUserGroup(User user, Group group) {
-        userRepository.save(new User(user.getId(), group.getId(), UserState.WITH_GROUP));
+        userRepository.save(new User(user.getId(), UserState.WITH_GROUP));
         userGroupRepository.save(user.getId(), group.getId());
     }
 

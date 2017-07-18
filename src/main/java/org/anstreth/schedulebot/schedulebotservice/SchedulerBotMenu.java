@@ -6,6 +6,7 @@ import org.anstreth.schedulebot.response.PossibleReplies;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +15,11 @@ class SchedulerBotMenu {
     private final MenuCommandParser menuCommandsParser;
     private final UserGroupRepository userGroupRepository;
 
-    SchedulerBotMenu(UserStateManager userStateManager, UserGroupRepository userGroupRepository, MenuCommandParser menuCommandsParser) {
+    @Autowired
+    SchedulerBotMenu(
+            UserStateManager userStateManager,
+            UserGroupRepository userGroupRepository,
+            MenuCommandParser menuCommandsParser) {
         this.userStateManager = userStateManager;
         this.menuCommandsParser = menuCommandsParser;
         this.userGroupRepository = userGroupRepository;
@@ -30,8 +35,7 @@ class SchedulerBotMenu {
                 );
 
             case RESET_GROUP:
-                userStateManager.transitToAskedForGroup(request.getUserId());
-                userGroupRepository.remove(request.getUserId());
+                removeUsersGroup(request.getUserId());
                 return new BotResponse("Send me your group number like '12345/6' to get your schedule.");
 
             default:
@@ -40,5 +44,10 @@ class SchedulerBotMenu {
                         PossibleReplies.MENU_REPLIES
                 );
         }
+    }
+
+    private void removeUsersGroup(long userId) {
+        userStateManager.transitToAskedForGroup(userId);
+        userGroupRepository.remove(userId);
     }
 }

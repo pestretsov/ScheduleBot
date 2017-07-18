@@ -10,6 +10,7 @@ import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
+import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +56,9 @@ public class SchedulerBotServiceTest {
     private GroupSearcher groupSearcher;
 
     @Mock
+    private UserGroupRepository userGroupRepository;
+
+    @Mock
     private SchedulerBotMenu schedulerBotMenu;
 
     @Test
@@ -80,6 +84,7 @@ public class SchedulerBotServiceTest {
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
         doReturn(new User(userId, groupId, WITH_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(groupId).when(userGroupRepository).get(userId);
         doReturn(TODAY).when(userCommandParser).parse(command);
         List<String> scheduleMessages = Arrays.asList("one", "two");
         doReturn(scheduleMessages)
@@ -109,6 +114,7 @@ public class SchedulerBotServiceTest {
         );
 
         then(userRepository).should().save(new User(userId, foundGroupId, WITH_GROUP));
+        then(userGroupRepository).should().save(userId, foundGroupId);
     }
 
 

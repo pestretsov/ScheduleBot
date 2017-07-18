@@ -15,6 +15,7 @@ import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
+import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -29,12 +30,13 @@ public class SchedulerBotService {
     private final UserRepository userRepository;
     private final GroupSearcher groupSearcher;
     private final SchedulerBotMenu scheduleBotMenu;
+    private final UserGroupRepository userGroupRepository;
 
     @Autowired
     public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler,
                                UserCommandParser userCommandParser, UserCreationService userCreationService,
                                UserStateManager userStateManager, UserRepository userRepository,
-                               GroupSearcher groupSearcher, SchedulerBotMenu scheduleBotMenu) {
+                               GroupSearcher groupSearcher, SchedulerBotMenu scheduleBotMenu, UserGroupRepository userGroupRepository) {
         this.schedulerBotCommandsHandler = schedulerBotCommandsHandler;
         this.userCommandParser = userCommandParser;
         this.userCreationService = userCreationService;
@@ -42,6 +44,7 @@ public class SchedulerBotService {
         this.userRepository = userRepository;
         this.groupSearcher = groupSearcher;
         this.scheduleBotMenu = scheduleBotMenu;
+        this.userGroupRepository = userGroupRepository;
     }
 
     @Async
@@ -89,6 +92,7 @@ public class SchedulerBotService {
 
     private void updateUserGroup(User user, Group group) {
         userRepository.save(new User(user.getId(), group.getId(), UserState.WITH_GROUP));
+        userGroupRepository.save(user.getId(), group.getId());
     }
 
     private BotResponse getAskForGroupResponse() {
@@ -109,7 +113,8 @@ public class SchedulerBotService {
             userStateManager.transitToMenu(user.getId());
             return new BotResponse("What do you want to do?", PossibleReplies.MENU_REPLIES);
         } else {
-            List<String> scheduleMessages = handleScheduleCommand(user.getGroupId(), command);
+            int groupId = userGroupRepository.get(user.getId());
+            List<String> scheduleMessages = handleScheduleCommand(groupId, command);
             return new BotResponse(scheduleMessages, PossibleReplies.WITH_GROUP_REPLIES);
         }
     }

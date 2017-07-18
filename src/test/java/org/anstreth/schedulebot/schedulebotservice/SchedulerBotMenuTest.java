@@ -4,6 +4,7 @@ import org.anstreth.schedulebot.commands.MenuCommandParser;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
+import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ public class SchedulerBotMenuTest {
     @Mock
     private UserStateManager manager;
 
+    @Mock
+    private UserGroupRepository userGroupRepository;
+
     @Test
     public void whenCommandIs_BACK_thenMenuMovesUserTo_HAS_GROUP_stateAndAsksForSchedule() throws Exception {
         long userId = 1;
@@ -42,7 +46,7 @@ public class SchedulerBotMenuTest {
     }
 
     @Test
-    public void whenCommandIs_RESET_GROUP_thenMenuMovesUserTo_ASKED_FOR_GROUP_andAsksForGroup() throws Exception {
+    public void if_RESET_GROUP_groupIsDeleted_stateSetTo_ASKED_FOR_GROUP() throws Exception {
         long userId = 1;
         String command = "command";
         UserRequest backRequest = new UserRequest(userId, command);
@@ -52,6 +56,7 @@ public class SchedulerBotMenuTest {
         assertThat(schedulerBotMenu.handleRequest(backRequest), is(askForGroup));
 
         then(manager).should().transitToAskedForGroup(userId);
+        then(userGroupRepository).should().remove(userId);
     }
 
     @Test

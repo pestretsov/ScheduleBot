@@ -7,7 +7,6 @@ import org.anstreth.ruzapi.response.Group;
 import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.commands.UserCommandParser;
 import org.anstreth.schedulebot.model.User;
-import org.anstreth.schedulebot.model.UserState;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.response.PossibleReplies;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
@@ -28,9 +27,9 @@ public class SchedulerBotService {
     private final UserCreationService userCreationService;
     private final UserStateManager userStateManager;
     private final UserRepository userRepository;
+    private final UserGroupRepository userGroupRepository;
     private final GroupSearcher groupSearcher;
     private final SchedulerBotMenu scheduleBotMenu;
-    private final UserGroupRepository userGroupRepository;
 
     @Autowired
     public SchedulerBotService(SchedulerBotCommandsHandler schedulerBotCommandsHandler,
@@ -60,9 +59,9 @@ public class SchedulerBotService {
                 userStateManager.transitToAskedForGroup(user);
                 return getAskForGroupResponse();
             case ASKED_FOR_GROUP:
-                return handleGroupSearchRequest(userRequest, user);
+                return handleGroupSearchRequest(userRequest);
             case WITH_GROUP:
-                return handleUserCommand(user, getCommand(userRequest));
+                return handleUserCommand(userRequest);
             case MENU:
                 return scheduleBotMenu.handleRequest(userRequest);
         }
@@ -80,19 +79,19 @@ public class SchedulerBotService {
         return userCreationService.createNewUser(userId);
     }
 
-    private BotResponse handleGroupSearchRequest(UserRequest userRequest, User user) {
+    private BotResponse handleGroupSearchRequest(UserRequest userRequest) {
         Optional<Group> foundGroup = groupSearcher.findGroupByName(userRequest.getMessage());
         if (foundGroup.isPresent()) {
-            updateUserGroup(user, foundGroup.get());
+            updateUserGroup(userRequest.getUserId(), foundGroup.get().getId());
             return groupIsFoundBotResponse(foundGroup.get());
         } else {
             return groupNotFoundBotResponse(userRequest);
         }
     }
 
-    private void updateUserGroup(User user, Group group) {
-        userRepository.save(new User(user.getId(), UserState.WITH_GROUP));
-        userGroupRepository.save(user.getId(), group.getId());
+    private void updateUserGroup(long userId, int groupId) {
+        userStateManager.transitToWithGroup(userId);
+        userGroupRepository.save(userId, groupId);
     }
 
     private BotResponse getAskForGroupResponse() {
@@ -108,12 +107,13 @@ public class SchedulerBotService {
         return new BotResponse(String.format("No group by name '%s' is found! Try again.", userRequest.getMessage()));
     }
 
-    private BotResponse handleUserCommand(User user, UserCommand command) {
+    private BotResponse handleUserCommand(UserRequest request) {
+        UserCommand command = getCommand(request);
         if (command == UserCommand.MENU) {
-            userStateManager.transitToMenu(user.getId());
+            userStateManager.transitToMenu(request.getUserId());
             return new BotResponse("What do you want to do?", PossibleReplies.MENU_REPLIES);
         } else {
-            int groupId = userGroupRepository.get(user.getId());
+            int groupId = userGroupRepository.get(request.getUserId());
             List<String> scheduleMessages = handleScheduleCommand(groupId, command);
             return new BotResponse(scheduleMessages, PossibleReplies.WITH_GROUP_REPLIES);
         }

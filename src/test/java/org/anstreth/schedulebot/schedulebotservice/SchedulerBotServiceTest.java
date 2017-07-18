@@ -112,7 +112,7 @@ public class SchedulerBotServiceTest {
                 is(new BotResponse("Your group is set to 'groupName'.", WITH_GROUP_REPLIES))
         );
 
-        then(userRepository).should().save(new User(userId, WITH_GROUP));
+        then(userStateManager).should().transitToWithGroup(userId);
         then(userGroupRepository).should().save(userId, foundGroupId);
     }
 

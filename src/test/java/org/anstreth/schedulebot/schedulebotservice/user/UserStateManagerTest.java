@@ -24,8 +24,8 @@ public class UserStateManagerTest {
 
     @Test
     public void transitToAskedForGroup_setsUserStateTo_ASKED_FOR_GROUP_andUpdates_repository() throws Exception {
-        User user = new User(1, 2, UserState.NO_GROUP);
-        User updatedUser = new User(1, 2, UserState.ASKED_FOR_GROUP);
+        User user = new User(1, UserState.NO_GROUP);
+        User updatedUser = new User(1, UserState.ASKED_FOR_GROUP);
         doReturn(updatedUser).when(userRepository).save(updatedUser);
 
         assertThat(userStateManager.transitToAskedForGroup(user),
@@ -35,8 +35,8 @@ public class UserStateManagerTest {
     @Test
     public void transitToAskedForGroup_getsUserFrom_repository_setsUserStateTo_ASKED_FOR_GROUP_andUpdates_repository() throws Exception {
         long userId = 1;
-        User user = new User(userId, 2, UserState.NO_GROUP);
-        User updatedUser = new User(userId, 2, UserState.ASKED_FOR_GROUP);
+        User user = new User(userId, UserState.NO_GROUP);
+        User updatedUser = new User(userId, UserState.ASKED_FOR_GROUP);
         doReturn(user).when(userRepository).getUserById(userId);
         doReturn(updatedUser).when(userRepository).save(updatedUser);
 
@@ -46,8 +46,8 @@ public class UserStateManagerTest {
 
     @Test
     public void transitToWithGroup_setsUserStateTo_WITH_GROUP_andUpdates_Repository() throws Exception {
-        User user = new User(1, 2, UserState.NO_GROUP);
-        User updatedUser = new User(1, 2, UserState.WITH_GROUP);
+        User user = new User(1, UserState.NO_GROUP);
+        User updatedUser = new User(1, UserState.WITH_GROUP);
         doReturn(updatedUser).when(userRepository).save(updatedUser);
 
         assertThat(userStateManager.transitToWithGroup(user),
@@ -57,8 +57,8 @@ public class UserStateManagerTest {
     @Test
     public void transitToWithGroup_getsUserFrom_repository_setsUserStateTo_WITH_GROUP_andUpdates_Repository() throws Exception {
         long userId = 1;
-        User user = new User(userId, 2, UserState.NO_GROUP);
-        User updatedUser = new User(userId, 2, UserState.WITH_GROUP);
+        User user = new User(userId, UserState.NO_GROUP);
+        User updatedUser = new User(userId, UserState.WITH_GROUP);
         doReturn(user).when(userRepository).getUserById(userId);
         doReturn(updatedUser).when(userRepository).save(updatedUser);
 
@@ -69,8 +69,8 @@ public class UserStateManagerTest {
     @Test
     public void transitToMen_getsUserFrom_repository_setsUserStateTo_MENU_andSavesHim() {
         long userId = 1;
-        User user = new User(userId, 2, UserState.WITH_GROUP);
-        User updatedUser = new User(userId, 2, UserState.MENU);
+        User user = new User(userId, UserState.WITH_GROUP);
+        User updatedUser = new User(userId, UserState.MENU);
         doReturn(user).when(userRepository).getUserById(userId);
         doReturn(updatedUser).when(userRepository).save(updatedUser);
 

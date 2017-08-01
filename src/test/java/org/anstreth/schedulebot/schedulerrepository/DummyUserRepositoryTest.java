@@ -1,6 +1,7 @@
 package org.anstreth.schedulebot.schedulerrepository;
 
 import org.anstreth.schedulebot.model.User;
+import org.anstreth.schedulebot.model.UserState;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
@@ -16,7 +17,7 @@ public class DummyUserRepositoryTest {
 
     @Test
     public void afterSaveUserAppearsInDummyRepository() throws Exception {
-        User savedUser = dummyUserRepository.save(new User(1, 2));
+        User savedUser = dummyUserRepository.save(new User(1));
 
         assertThat(savedUser, notNullValue());
         assertThat(dummyUserRepository.getUserById(1), is(savedUser));
@@ -24,7 +25,7 @@ public class DummyUserRepositoryTest {
 
     @Test
     public void afterDeletionUserDissapears() throws Exception {
-        User savedUser = dummyUserRepository.save(new User(1, 2));
+        User savedUser = dummyUserRepository.save(new User(1));
 
         dummyUserRepository.delete(savedUser);
 
@@ -33,12 +34,11 @@ public class DummyUserRepositoryTest {
 
     @Test
     public void youCanUpdateUserWithSave() throws Exception {
-        User savedUser = dummyUserRepository.save(new User(1, 2));
-        int updatedGroupId = 3;
-        User updatedUser = new User(savedUser.getId(), updatedGroupId);
+        User savedUser = dummyUserRepository.save(new User(1, UserState.NO_GROUP));
+        User updatedUser = new User(savedUser.getId(), UserState.ASKED_FOR_GROUP);
 
         dummyUserRepository.save(updatedUser);
 
-        assertThat(dummyUserRepository.getUserById(1).getGroupId(), is(updatedGroupId));
+        assertThat(dummyUserRepository.getUserById(1).getState(), is(UserState.ASKED_FOR_GROUP));
     }
 }

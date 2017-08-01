@@ -10,6 +10,7 @@ import org.anstreth.schedulebot.schedulebotservice.user.UserCreationService;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.SchedulerBotCommandsHandler;
 import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequest;
+import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
 import org.anstreth.schedulebot.schedulerrepository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +56,9 @@ public class SchedulerBotServiceTest {
     private GroupSearcher groupSearcher;
 
     @Mock
+    private UserGroupRepository userGroupRepository;
+
+    @Mock
     private SchedulerBotMenu schedulerBotMenu;
 
     @Test
@@ -62,8 +66,8 @@ public class SchedulerBotServiceTest {
         long userId = 1;
         UserRequest request = new UserRequest(userId, "command");
         doReturn(null).when(userRepository).getUserById(userId);
-        User createdUser = new User(userId, 1, NO_GROUP);
-        User userAskedForGroup = new User(userId, 1, ASKED_FOR_GROUP);
+        User createdUser = new User(userId, NO_GROUP);
+        User userAskedForGroup = new User(userId, ASKED_FOR_GROUP);
         doReturn(createdUser).when(userCreationService).createNewUser(userId);
         doReturn(userAskedForGroup).when(userStateManager).transitToAskedForGroup(createdUser);
 
@@ -79,7 +83,8 @@ public class SchedulerBotServiceTest {
         int groupId = 2;
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
-        doReturn(new User(userId, groupId, WITH_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(new User(userId, WITH_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(groupId).when(userGroupRepository).get(userId);
         doReturn(TODAY).when(userCommandParser).parse(command);
         List<String> scheduleMessages = Arrays.asList("one", "two");
         doReturn(scheduleMessages)
@@ -94,11 +99,10 @@ public class SchedulerBotServiceTest {
     @Test
     public void whenUserStateIs_ASKED_FOR_GROUP_andHisGroupIsFoundThenSuccess_BotResponse_returned() throws Exception {
         long userId = 1;
-        int groupId = 0;
         int foundGroupId = 3;
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
-        doReturn(new User(userId, groupId, ASKED_FOR_GROUP))
+        doReturn(new User(userId, ASKED_FOR_GROUP))
                 .when(userRepository).getUserById(userId);
         doReturn(Optional.of(new Group(foundGroupId, "groupName", "spec")))
                 .when(groupSearcher).findGroupByName(command);
@@ -108,17 +112,17 @@ public class SchedulerBotServiceTest {
                 is(new BotResponse("Your group is set to 'groupName'.", WITH_GROUP_REPLIES))
         );
 
-        then(userRepository).should().save(new User(userId, foundGroupId, WITH_GROUP));
+        then(userStateManager).should().transitToWithGroup(userId);
+        then(userGroupRepository).should().save(userId, foundGroupId);
     }
 
 
     @Test
     public void whenUserStateIs_ASKED_FOR_GROUP_andNoneIsFoundErrorMessageIsReturned() throws Exception {
         long userId = 1;
-        int groupId = 0;
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
-        doReturn(new User(userId, groupId, ASKED_FOR_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(new User(userId, ASKED_FOR_GROUP)).when(userRepository).getUserById(userId);
         doReturn(Optional.empty()).when(groupSearcher).findGroupByName(command);
 
         assertThat(schedulerBotService.handleRequest(request),
@@ -128,10 +132,9 @@ public class SchedulerBotServiceTest {
     @Test
     public void ifUserStateIs_WITH_GROUP_andCommandIsParsedAs_MENU_ThenItsStateIsChangedTo_MENU() throws Exception {
         long userId = 1;
-        int groupId = 2;
         String command = "command";
         UserRequest menuRequest = new UserRequest(userId, command);
-        doReturn(new User(userId, groupId, WITH_GROUP)).when(userRepository).getUserById(userId);
+        doReturn(new User(userId, WITH_GROUP)).when(userRepository).getUserById(userId);
         doReturn(UserCommand.MENU).when(userCommandParser).parse(command);
         BotResponse transitToMenuResponse = new BotResponse("What do you want to do?", MENU_REPLIES);
 
@@ -143,11 +146,10 @@ public class SchedulerBotServiceTest {
     @Test
     public void whenUserStateIs_MENU_thenRequestIsPassedTo_SchedulerBotMenu() throws Exception {
         long userId = 1;
-        int groupId = 0;
         String command = "command";
         UserRequest request = new UserRequest(userId, command);
         BotResponse menuResponse = mock(BotResponse.class);
-        doReturn(new User(userId, groupId, MENU)).when(userRepository).getUserById(userId);
+        doReturn(new User(userId, MENU)).when(userRepository).getUserById(userId);
         doReturn(menuResponse).when(schedulerBotMenu).handleRequest(request);
 
         assertThat(schedulerBotService.handleRequest(request),

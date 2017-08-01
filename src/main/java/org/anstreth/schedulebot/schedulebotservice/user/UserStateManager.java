@@ -37,6 +37,6 @@ public class UserStateManager {
     }
 
     private User updateUserState(User user, UserState state) {
-        return userRepository.save(new User(user.getId(), user.getGroupId(), state));
+        return userRepository.save(new User(user.getId(), state));
     }
 }

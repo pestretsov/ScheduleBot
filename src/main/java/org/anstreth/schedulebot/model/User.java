@@ -4,8 +4,6 @@ import lombok.Data;
 
 @Data
 public class User {
-    public final static int NO_GROUP_SPECIFIED = -1;
-
     private final long id;
     private final UserState state;
 

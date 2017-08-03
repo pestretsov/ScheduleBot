@@ -4,7 +4,6 @@ import org.anstreth.schedulebot.model.UserRoute;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,6 +24,10 @@ public class RouterTest {
     private UserRouteRepository routeRepository;
     @Mock
     private GroupSearchService groupSearcher;
+    @Mock
+    private SchedulerBotMenu menuService;
+    @Mock
+    private SchedulerBotHome homeService;
 
     @Test
     public void when_user_route_is_null_then_his_route_is_set_to_group_search_and_request_passed_to_group_search_service() throws Exception {
@@ -39,4 +42,36 @@ public class RouterTest {
         then(routeRepository).should().save(userId, UserRoute.GROUP_SEARCH);
     }
 
+    @Test
+    public void when_user_route_is_group_search_request_passed_to_group_search_service() throws Exception {
+        long userId = 1;
+        UserRequest userRequest = new UserRequest(userId, "command");
+        doReturn(UserRoute.GROUP_SEARCH).when(routeRepository).get(userId);
+        BotResponse responseFromSearcher = mock(BotResponse.class);
+        doReturn(responseFromSearcher).when(groupSearcher).handleRequest(userRequest);
+
+        assertThat(router.route(userRequest), is(responseFromSearcher));
+    }
+
+    @Test
+    public void when_user_route_is_menu_request_is_passed_to_menu_service() throws Exception {
+        long userId = 1;
+        UserRequest userRequest = new UserRequest(userId, "command");
+        doReturn(UserRoute.MENU).when(routeRepository).get(userId);
+        BotResponse responseFromMenu = mock(BotResponse.class);
+        doReturn(responseFromMenu).when(menuService).handleRequest(userRequest);
+
+        assertThat(router.route(userRequest), is(responseFromMenu));
+    }
+
+    @Test
+    public void when_user_route_is_home_request_is_passed_to_home_service() throws Exception {
+        long userId = 1;
+        UserRequest userRequest = new UserRequest(userId, "command");
+        doReturn(UserRoute.HOME).when(routeRepository).get(userId);
+        BotResponse responseFromHome = mock(BotResponse.class);
+        doReturn(responseFromHome).when(homeService).handleRequest(userRequest);
+
+        assertThat(router.route(userRequest), is(responseFromHome));
+    }
 }

@@ -8,27 +8,45 @@ import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
 public class Router {
     private final UserRouteRepository userRouteRepository;
     private final GroupSearchService groupSearchService;
+    private final SchedulerBotMenu schedulerBotMenu;
+    private final SchedulerBotHome schedulerBotHome;
 
-    public Router(UserRouteRepository userRouteRepository, GroupSearchService groupSearchService) {
+    public Router(UserRouteRepository userRouteRepository, GroupSearchService groupSearchService, SchedulerBotMenu schedulerBotMenu, SchedulerBotHome schedulerBotHome) {
         this.userRouteRepository = userRouteRepository;
         this.groupSearchService = groupSearchService;
+        this.schedulerBotMenu = schedulerBotMenu;
+        this.schedulerBotHome = schedulerBotHome;
     }
 
     BotResponse route(UserRequest userRequest) {
-        UserRoute userRoute = userRouteRepository.get(userRequest.getUserId());
-        if (userRoute == null) {
-            userRoute = UserRoute.GROUP_SEARCH;
-            userRouteRepository.save(userRequest.getUserId(), UserRoute.GROUP_SEARCH);
+        UserRoute userRoute = getUserRoute(userRequest.getUserId());
+
+        switch (userRoute) {
+            case GROUP_SEARCH:
+                return groupSearchService.handleRequest(userRequest);
+            case MENU:
+                return schedulerBotMenu.handleRequest(userRequest);
+            case HOME:
+                return schedulerBotHome.handleRequest(userRequest);
         }
 
-        if (userRoute == UserRoute.GROUP_SEARCH) {
-            return groupSearchService.handleRequest(userRequest);
-        }
+        throw new IllegalArgumentException("Illegal user route " + userRoute);
+    }
 
-        return null;
+    private UserRoute getUserRoute(long userId) {
+        UserRoute userRoute = userRouteRepository.get(userId);
+        if (userRoute != null) {
+            return userRoute;
+        }
+        userRouteRepository.save(userId, UserRoute.GROUP_SEARCH);
+        return UserRoute.GROUP_SEARCH;
     }
 }
 
 interface GroupSearchService {
+    BotResponse handleRequest(UserRequest userRequest);
+}
+
+interface SchedulerBotHome {
     BotResponse handleRequest(UserRequest userRequest);
 }

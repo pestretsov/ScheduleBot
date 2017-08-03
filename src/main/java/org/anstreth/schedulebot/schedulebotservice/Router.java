@@ -7,19 +7,29 @@ import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
 
 public class Router {
     private final UserRouteRepository userRouteRepository;
+    private final UserRouteInitializer userRouteInitializer;
     private final GroupSearchService groupSearchService;
     private final SchedulerBotMenu schedulerBotMenu;
     private final SchedulerBotHome schedulerBotHome;
 
-    public Router(UserRouteRepository userRouteRepository, GroupSearchService groupSearchService, SchedulerBotMenu schedulerBotMenu, SchedulerBotHome schedulerBotHome) {
+    public Router(
+            UserRouteRepository userRouteRepository,
+            UserRouteInitializer userRouteInitializer,
+            GroupSearchService groupSearchService,
+            SchedulerBotMenu schedulerBotMenu,
+            SchedulerBotHome schedulerBotHome) {
         this.userRouteRepository = userRouteRepository;
+        this.userRouteInitializer = userRouteInitializer;
         this.groupSearchService = groupSearchService;
         this.schedulerBotMenu = schedulerBotMenu;
         this.schedulerBotHome = schedulerBotHome;
     }
 
     BotResponse route(UserRequest userRequest) {
-        UserRoute userRoute = getUserRoute(userRequest.getUserId());
+        UserRoute userRoute = userRouteRepository.get(userRequest.getUserId());
+        if (userRoute == null) {
+            return userRouteInitializer.handleRequest(userRequest);
+        }
 
         switch (userRoute) {
             case GROUP_SEARCH:
@@ -33,14 +43,6 @@ public class Router {
         throw new IllegalArgumentException("Illegal user route " + userRoute);
     }
 
-    private UserRoute getUserRoute(long userId) {
-        UserRoute userRoute = userRouteRepository.get(userId);
-        if (userRoute != null) {
-            return userRoute;
-        }
-        userRouteRepository.save(userId, UserRoute.GROUP_SEARCH);
-        return UserRoute.GROUP_SEARCH;
-    }
 }
 
 interface GroupSearchService {
@@ -48,5 +50,9 @@ interface GroupSearchService {
 }
 
 interface SchedulerBotHome {
+    BotResponse handleRequest(UserRequest userRequest);
+}
+
+interface UserRouteInitializer {
     BotResponse handleRequest(UserRequest userRequest);
 }

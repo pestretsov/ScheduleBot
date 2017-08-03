@@ -12,7 +12,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -28,18 +27,18 @@ public class RouterTest {
     private SchedulerBotMenu menuService;
     @Mock
     private SchedulerBotHome homeService;
+    @Mock
+    private UserRouteInitializer initService;
 
     @Test
-    public void when_user_route_is_null_then_his_route_is_set_to_group_search_and_request_passed_to_group_search_service() throws Exception {
+    public void when_user_route_is_null_request_passed_to_user_init_service() throws Exception {
         long userId = 1;
         UserRequest userRequest = new UserRequest(userId, "command");
         doReturn(null).when(routeRepository).get(userId);
-        BotResponse responseFromSearcher = mock(BotResponse.class);
-        doReturn(responseFromSearcher).when(groupSearcher).handleRequest(userRequest);
+        BotResponse responseFromInit = mock(BotResponse.class);
+        doReturn(responseFromInit).when(initService).handleRequest(userRequest);
 
-        assertThat(router.route(userRequest), is(responseFromSearcher));
-
-        then(routeRepository).should().save(userId, UserRoute.GROUP_SEARCH);
+        assertThat(router.route(userRequest), is(responseFromInit));
     }
 
     @Test

@@ -35,7 +35,7 @@ public class GroupSearchServiceTest {
     private UserRouteRepository userRouteRepository;
 
     @Test
-    public void if_group_is_found_by_message_then_user_route_set_to_HOME_and_success_response_returned() throws Exception {
+    public void if_group_is_found_by_message_then_user_route_set_to_HOME_and_success_response_returned() {
         long userId = 1;
         int foundGroupId = 2;
         String searchMessage = "msg";
@@ -54,7 +54,7 @@ public class GroupSearchServiceTest {
     }
 
     @Test
-    public void if_group_is_not_found_then_no_group_found_response_is_returned() throws Exception {
+    public void if_group_is_not_found_then_no_group_found_response_is_returned() {
         long userId = 1;
         String searchMessage = "msg";
         UserRequest request = new UserRequest(userId, searchMessage);

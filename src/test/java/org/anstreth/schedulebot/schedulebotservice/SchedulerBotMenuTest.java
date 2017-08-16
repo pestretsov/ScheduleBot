@@ -1,10 +1,12 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
 import org.anstreth.schedulebot.commands.MenuCommandParser;
+import org.anstreth.schedulebot.model.UserRoute;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulebotservice.user.UserStateManager;
 import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
+import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,8 +34,11 @@ public class SchedulerBotMenuTest {
     @Mock
     private UserGroupRepository userGroupRepository;
 
+    @Mock
+    private UserRouteRepository userRouteRepository;
+
     @Test
-    public void whenCommandIs_BACK_thenMenuMovesUserTo_HAS_GROUP_stateAndAsksForSchedule() throws Exception {
+    public void when_command_is_BACK_then_menu_moves_user_to_HAS_GROUP_state_and_asks_for_schedule() throws Exception {
         long userId = 1;
         String command = "command";
         UserRequest backRequest = new UserRequest(userId, command);
@@ -43,10 +48,11 @@ public class SchedulerBotMenuTest {
         assertThat(schedulerBotMenu.handleRequest(backRequest), is(askForScheduleCommand));
 
         then(manager).should().transitToWithGroup(userId);
+        then(userRouteRepository).should().save(userId, UserRoute.HOME);
     }
 
     @Test
-    public void if_RESET_GROUP_groupIsDeleted_stateSetTo_ASKED_FOR_GROUP() throws Exception {
+    public void if_RESET_GROUP_group_is_deleted_state_set_to_ASKED_FOR_GROUP() throws Exception {
         long userId = 1;
         String command = "command";
         UserRequest backRequest = new UserRequest(userId, command);
@@ -57,6 +63,7 @@ public class SchedulerBotMenuTest {
 
         then(manager).should().transitToAskedForGroup(userId);
         then(userGroupRepository).should().remove(userId);
+        then(userRouteRepository).should().save(userId, UserRoute.GROUP_SEARCH);
     }
 
     @Test

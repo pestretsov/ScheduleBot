@@ -3,7 +3,9 @@ package org.anstreth.schedulebot.schedulerrepository;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.anstreth.schedulebot.model.UserRoute;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DummyUserRouteRepository implements UserRouteRepository {
     private final Map<Long, UserRoute> routes = new ConcurrentHashMap<>();
     private static final String NULL_ROUTE_MESSAGE = "UserRoute cannot be null; use remove to delete route!";

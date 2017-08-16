@@ -53,6 +53,3 @@ interface SchedulerBotHome {
     BotResponse handleRequest(UserRequest userRequest);
 }
 
-interface UserRouteInitializer {
-    BotResponse handleRequest(UserRequest userRequest);
-}

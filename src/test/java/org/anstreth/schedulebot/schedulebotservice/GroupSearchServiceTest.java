@@ -52,4 +52,15 @@ public class GroupSearchServiceTest {
         then(userRouteRepository).should().save(userId, UserRoute.HOME);
         then(userGroupRepository).should().save(userId, foundGroupId);
     }
+
+    @Test
+    public void if_group_is_not_found_then_no_group_found_response_is_returned() throws Exception {
+        long userId = 1;
+        String searchMessage = "msg";
+        UserRequest request = new UserRequest(userId, searchMessage);
+        doReturn(Optional.empty()).when(groupSearcher).findGroupByName(searchMessage);
+        BotResponse noSuchGroupResponse = new BotResponse("No group by name 'msg' is found! Try again.");
+
+        assertThat(groupSearchService.handleRequest(request), is(noSuchGroupResponse));
+    }
 }

@@ -24,18 +24,33 @@ class GroupSearchService {
     BotResponse handleRequest(UserRequest userRequest) {
         Optional<Group> group = groupSearcher.findGroupByName(userRequest.getMessage());
         if (group.isPresent()) {
-            userGroupRepository.save(userRequest.getUserId(), group.get().getId());
-            userRouteRepository.save(userRequest.getUserId(), UserRoute.HOME);
-            return groupIsFound(group.get());
+            saveUserGroup(userRequest.getUserId(), group.get());
+            setUserToHomeRoute(userRequest.getUserId());
+            return groupIsFoundBotResponse(group.get());
+        } else {
+            return groupNotFoundBotResponse(userRequest);
         }
-
-        return null;
     }
 
-    private BotResponse groupIsFound(Group groupName) {
+    private void saveUserGroup(long userId, Group group) {
+        userGroupRepository.save(userId, group.getId());
+    }
+
+    private void setUserToHomeRoute(long userId) {
+        userRouteRepository.save(userId, UserRoute.HOME);
+    }
+
+    private BotResponse groupIsFoundBotResponse(Group groupName) {
         return new BotResponse(
                 String.format("Your group is set to '%s'.", groupName.getName()),
                 PossibleReplies.WITH_GROUP_REPLIES
         );
+    }
+
+    private BotResponse groupNotFoundBotResponse(UserRequest userRequest) {
+        return new BotResponse(String.format(
+                "No group by name '%s' is found! Try again.",
+                userRequest.getMessage()
+        ));
     }
 }

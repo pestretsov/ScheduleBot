@@ -45,10 +45,6 @@ public class Router {
 
 }
 
-interface GroupSearchService {
-    BotResponse handleRequest(UserRequest userRequest);
-}
-
 interface SchedulerBotHome {
     BotResponse handleRequest(UserRequest userRequest);
 }

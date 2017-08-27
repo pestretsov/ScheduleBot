@@ -10,11 +10,13 @@ import org.anstreth.schedulebot.schedulerbotcommandshandler.request.ScheduleRequ
 import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
 import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static org.anstreth.schedulebot.model.UserRoute.MENU;
 
+@Component
 class SchedulerBotHome {
     private static final BotResponse MENU_ROUTE_RESPONSE
         = new BotResponse("What do you want to do?", PossibleReplies.MENU_REPLIES);
@@ -23,6 +25,7 @@ class SchedulerBotHome {
     private final SchedulerBotCommandsHandler commandsHandler;
     private final UserGroupRepository userGroupRepository;
 
+    @Autowired
     SchedulerBotHome(UserRouteRepository userRouteRepository, UserCommandParser userCommandParser, SchedulerBotCommandsHandler commandsHandler, UserGroupRepository userGroupRepository) {
         this.userRouteRepository = userRouteRepository;
         this.userCommandParser = userCommandParser;

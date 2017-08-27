@@ -5,7 +5,10 @@ import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class UserRequestRouter {
@@ -27,6 +30,11 @@ public class UserRequestRouter {
         this.groupSearchService = groupSearchService;
         this.schedulerBotMenu = schedulerBotMenu;
         this.schedulerBotHome = schedulerBotHome;
+    }
+
+    @Async
+    public CompletableFuture<BotResponse> routeAsync(UserRequest userRequest) {
+        return CompletableFuture.completedFuture(route(userRequest));
     }
 
     BotResponse route(UserRequest userRequest) {

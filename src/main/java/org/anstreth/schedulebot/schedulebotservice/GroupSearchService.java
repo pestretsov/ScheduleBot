@@ -7,14 +7,18 @@ import org.anstreth.schedulebot.response.PossibleReplies;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserGroupRepository;
 import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 class GroupSearchService {
     private final GroupSearcher groupSearcher;
     private final UserGroupRepository userGroupRepository;
     private final UserRouteRepository userRouteRepository;
 
+    @Autowired
     GroupSearchService(GroupSearcher groupSearcher, UserGroupRepository userGroupRepository, UserRouteRepository userRouteRepository) {
         this.groupSearcher = groupSearcher;
         this.userGroupRepository = userGroupRepository;

@@ -5,13 +5,16 @@ import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 class UserRouteInitializer {
 
     private static final BotResponse askForGroup
             = new BotResponse("Send me your group number like '12345/6' to get your schedule.");
     private final UserRouteRepository userRouteRepository;
 
+    @Autowired
     UserRouteInitializer(UserRouteRepository userRouteRepository) {
         this.userRouteRepository = userRouteRepository;
     }

@@ -4,7 +4,10 @@ import org.anstreth.schedulebot.model.UserRoute;
 import org.anstreth.schedulebot.response.BotResponse;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.anstreth.schedulebot.schedulerrepository.UserRouteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Router {
     private final UserRouteRepository userRouteRepository;
     private final UserRouteInitializer userRouteInitializer;
@@ -12,6 +15,7 @@ public class Router {
     private final SchedulerBotMenu schedulerBotMenu;
     private final SchedulerBotHome schedulerBotHome;
 
+    @Autowired
     public Router(
             UserRouteRepository userRouteRepository,
             UserRouteInitializer userRouteInitializer,

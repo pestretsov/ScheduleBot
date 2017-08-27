@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Router {
+public class UserRequestRouter {
     private final UserRouteRepository userRouteRepository;
     private final UserRouteInitializer userRouteInitializer;
     private final GroupSearchService groupSearchService;
@@ -16,7 +16,7 @@ public class Router {
     private final SchedulerBotHome schedulerBotHome;
 
     @Autowired
-    public Router(
+    public UserRequestRouter(
             UserRouteRepository userRouteRepository,
             UserRouteInitializer userRouteInitializer,
             GroupSearchService groupSearchService,

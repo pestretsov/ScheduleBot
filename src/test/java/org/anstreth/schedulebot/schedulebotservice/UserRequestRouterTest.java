@@ -16,9 +16,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RouterTest {
+public class UserRequestRouterTest {
     @InjectMocks
-    private Router router;
+    private UserRequestRouter router;
     @Mock
     private UserRouteRepository routeRepository;
     @Mock

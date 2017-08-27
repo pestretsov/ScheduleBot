@@ -42,10 +42,4 @@ public class Router {
 
         throw new IllegalArgumentException("Illegal user route " + userRoute);
     }
-
 }
-
-interface SchedulerBotHome {
-    BotResponse handleRequest(UserRequest userRequest);
-}
-

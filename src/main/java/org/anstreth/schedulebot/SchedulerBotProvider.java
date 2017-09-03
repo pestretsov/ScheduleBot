@@ -1,6 +1,5 @@
 package org.anstreth.schedulebot;
 
-import org.anstreth.schedulebot.schedulebotservice.SchedulerBotService;
 import org.anstreth.schedulebot.schedulebotservice.UserRequestRouter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

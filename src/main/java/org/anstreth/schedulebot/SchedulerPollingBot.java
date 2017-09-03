@@ -2,7 +2,6 @@ package org.anstreth.schedulebot;
 
 import lombok.extern.log4j.Log4j;
 import org.anstreth.schedulebot.response.BotResponse;
-import org.anstreth.schedulebot.schedulebotservice.SchedulerBotService;
 import org.anstreth.schedulebot.schedulebotservice.UserRequestRouter;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.telegram.telegrambots.api.methods.send.SendMessage;

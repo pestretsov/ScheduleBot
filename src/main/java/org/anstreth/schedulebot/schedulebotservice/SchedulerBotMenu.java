@@ -28,15 +28,15 @@ class SchedulerBotMenu {
     BotResponse handleRequest(UserRequest request) {
         switch (menuCommandsParser.parse(request.getMessage())) {
             case BACK:
-                userRouteRepository.save(request.getUserId(), UserRoute.HOME);
+                routeUserToHome(request);
                 return new BotResponse(
                         "You can ask for schedule now.",
                         PossibleReplies.WITH_GROUP_REPLIES
                 );
 
             case RESET_GROUP:
-                userGroupRepository.remove(request.getUserId());
-                userRouteRepository.save(request.getUserId(), UserRoute.GROUP_SEARCH);
+                deleteUserGroup(request);
+                routeUserToGroupSearch(request);
                 return new BotResponse("Send me your group number like '12345/6' to get your schedule.");
 
             default:
@@ -45,6 +45,18 @@ class SchedulerBotMenu {
                         PossibleReplies.MENU_REPLIES
                 );
         }
+    }
+
+    private void routeUserToGroupSearch(UserRequest request) {
+        userRouteRepository.save(request.getUserId(), UserRoute.GROUP_SEARCH);
+    }
+
+    private void deleteUserGroup(UserRequest request) {
+        userGroupRepository.remove(request.getUserId());
+    }
+
+    private void routeUserToHome(UserRequest request) {
+        userRouteRepository.save(request.getUserId(), UserRoute.HOME);
     }
 
 }

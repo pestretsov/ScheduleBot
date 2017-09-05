@@ -72,7 +72,7 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
 
     private void sendMessageQuietly(SendMessage sendMessageForChatWithText) {
         try {
-            sendMessage(sendMessageForChatWithText);
+            execute(sendMessageForChatWithText);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

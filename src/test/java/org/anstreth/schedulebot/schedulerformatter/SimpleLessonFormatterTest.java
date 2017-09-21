@@ -1,13 +1,11 @@
 package org.anstreth.schedulebot.schedulerformatter;
 
-import org.anstreth.ruzapi.response.Auditory;
-import org.anstreth.ruzapi.response.Building;
-import org.anstreth.ruzapi.response.Lesson;
-import org.anstreth.ruzapi.response.LessonType;
+import org.anstreth.ruzapi.response.*;
 import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -23,10 +21,12 @@ public class SimpleLessonFormatterTest {
         String auditoryName = "auditory name";
         String auditoryBuilding = "auditory building";
         String lessonTypeName = "lesson type short name";
+        String teacherFullName = "teacher name";
 
         Building building = getBuildingWithName(auditoryBuilding);
         Auditory auditory = getAuditoryWithNameAndBuilding(auditoryName, building);
         LessonType lessonType = getLessonTypeWithName(lessonTypeName);
+        Teacher teacher = getTeacherWithFullName(teacherFullName);
 
         Lesson lesson = new Lesson();
         lesson.setSubject(subjectName);
@@ -34,13 +34,15 @@ public class SimpleLessonFormatterTest {
         lesson.setTimeEnd(timeEnd);
         lesson.setAuditories(Collections.singletonList(auditory));
         lesson.setLessonType(lessonType);
+        lesson.setTeachers(Collections.singletonList(teacher));
 
         String expectedFormat = String.format(
-                "%s - %s: %s (%s)\n%s, %s",
+                "%s - %s: %s (%s)\n[%s]\n%s, %s",
                 timeStart,
                 timeEnd,
                 subjectName,
                 lessonTypeName,
+                teacherFullName,
                 auditoryName,
                 auditoryBuilding
         );
@@ -61,6 +63,17 @@ public class SimpleLessonFormatterTest {
         assertThat(formattedLesson, endsWith("no auditory"));
     }
 
+    @Test
+    public void ifTeacherListIsNullPlaceholderIsPlacedInstead() throws Exception {
+        Lesson lesson = new Lesson();
+        lesson.setLessonType(getLessonTypeWithName(""));
+        lesson.setTeachers(null);
+
+        String formattedLesson = simpleLessonFormatter.formatLesson(lesson);
+
+        assertThat(formattedLesson, containsString("no teacher"));
+    }
+
     private LessonType getLessonTypeWithName(String lessonTypeName) {
         LessonType lessonType = new LessonType();
         lessonType.setName(lessonTypeName);
@@ -78,5 +91,11 @@ public class SimpleLessonFormatterTest {
         auditory.setName(auditoryName);
         auditory.setBuilding(building);
         return auditory;
+    }
+
+    private Teacher getTeacherWithFullName(String teacherFullName) {
+        Teacher teacher = new Teacher();
+        teacher.setFullName(teacherFullName);
+        return teacher;
     }
 }

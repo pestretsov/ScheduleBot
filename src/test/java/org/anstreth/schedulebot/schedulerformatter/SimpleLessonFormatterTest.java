@@ -13,6 +13,9 @@ import static org.junit.Assert.assertThat;
 public class SimpleLessonFormatterTest {
     private SimpleLessonFormatter simpleLessonFormatter = new SimpleLessonFormatter();
 
+    private final String NO_AUDITORIES_PLACEHOLDER = "no auditory";
+    private final String NO_TEACHERS_PLACEHOLDER = "no teacher";
+
     @Test
     public void formatterConcatenatesSubjectAndTimesAndAuditoryName() throws Exception {
         String subjectName = "subject name";
@@ -60,7 +63,29 @@ public class SimpleLessonFormatterTest {
 
         String formattedLesson = simpleLessonFormatter.formatLesson(lesson);
 
-        assertThat(formattedLesson, endsWith("no auditory"));
+        assertThat(formattedLesson, endsWith(NO_AUDITORIES_PLACEHOLDER));
+    }
+
+    @Test
+    public void ifAuditoriesListIsNullPlaceholderIsPlacedInstead() throws Exception {
+        Lesson lesson = new Lesson();
+        lesson.setLessonType(getLessonTypeWithName(""));
+        lesson.setAuditories(null);
+
+        String formattedLesson = simpleLessonFormatter.formatLesson(lesson);
+
+        assertThat(formattedLesson, endsWith(NO_AUDITORIES_PLACEHOLDER));
+    }
+
+    @Test
+    public void ifTeacherListIsEmptyPlaceholderIsPlacedInstead() throws Exception {
+        Lesson lesson = new Lesson();
+        lesson.setLessonType(getLessonTypeWithName(""));
+        lesson.setTeachers(Collections.emptyList());
+
+        String formattedLesson = simpleLessonFormatter.formatLesson(lesson);
+
+        assertThat(formattedLesson, containsString(NO_TEACHERS_PLACEHOLDER));
     }
 
     @Test
@@ -71,7 +96,7 @@ public class SimpleLessonFormatterTest {
 
         String formattedLesson = simpleLessonFormatter.formatLesson(lesson);
 
-        assertThat(formattedLesson, containsString("no teacher"));
+        assertThat(formattedLesson, containsString(NO_TEACHERS_PLACEHOLDER));
     }
 
     private LessonType getLessonTypeWithName(String lessonTypeName) {

@@ -10,7 +10,7 @@ class SimpleLessonFormatter implements LessonFormatter {
 
     @Override
     public String formatLesson(Lesson lesson) {
-        return String.format("%s - %s: %s (%s)\n[%s]\n%s",
+        return String.format("%s - %s: %s (%s)\n%s\n%s",
                 lesson.getTimeStart(),
                 lesson.getTimeEnd(),
                 lesson.getSubject(),
@@ -25,7 +25,7 @@ class SimpleLessonFormatter implements LessonFormatter {
         }
 
         Teacher teacher = lesson.getTeachers().get(0);
-        return teacher.getFullName();
+        return String.format("[%s]", teacher.getFullName());
     }
 
     private String getAuditory(Lesson lesson) {

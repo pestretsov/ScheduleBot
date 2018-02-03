@@ -17,9 +17,11 @@ class SchedulerBotMenu {
     private final UserRouteRepository userRouteRepository;
 
     @Autowired
-    SchedulerBotMenu(UserGroupRepository userGroupRepository,
-                     MenuCommandParser menuCommandsParser,
-                     UserRouteRepository userRouteRepository) {
+    SchedulerBotMenu(
+            UserGroupRepository userGroupRepository,
+            MenuCommandParser menuCommandsParser,
+            UserRouteRepository userRouteRepository
+    ) {
         this.menuCommandsParser = menuCommandsParser;
         this.userGroupRepository = userGroupRepository;
         this.userRouteRepository = userRouteRepository;

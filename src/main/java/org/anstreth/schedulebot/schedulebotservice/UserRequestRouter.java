@@ -24,7 +24,8 @@ public class UserRequestRouter {
             UserRouteInitializer userRouteInitializer,
             GroupSearchService groupSearchService,
             SchedulerBotMenu schedulerBotMenu,
-            SchedulerBotHome schedulerBotHome) {
+            SchedulerBotHome schedulerBotHome
+    ) {
         this.userRouteRepository = userRouteRepository;
         this.userRouteInitializer = userRouteInitializer;
         this.groupSearchService = groupSearchService;

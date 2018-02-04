@@ -10,8 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 class UserRouteInitializer {
 
-    private static final BotResponse askForGroup
+    private static final BotResponse ASK_FOR_GROUP_USER_CHAT
             = new BotResponse("Send me your group number like '12345/6' to get your schedule.");
+
+    private static final BotResponse ASK_FOR_GROUP_GROUP_CHAT
+            = new BotResponse("Send me your group number like '/set_group 12345/6' to get your schedule.");
+
     private final UserRouteRepository userRouteRepository;
 
     @Autowired
@@ -21,6 +25,6 @@ class UserRouteInitializer {
 
     BotResponse handleRequest(UserRequest userRequest) {
         userRouteRepository.save(userRequest.getUserId(), UserRoute.GROUP_SEARCH);
-        return askForGroup;
+        return userRequest.isGroupChat() ? ASK_FOR_GROUP_GROUP_CHAT : ASK_FOR_GROUP_USER_CHAT;
     }
 }

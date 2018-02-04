@@ -34,7 +34,7 @@ public class SchedulerBotMenuTest {
     public void when_command_is_BACK_then_menu_moves_user_to_HOME_route_and_asks_for_schedule() throws Exception {
         long userId = 1;
         String command = "command";
-        UserRequest backRequest = new UserRequest(userId, command);
+        UserRequest backRequest = new UserRequest(userId, command, false);
         BotResponse askForScheduleCommand = new BotResponse("You can ask for schedule now.", WITH_GROUP_REPLIES);
         doReturn(BACK).when(menuCommandParser).parse(command);
 
@@ -47,7 +47,7 @@ public class SchedulerBotMenuTest {
     public void if_RESET_GROUP_group_is_deleted_state_and_route_set_to_GROUP_SEARCH() throws Exception {
         long userId = 1;
         String command = "command";
-        UserRequest backRequest = new UserRequest(userId, command);
+        UserRequest backRequest = new UserRequest(userId, command, false);
         BotResponse askForGroup = new BotResponse("Send me your group number like '12345/6' to get your schedule.");
         doReturn(RESET_GROUP).when(menuCommandParser).parse(command);
 
@@ -61,7 +61,7 @@ public class SchedulerBotMenuTest {
     public void whenCommandIs_UNKNOWN_menuSaysItDontUnderstandThat() throws Exception {
         long userId = 1;
         String command = "command";
-        UserRequest backRequest = new UserRequest(userId, command);
+        UserRequest backRequest = new UserRequest(userId, command, false);
         BotResponse dontUnderstand = new BotResponse("Sorry, don't understand that!", MENU_REPLIES);
         doReturn(UNKNOWN).when(menuCommandParser).parse(command);
 

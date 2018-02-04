@@ -1,5 +1,7 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.schedulebot.commands.FullCommand;
+import org.anstreth.schedulebot.commands.MenuCommand;
 import org.anstreth.schedulebot.commands.MenuCommandParser;
 import org.anstreth.schedulebot.model.UserRoute;
 import org.anstreth.schedulebot.response.BotResponse;
@@ -28,7 +30,8 @@ class SchedulerBotMenu {
     }
 
     BotResponse handleRequest(UserRequest request) {
-        switch (menuCommandsParser.parse(request.getMessage())) {
+        FullCommand<MenuCommand> command = menuCommandsParser.parse(request.getMessage());
+        switch (command.getName()) {
             case BACK:
                 routeUserToHome(request);
                 return new BotResponse(

@@ -6,10 +6,6 @@ import org.anstreth.schedulebot.schedulebotservice.UserRequestRouter;
 import org.anstreth.schedulebot.schedulebotservice.request.UserRequest;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
@@ -56,7 +52,8 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
     private UserRequest getUserRequestFromUpdate(Update update) {
         Long chatId = update.getMessage().getChatId();
         String messageText = update.getMessage().getText();
-        return new UserRequest(chatId, messageText);
+        boolean isGroupChat = update.getMessage().isGroupMessage() || update.getMessage().isSuperGroupMessage();
+        return new UserRequest(chatId, messageText, isGroupChat);
     }
 
     private void sendBotResponseToChat(Long chatId, BotResponse botResponse) {
@@ -66,7 +63,7 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
 
     private List<SendMessage> getSendMessagesForBotResponse(Long chatId, BotResponse botResponse) {
         return botResponse.getMessages().stream()
-                .map(message -> getSendMessage(chatId, message, botResponse.getRepliesRows()))
+                .map(message -> getSendMessage(chatId, message))
                 .collect(Collectors.toList());
     }
 
@@ -78,33 +75,9 @@ class SchedulerPollingBot extends TelegramLongPollingBot {
         }
     }
 
-    private SendMessage getSendMessage(Long chatId, String message, List<List<String>> replies) {
+    private SendMessage getSendMessage(Long chatId, String message) {
         return new SendMessage()
                 .setChatId(chatId)
-                .setText(message)
-                .setReplyMarkup(getReplyMarkup(replies));
+                .setText(message);
     }
-
-    private ReplyKeyboard getReplyMarkup(List<List<String>> replies) {
-        if (replies.isEmpty()) {
-            return new ReplyKeyboardRemove();
-        }
-
-        return new ReplyKeyboardMarkup()
-                .setKeyboard(getRowsWithReplies(replies))
-                .setResizeKeyboard(true);
-    }
-
-    private List<KeyboardRow> getRowsWithReplies(List<List<String>> replies) {
-        return replies.stream()
-                .map(this::keyboardRowWithReplies)
-                .collect(Collectors.toList());
-    }
-
-    private KeyboardRow keyboardRowWithReplies(List<String> replies) {
-        KeyboardRow keyboardButtons = new KeyboardRow();
-        replies.forEach(keyboardButtons::add);
-        return keyboardButtons;
-    }
-
 }

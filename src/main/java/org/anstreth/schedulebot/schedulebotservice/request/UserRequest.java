@@ -6,4 +6,5 @@ import lombok.Data;
 public class UserRequest {
     private final long userId;
     private final String message;
+    private final boolean groupChat;
 }

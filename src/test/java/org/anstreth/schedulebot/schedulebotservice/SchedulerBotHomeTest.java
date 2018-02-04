@@ -42,7 +42,7 @@ public class SchedulerBotHomeTest {
     public void if_user_command_parsed_as_MENU_then_his_route_is_changed_to_menu_and_menu_response_returned() {
         long userId = 1;
         String command = "command";
-        UserRequest userRequest = new UserRequest(userId, command);
+        UserRequest userRequest = new UserRequest(userId, command, false);
         doReturn(UserCommand.MENU).when(parser).parse(command);
         BotResponse menuResponse = new BotResponse("What do you want to do?", PossibleReplies.MENU_REPLIES);
 
@@ -57,7 +57,7 @@ public class SchedulerBotHomeTest {
         int groupId = 2;
         String command = "command";
         UserCommand parsedCommand = UserCommand.TODAY;
-        UserRequest userRequest = new UserRequest(userId, command);
+        UserRequest userRequest = new UserRequest(userId, command, false);
         ScheduleRequest expectedScheduleRequest = new ScheduleRequest(groupId, parsedCommand);
         List<String> messagesFromHanlder = Collections.singletonList("response");
         BotResponse commandHanldedResponse = new BotResponse(messagesFromHanlder, PossibleReplies.WITH_GROUP_REPLIES);

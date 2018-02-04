@@ -10,6 +10,7 @@ public class UserCommandParser extends CommandParser<UserCommand> {
         addCommand(UserCommand.TODAY, "/today", "Today");
         addCommand(UserCommand.WEEK, "/week", "Week");
         addCommand(UserCommand.MENU, "/menu", "Menu");
+        addCommand(UserCommand.SET_GROUP, "/set_group", "SetGroup");
     }
 
     @Override

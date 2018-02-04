@@ -11,19 +11,24 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 @Component
 @PropertySource("classpath:ruzapi.properties")
 class RestWeekScheduleRepository implements WeekScheduleRepository {
+
+    private final static String MSK_TIMEZONE = "Europe/Moscow";
 
     private final String weekScheduleURL;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final RestTemplate restTemplate;
 
     @Autowired
-    public RestWeekScheduleRepository(@Value("${ruzapi.weekschedule}") String weekScheduleURL, RestTemplate restTemplate) {
+    public RestWeekScheduleRepository(
+            @Value("${ruzapi.weekschedule}") String weekScheduleURL, RestTemplate restTemplate) {
         this.weekScheduleURL = weekScheduleURL;
         this.restTemplate = restTemplate;
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone(MSK_TIMEZONE));
     }
 
 

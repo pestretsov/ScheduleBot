@@ -11,13 +11,13 @@ public class MenuCommandParserTest {
 
     @Test
     public void parserCorrectlyParsesBackCommand() throws Exception {
-        assertThat(parser.parse("/back"), is(BACK));
-        assertThat(parser.parse("Back"), is(BACK));
+        assertThat(parser.parse("/back").getName(), is(BACK));
+        assertThat(parser.parse("Back").getName(), is(BACK));
     }
 
     @Test
     public void parserCorrectlyParsesResetCommand() throws Exception {
-        assertThat(parser.parse("/reset_group"), is(RESET_GROUP));
-        assertThat(parser.parse("Reset group"), is(RESET_GROUP));
+        assertThat(parser.parse("/reset_group").getName(), is(RESET_GROUP));
+        assertThat(parser.parse("Reset group").getName(), is(RESET_GROUP));
     }
 }

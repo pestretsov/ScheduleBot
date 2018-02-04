@@ -25,7 +25,7 @@ public class UserRouteInitializerTest {
     @Test
     public void initializer_puts_GROUP_SEARCH_route_to_repository_and_asks_for_group() throws Exception {
         long userId = 1;
-        UserRequest userRequest = new UserRequest(userId, "msg");
+        UserRequest userRequest = new UserRequest(userId, "msg", false);
         BotResponse askForGroupResponse = new BotResponse("Send me your group number like '12345/6' to get your schedule.");
 
         assertThat(initializer.handleRequest(userRequest), is(askForGroupResponse));

@@ -39,7 +39,7 @@ public class GroupSearchServiceTest {
         long userId = 1;
         int foundGroupId = 2;
         String searchMessage = "msg";
-        UserRequest request = new UserRequest(userId, searchMessage);
+        UserRequest request = new UserRequest(userId, searchMessage, false);
         BotResponse groupFoundResponse = new BotResponse(
                 "Your group is set to 'groupName'.",
                 PossibleReplies.WITH_GROUP_REPLIES
@@ -57,7 +57,7 @@ public class GroupSearchServiceTest {
     public void if_group_is_not_found_then_no_group_found_response_is_returned() {
         long userId = 1;
         String searchMessage = "msg";
-        UserRequest request = new UserRequest(userId, searchMessage);
+        UserRequest request = new UserRequest(userId, searchMessage, false);
         doReturn(Optional.empty()).when(groupSearcher).findGroupByName(searchMessage);
         BotResponse noSuchGroupResponse = new BotResponse("No group by name 'msg' is found! Try again.");
 

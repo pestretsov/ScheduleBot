@@ -1,5 +1,6 @@
 package org.anstreth.schedulebot.schedulebotservice;
 
+import org.anstreth.schedulebot.commands.FullCommand;
 import org.anstreth.schedulebot.commands.UserCommand;
 import org.anstreth.schedulebot.commands.UserCommandParser;
 import org.anstreth.schedulebot.response.BotResponse;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static org.anstreth.schedulebot.model.UserRoute.GROUP_SEARCH;
 import static org.anstreth.schedulebot.model.UserRoute.MENU;
 
 @Component
@@ -24,22 +26,35 @@ class SchedulerBotHome {
     private final UserCommandParser userCommandParser;
     private final SchedulerBotCommandsHandler commandsHandler;
     private final UserGroupRepository userGroupRepository;
+    private final GroupSearchService groupSearchService;
 
     @Autowired
-    SchedulerBotHome(UserRouteRepository userRouteRepository, UserCommandParser userCommandParser, SchedulerBotCommandsHandler commandsHandler, UserGroupRepository userGroupRepository) {
+    SchedulerBotHome(
+            UserRouteRepository userRouteRepository,
+            UserCommandParser userCommandParser,
+            SchedulerBotCommandsHandler commandsHandler,
+            UserGroupRepository userGroupRepository,
+            GroupSearchService groupSearchService
+    ) {
         this.userRouteRepository = userRouteRepository;
         this.userCommandParser = userCommandParser;
         this.commandsHandler = commandsHandler;
         this.userGroupRepository = userGroupRepository;
+        this.groupSearchService = groupSearchService;
     }
 
     BotResponse handleRequest(UserRequest userRequest) {
-        UserCommand command = userCommandParser.parse(userRequest.getMessage());
-        if (command == UserCommand.MENU) {
-            routeUserToMenu(userRequest.getUserId());
-            return MENU_ROUTE_RESPONSE;
-        } else {
-            return handleUserScheduleCommand(userRequest.getUserId(), command);
+        FullCommand<UserCommand> command = userCommandParser.parse(userRequest.getMessage());
+        switch (command.getName()) {
+            case MENU:
+                routeUserToMenu(userRequest);
+                return MENU_ROUTE_RESPONSE;
+            case SET_GROUP:
+                deleteUserGroup(userRequest);
+                routeUserToGroupSearch(userRequest);
+                return groupSearchService.handleRequest(userRequest);
+            default:
+                return handleUserScheduleCommand(userRequest.getUserId(), command.getName());
         }
     }
 
@@ -50,8 +65,16 @@ class SchedulerBotHome {
         return new BotResponse(scheduleResponses, PossibleReplies.WITH_GROUP_REPLIES);
     }
 
-    private void routeUserToMenu(long userId) {
-        userRouteRepository.save(userId, MENU);
+    private void deleteUserGroup(UserRequest request) {
+        userGroupRepository.remove(request.getUserId());
+    }
+
+    private void routeUserToGroupSearch(UserRequest request) {
+        userRouteRepository.save(request.getUserId(), GROUP_SEARCH);
+    }
+
+    private void routeUserToMenu(UserRequest request) {
+        userRouteRepository.save(request.getUserId(), MENU);
     }
 
 }

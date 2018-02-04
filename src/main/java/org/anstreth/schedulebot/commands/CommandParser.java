@@ -5,10 +5,16 @@ import java.util.Map;
 
 abstract class CommandParser<T extends Enum<T>> {
     private final Map<String, T> possibleNames = new HashMap<>();
+    private static final String EMPTY_ARGUMENT_PLACEHOLDER = "";
 
-    public T parse(String command) {
-        String trimmedCommand = command.trim();
-        return possibleNames.getOrDefault(trimmedCommand, getDefault());
+    public FullCommand<T> parse(String command) {
+        String[] commandWithArgument = command.trim().split(" ");
+        String strCommandName = commandWithArgument[0].split("@")[0];
+        String commandArgument = commandWithArgument.length > 1 ? commandWithArgument[1] : EMPTY_ARGUMENT_PLACEHOLDER;
+
+        T commandName = possibleNames.getOrDefault(strCommandName, getDefault());
+
+        return new FullCommand<>(commandName, commandArgument);
     }
 
     void addCommand(T command, String commandInText, String... otherVariants) {
